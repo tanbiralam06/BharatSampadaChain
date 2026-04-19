@@ -1,0 +1,40 @@
+{
+  "total_registered_nodes": 847234,
+  "total_properties_on_chain": 3241887,
+  "total_financial_assets_linked": 12847002,
+  "total_flagged_cases": 18472,
+  "total_red_flags": 3241,
+  "total_orange_flags": 6118,
+  "total_yellow_flags": 9113,
+  "total_resolved_cases": 14228,
+  "tax_recovery_estimate": 847000000000,
+  "tax_recovery_display": "₹8,470 Cr",
+  "active_investigations": 4244,
+  "agencies_connected": 14,
+  "blockchain_transactions_total": 48721334,
+  "data_freshness_hours": 4,
+  "last_sync": "2024-04-18T06:00:00Z",
+  "states_covered": 28,
+  "monthly_stats": [
+    {"month": "Oct 2023", "flags_raised": 1240, "flags_resolved": 980, "new_nodes": 48200},
+    {"month": "Nov 2023", "flags_raised": 1380, "flags_resolved": 1120, "new_nodes": 52400},
+    {"month": "Dec 2023", "flags_raised": 1520, "flags_resolved": 1340, "new_nodes": 61200},
+    {"month": "Jan 2024", "flags_raised": 1840, "flags_resolved": 1480, "new_nodes": 72800},
+    {"month": "Feb 2024", "flags_raised": 2100, "flags_resolved": 1720, "new_nodes": 88400},
+    {"month": "Mar 2024", "flags_raised": 2480, "flags_resolved": 1920, "new_nodes": 104200}
+  ],
+  "flags_by_type": [
+    {"name": "Income Mismatch", "value": 8420, "color": "#ef4444"},
+    {"name": "Sudden Wealth Gain", "value": 4218, "color": "#f97316"},
+    {"name": "Benami Suspicion", "value": 2840, "color": "#eab308"},
+    {"name": "Shell Company", "value": 1882, "color": "#8b5cf6"},
+    {"name": "Foreign Asset", "value": 1112, "color": "#06b6d4"}
+  ],
+  "top_flagged_states": [
+    {"state": "Uttar Pradesh", "flags": 4218, "pct": 22.8},
+    {"state": "Maharashtra", "flags": 2841, "pct": 15.4},
+    {"state": "Bihar", "flags": 2440, "pct": 13.2},
+    {"state": "Rajasthan", "flags": 1882, "pct": 10.2},
+    {"state": "West Bengal", "flags": 1621, "pct": 8.8}
+  ]
+}

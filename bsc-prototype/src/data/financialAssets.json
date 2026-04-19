@@ -1,0 +1,134 @@
+[
+  {
+    "asset_id": "FA-001",
+    "owner_node_id": "BSC-CIT-001",
+    "asset_type": "BANK_ACCOUNT",
+    "institution_name": "State Bank of India",
+    "balance_range": "10L_TO_1CR",
+    "approximate_value": 550000,
+    "as_of_date": "2024-03-01",
+    "verification_status": "AGENCY_VERIFIED",
+    "is_joint_account": false
+  },
+  {
+    "asset_id": "FA-002",
+    "owner_node_id": "BSC-CIT-001",
+    "asset_type": "MUTUAL_FUND",
+    "institution_name": "HDFC Mutual Fund",
+    "balance_range": "10L_TO_1CR",
+    "approximate_value": 1850000,
+    "as_of_date": "2024-03-01",
+    "verification_status": "AGENCY_VERIFIED",
+    "is_joint_account": false
+  },
+  {
+    "asset_id": "FA-003",
+    "owner_node_id": "BSC-CIT-001",
+    "asset_type": "EPF",
+    "institution_name": "EPFO",
+    "balance_range": "10L_TO_1CR",
+    "approximate_value": 980000,
+    "as_of_date": "2024-03-01",
+    "verification_status": "AGENCY_VERIFIED",
+    "is_joint_account": false
+  },
+  {
+    "asset_id": "FA-004",
+    "owner_node_id": "BSC-CIT-001",
+    "asset_type": "STOCKS",
+    "institution_name": "Zerodha Demat",
+    "balance_range": "1L_TO_10L",
+    "approximate_value": 420000,
+    "as_of_date": "2024-03-01",
+    "verification_status": "SELF_DECLARED",
+    "is_joint_account": false
+  },
+  {
+    "asset_id": "FA-005",
+    "owner_node_id": "BSC-POL-001",
+    "asset_type": "BANK_ACCOUNT",
+    "institution_name": "Punjab National Bank",
+    "balance_range": "1CR_TO_10CR",
+    "approximate_value": 55000000,
+    "as_of_date": "2024-03-15",
+    "verification_status": "AGENCY_VERIFIED",
+    "is_joint_account": false
+  },
+  {
+    "asset_id": "FA-006",
+    "owner_node_id": "BSC-POL-001",
+    "asset_type": "FD",
+    "institution_name": "Canara Bank",
+    "balance_range": "10CR_TO_100CR",
+    "approximate_value": 120000000,
+    "as_of_date": "2024-03-15",
+    "verification_status": "AGENCY_VERIFIED",
+    "is_joint_account": false
+  },
+  {
+    "asset_id": "FA-007",
+    "owner_node_id": "BSC-POL-001",
+    "asset_type": "FOREIGN_ASSET",
+    "institution_name": "HSBC Dubai",
+    "balance_range": "10CR_TO_100CR",
+    "approximate_value": 85000000,
+    "as_of_date": "2024-01-01",
+    "verification_status": "SELF_DECLARED",
+    "is_joint_account": false
+  },
+  {
+    "asset_id": "FA-008",
+    "owner_node_id": "BSC-POL-002",
+    "asset_type": "BANK_ACCOUNT",
+    "institution_name": "Bank of Baroda",
+    "balance_range": "1CR_TO_10CR",
+    "approximate_value": 42000000,
+    "as_of_date": "2024-02-28",
+    "verification_status": "AGENCY_VERIFIED",
+    "is_joint_account": false
+  },
+  {
+    "asset_id": "FA-009",
+    "owner_node_id": "BSC-POL-002",
+    "asset_type": "MUTUAL_FUND",
+    "institution_name": "SBI Mutual Fund",
+    "balance_range": "10CR_TO_100CR",
+    "approximate_value": 78000000,
+    "as_of_date": "2024-02-28",
+    "verification_status": "AGENCY_VERIFIED",
+    "is_joint_account": false
+  },
+  {
+    "asset_id": "FA-010",
+    "owner_node_id": "BSC-OFC-001",
+    "asset_type": "BANK_ACCOUNT",
+    "institution_name": "HDFC Bank",
+    "balance_range": "10CR_TO_100CR",
+    "approximate_value": 65000000,
+    "as_of_date": "2024-03-12",
+    "verification_status": "AGENCY_VERIFIED",
+    "is_joint_account": false
+  },
+  {
+    "asset_id": "FA-011",
+    "owner_node_id": "BSC-OFC-002",
+    "asset_type": "BANK_ACCOUNT",
+    "institution_name": "Axis Bank",
+    "balance_range": "10L_TO_1CR",
+    "approximate_value": 850000,
+    "as_of_date": "2024-02-20",
+    "verification_status": "AGENCY_VERIFIED",
+    "is_joint_account": false
+  },
+  {
+    "asset_id": "FA-012",
+    "owner_node_id": "BSC-OFC-002",
+    "asset_type": "NPS",
+    "institution_name": "NSDL",
+    "balance_range": "10L_TO_1CR",
+    "approximate_value": 4200000,
+    "as_of_date": "2024-02-20",
+    "verification_status": "AGENCY_VERIFIED",
+    "is_joint_account": false
+  }
+]
