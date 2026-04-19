@@ -2,8 +2,9 @@
 
 ### India's Unified Blockchain Wealth Transparency System
 
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-bharat--sampada--chain.vercel.app-brightgreen)](https://bharat-sampada-chain.vercel.app)
 [![License: MIT](https://img.shields.io/badge/License-MIT-amber.svg)](https://opensource.org/licenses/MIT)
-[![Status: Prototype](https://img.shields.io/badge/Status-Prototype-blue.svg)]()
+[![Status: Prototype](https://img.shields.io/badge/Status-Prototype%20%28Phase%200%29-blue.svg)]()
 [![PRs Welcome](https://img.shields.io/badge/PRs-Welcome-green.svg)](./CONTRIBUTING.md)
 [![Whitepaper](https://img.shields.io/badge/Read-Whitepaper-orange.svg)](./WHITEPAPER.md)
 
