@@ -1,0 +1,530 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bharat Sampada Chain Dashboard</title>
+<style>
+:root{
+  --font-sans:Inter,Segoe UI,Roboto,Arial,sans-serif;
+  --font-mono:"Cascadia Mono","SFMono-Regular",Consolas,monospace;
+  --color-background-primary:#FFFFFF;
+  --color-background-secondary:#F5F7FA;
+  --color-background-tertiary:#EDEFF3;
+  --color-background-info:#E8F3FF;
+  --color-background-success:#EAF6EF;
+  --color-background-warning:#FFF4DF;
+  --color-background-danger:#FDECEC;
+  --color-text-primary:#202124;
+  --color-text-secondary:#5F6368;
+  --color-text-tertiary:#8A9099;
+  --color-text-info:#0B63B6;
+  --color-text-success:#1D7F55;
+  --color-text-warning:#93610B;
+  --color-text-danger:#B42318;
+  --color-border-secondary:#C7CDD6;
+  --color-border-tertiary:#DDE2EA;
+  --color-border-danger:#E24B4A;
+  --border-radius-md:6px;
+  --border-radius-lg:8px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans);background:var(--color-background-tertiary)}
+.app{display:flex;height:100vh;min-height:600px;overflow:hidden}
+.sidebar{width:220px;min-width:220px;background:var(--color-background-primary);border-right:0.5px solid var(--color-border-tertiary);display:flex;flex-direction:column;padding:1rem 0}
+.logo{padding:0 1rem 1rem;border-bottom:0.5px solid var(--color-border-tertiary);margin-bottom:0.75rem}
+.logo-title{font-size:15px;font-weight:500;color:var(--color-text-primary)}
+.logo-sub{font-size:11px;color:var(--color-text-secondary);margin-top:2px}
+.nav-section{font-size:10px;color:var(--color-text-tertiary);padding:0.5rem 1rem 0.25rem;text-transform:uppercase;letter-spacing:0.08em}
+.nav-item{display:flex;align-items:center;gap:8px;padding:7px 1rem;font-size:13px;color:var(--color-text-secondary);cursor:pointer;border-left:2px solid transparent;transition:all 0.15s}
+.nav-item:hover{background:var(--color-background-secondary);color:var(--color-text-primary)}
+.nav-item.active{background:var(--color-background-info);color:var(--color-text-info);border-left:2px solid #378ADD}
+.nav-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.main{flex:1;overflow-y:auto;padding:1.5rem}
+.page{display:none}
+.page.active{display:block}
+.page-title{font-size:18px;font-weight:500;color:var(--color-text-primary);margin-bottom:0.25rem}
+.page-sub{font-size:13px;color:var(--color-text-secondary);margin-bottom:1.5rem}
+.metric-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:1.5rem}
+.metric{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:1rem}
+.metric-label{font-size:11px;color:var(--color-text-secondary);margin-bottom:6px}
+.metric-value{font-size:22px;font-weight:500;color:var(--color-text-primary)}
+.metric-sub{font-size:11px;margin-top:4px}
+.metric-sub.up{color:var(--color-text-danger)}
+.metric-sub.ok{color:var(--color-text-success)}
+.card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1.25rem;margin-bottom:1rem}
+.card-title{font-size:14px;font-weight:500;color:var(--color-text-primary);margin-bottom:1rem}
+.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:var(--border-radius-md);font-size:11px;font-weight:500}
+.badge-red{background:var(--color-background-danger);color:var(--color-text-danger)}
+.badge-yellow{background:var(--color-background-warning);color:var(--color-text-warning)}
+.badge-green{background:var(--color-background-success);color:var(--color-text-success)}
+.badge-blue{background:var(--color-background-info);color:var(--color-text-info)}
+.badge-gray{background:var(--color-background-secondary);color:var(--color-text-secondary)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;font-weight:500;color:var(--color-text-secondary);font-size:11px;text-transform:uppercase;letter-spacing:0.06em;padding:0 0.75rem 0.5rem;border-bottom:0.5px solid var(--color-border-tertiary)}
+td{padding:0.6rem 0.75rem;border-bottom:0.5px solid var(--color-border-tertiary);color:var(--color-text-primary);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--color-background-secondary)}
+.bar-wrap{background:var(--color-background-secondary);border-radius:4px;height:8px;overflow:hidden;width:120px}
+.bar-fill{height:100%;border-radius:4px;transition:width 0.3s}
+.bar-red{background:#E24B4A}
+.bar-amber{background:#EF9F27}
+.bar-green{background:#639922}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem}
+.prop-card{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:0.75rem;margin-bottom:0.5rem}
+.prop-title{font-size:13px;font-weight:500;color:var(--color-text-primary)}
+.prop-detail{font-size:12px;color:var(--color-text-secondary);margin-top:3px}
+.timeline-row{display:flex;gap:12px;align-items:flex-start;margin-bottom:1rem}
+.timeline-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.timeline-line{display:flex;flex-direction:column;gap:0}
+.access-row{display:flex;gap:12px;align-items:center;padding:0.6rem 0;border-bottom:0.5px solid var(--color-border-tertiary);font-size:12px}
+.access-row:last-child{border-bottom:none}
+.agency-pill{font-size:11px;padding:2px 8px;border-radius:var(--border-radius-md);font-weight:500;white-space:nowrap}
+.btn-small{font-size:12px;padding:4px 10px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);cursor:pointer}
+.btn-small:hover{background:var(--color-background-secondary)}
+.flag-card{border-left:3px solid;padding:0.75rem 1rem;border-radius:0 var(--border-radius-md) var(--border-radius-md) 0;margin-bottom:0.75rem;background:var(--color-background-secondary)}
+.flag-red{border-color:#E24B4A}
+.flag-yellow{border-color:#EF9F27}
+.flag-green{border-color:#639922}
+.zkp-box{border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:1rem;margin-bottom:0.75rem}
+.zkp-query{font-size:13px;color:var(--color-text-primary);margin-bottom:8px}
+.zkp-result{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:500}
+.stat-row{display:flex;justify-content:space-between;align-items:center;padding:0.5rem 0;border-bottom:0.5px solid var(--color-border-tertiary);font-size:13px}
+.stat-row:last-child{border-bottom:none}
+.chart-bar-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;font-size:12px}
+.chart-bar-label{width:120px;color:var(--color-text-secondary);text-align:right;flex-shrink:0}
+.chart-bar-outer{flex:1;background:var(--color-background-secondary);border-radius:4px;height:20px;overflow:hidden}
+.chart-bar-inner{height:100%;border-radius:4px;display:flex;align-items:center;padding-left:6px;font-size:11px;font-weight:500}
+.tab-bar{display:flex;gap:4px;margin-bottom:1.25rem;border-bottom:0.5px solid var(--color-border-tertiary);padding-bottom:0}
+.tab{font-size:13px;padding:6px 14px;cursor:pointer;color:var(--color-text-secondary);border-bottom:2px solid transparent;margin-bottom:-0.5px}
+.tab.active{color:var(--color-text-info);border-bottom:2px solid #378ADD;font-weight:500}
+.sub-page{display:none}
+.sub-page.active{display:block}
+.wealth-bar{height:24px;border-radius:4px;display:flex;overflow:hidden;margin:8px 0}
+.w-prop{background:#378ADD}
+.w-fin{background:#1D9E75}
+.w-biz{background:#EF9F27}
+.legend{display:flex;gap:16px;font-size:11px;color:var(--color-text-secondary)}
+.legend-dot{width:8px;height:8px;border-radius:2px;display:inline-block;margin-right:4px}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="sidebar">
+    <div class="logo">
+      <div class="logo-title">Bharat Sampada Chain</div>
+      <div class="logo-sub">BSC Prototype v1.0</div>
+    </div>
+    <div class="nav-section">Dashboards</div>
+    <div class="nav-item active" onclick="showPage('public')">
+      <div class="nav-dot" style="background:#378ADD"></div>Public transparency
+    </div>
+    <div class="nav-item" onclick="showPage('citizen')">
+      <div class="nav-dot" style="background:#1D9E75"></div>Citizen dashboard
+    </div>
+    <div class="nav-item" onclick="showPage('officer')">
+      <div class="nav-dot" style="background:#E24B4A"></div>IT officer console
+    </div>
+    <div class="nav-section" style="margin-top:0.5rem">System</div>
+    <div class="nav-item" onclick="showPage('zkp')">
+      <div class="nav-dot" style="background:#7F77DD"></div>ZKP verifier
+    </div>
+    <div class="nav-item" onclick="showPage('admin')">
+      <div class="nav-dot" style="background:#888780"></div>Admin panel
+    </div>
+    <div style="margin-top:auto;padding:1rem;font-size:11px;color:var(--color-text-tertiary)">
+      Prototype — dummy data only<br>No real citizen data used
+    </div>
+  </div>
+
+  <div class="main">
+
+    <!-- PUBLIC TRANSPARENCY -->
+    <div id="page-public" class="page active">
+      <div class="page-title">Public transparency dashboard</div>
+      <div class="page-sub">Publicly accessible — no login required. Shows declared wealth of politicians and public officials.</div>
+
+      <div class="metric-grid">
+        <div class="metric"><div class="metric-label">Registered officials</div><div class="metric-value">2,847</div><div class="metric-sub ok">On BSC</div></div>
+        <div class="metric"><div class="metric-label">Active red flags</div><div class="metric-value">143</div><div class="metric-sub up">Requires investigation</div></div>
+        <div class="metric"><div class="metric-label">Avg wealth growth (5yr)</div><div class="metric-value">312%</div><div class="metric-sub up">vs 18% avg salary growth</div></div>
+        <div class="metric"><div class="metric-label">Properties on chain</div><div class="metric-value">18,492</div><div class="metric-sub ok">Verified</div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Registered officials — wealth overview</div>
+        <table>
+          <thead><tr><th>Name</th><th>Position</th><th>State</th><th>Declared wealth</th><th>5yr growth</th><th>Properties</th><th>Flag status</th></tr></thead>
+          <tbody>
+            <tr><td><b>Rajesh Kumar Sharma</b></td><td>MLA, BJP</td><td>Uttar Pradesh</td><td>₹14.2 Cr</td><td><span style="color:#E24B4A;font-weight:500">+847%</span></td><td>9</td><td><span class="badge badge-red">Red flag</span></td></tr>
+            <tr><td><b>Sunita Devi Patel</b></td><td>MP, INC</td><td>Maharashtra</td><td>₹8.7 Cr</td><td><span style="color:#EF9F27;font-weight:500">+210%</span></td><td>4</td><td><span class="badge badge-yellow">Under review</span></td></tr>
+            <tr><td><b>Mohammad Farouk</b></td><td>IAS Officer</td><td>Karnataka</td><td>₹3.1 Cr</td><td><span style="color:#EF9F27;font-weight:500">+180%</span></td><td>3</td><td><span class="badge badge-yellow">Under review</span></td></tr>
+            <tr><td><b>Priya Anand Nair</b></td><td>MLA, DMK</td><td>Tamil Nadu</td><td>₹2.4 Cr</td><td><span style="color:#639922;font-weight:500">+42%</span></td><td>2</td><td><span class="badge badge-green">Clear</span></td></tr>
+            <tr><td><b>Vikram Singh Chauhan</b></td><td>MP, SP</td><td>Uttar Pradesh</td><td>₹22.8 Cr</td><td><span style="color:#E24B4A;font-weight:500">+1,240%</span></td><td>14</td><td><span class="badge badge-red">Red flag</span></td></tr>
+            <tr><td><b>Kavitha Reddy</b></td><td>IPS Officer</td><td>Andhra Pradesh</td><td>₹1.8 Cr</td><td><span style="color:#639922;font-weight:500">+28%</span></td><td>1</td><td><span class="badge badge-green">Clear</span></td></tr>
+            <tr><td><b>Arun Mehta</b></td><td>MLC, AAP</td><td>Delhi</td><td>₹6.3 Cr</td><td><span style="color:#E24B4A;font-weight:500">+390%</span></td><td>6</td><td><span class="badge badge-red">Red flag</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-title">Wealth growth vs salary — Rajesh Kumar Sharma</div>
+          <div style="margin-bottom:8px">
+            <div class="chart-bar-row"><div class="chart-bar-label">2020</div><div class="chart-bar-outer"><div class="chart-bar-inner" style="width:15%;background:#378ADD;color:#042C53">₹1.5Cr</div></div></div>
+            <div class="chart-bar-row"><div class="chart-bar-label">2021</div><div class="chart-bar-outer"><div class="chart-bar-inner" style="width:25%;background:#378ADD;color:#042C53">₹3.2Cr</div></div></div>
+            <div class="chart-bar-row"><div class="chart-bar-label">2022</div><div class="chart-bar-outer"><div class="chart-bar-inner" style="width:40%;background:#378ADD;color:#042C53">₹5.8Cr</div></div></div>
+            <div class="chart-bar-row"><div class="chart-bar-label">2023</div><div class="chart-bar-outer"><div class="chart-bar-inner" style="width:65%;background:#EF9F27;color:#412402">₹9.1Cr</div></div></div>
+            <div class="chart-bar-row"><div class="chart-bar-label">2024</div><div class="chart-bar-outer"><div class="chart-bar-inner" style="width:100%;background:#E24B4A;color:#501313">₹14.2Cr</div></div></div>
+          </div>
+          <div style="font-size:11px;color:var(--color-text-secondary)">MLA salary 2020–2024: ₹42L cumulative. Declared wealth grew ₹12.7Cr.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Asset composition — Vikram Singh Chauhan</div>
+          <div class="wealth-bar">
+            <div class="w-prop" style="width:72%"></div>
+            <div class="w-fin" style="width:18%"></div>
+            <div class="w-biz" style="width:10%"></div>
+          </div>
+          <div class="legend" style="margin-bottom:1rem">
+            <span><span class="legend-dot" style="background:#378ADD"></span>Property 72%</span>
+            <span><span class="legend-dot" style="background:#1D9E75"></span>Financial 18%</span>
+            <span><span class="legend-dot" style="background:#EF9F27"></span>Business 10%</span>
+          </div>
+          <div class="stat-row"><span>Properties registered</span><span style="font-weight:500">14</span></div>
+          <div class="stat-row"><span>States with property</span><span style="font-weight:500">4</span></div>
+          <div class="stat-row"><span>Business ownerships</span><span style="font-weight:500">7</span></div>
+          <div class="stat-row"><span>Anomaly flags raised</span><span style="font-weight:500;color:#E24B4A">3 active</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CITIZEN DASHBOARD -->
+    <div id="page-citizen" class="page">
+      <div class="page-title">Citizen dashboard</div>
+      <div class="page-sub">Logged in as: Arjun Ramesh Iyer — Node ID: BSC-7f3a9d — KYC Level 3</div>
+
+      <div class="tab-bar">
+        <div class="tab active" onclick="showTab('c','overview')">Overview</div>
+        <div class="tab" onclick="showTab('c','properties')">My properties</div>
+        <div class="tab" onclick="showTab('c','financial')">Financial assets</div>
+        <div class="tab" onclick="showTab('c','access')">Data access log</div>
+        <div class="tab" onclick="showTab('c','flags')">My flags</div>
+      </div>
+
+      <div id="c-overview" class="sub-page active">
+        <div class="metric-grid">
+          <div class="metric"><div class="metric-label">Estimated net worth</div><div class="metric-value">₹48–72L</div><div class="metric-sub ok">Consistent with income</div></div>
+          <div class="metric"><div class="metric-label">Properties linked</div><div class="metric-value">2</div><div class="metric-sub ok">Verified on BSC</div></div>
+          <div class="metric"><div class="metric-label">Financial accounts</div><div class="metric-value">5</div><div class="metric-sub ok">All linked</div></div>
+          <div class="metric"><div class="metric-label">Flag status</div><div class="metric-value" style="color:#639922">Clear</div><div class="metric-sub ok">No anomalies</div></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Wealth breakdown</div>
+          <div class="wealth-bar">
+            <div class="w-prop" style="width:55%"></div>
+            <div class="w-fin" style="width:40%"></div>
+            <div class="w-biz" style="width:5%"></div>
+          </div>
+          <div class="legend">
+            <span><span class="legend-dot" style="background:#378ADD"></span>Property 55%</span>
+            <span><span class="legend-dot" style="background:#1D9E75"></span>Financial assets 40%</span>
+            <span><span class="legend-dot" style="background:#EF9F27"></span>Business 5%</span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Recent activity on your node</div>
+          <div class="timeline-row"><div class="timeline-dot" style="background:#378ADD"></div><div><div style="font-size:13px;font-weight:500;color:var(--color-text-primary)">Property record updated</div><div style="font-size:12px;color:var(--color-text-secondary)">Flat 4B, Koramangala — circle rate revaluation applied. Apr 10, 2026</div></div></div>
+          <div class="timeline-row"><div class="timeline-dot" style="background:#1D9E75"></div><div><div style="font-size:13px;font-weight:500;color:var(--color-text-primary)">Bank balance range synced</div><div style="font-size:12px;color:var(--color-text-secondary)">HDFC Bank — quarterly sync. Apr 1, 2026</div></div></div>
+          <div class="timeline-row"><div class="timeline-dot" style="background:#888780"></div><div><div style="font-size:13px;font-weight:500;color:var(--color-text-primary)">Smart contract check ran</div><div style="font-size:12px;color:var(--color-text-secondary)">Annual anomaly check — result: Clear. Mar 31, 2026</div></div></div>
+          <div class="timeline-row"><div class="timeline-dot" style="background:#7F77DD"></div><div><div style="font-size:13px;font-weight:500;color:var(--color-text-primary)">ITR data linked</div><div style="font-size:12px;color:var(--color-text-secondary)">FY 2024–25 ITR linked from IT Dept. Mar 15, 2026</div></div></div>
+        </div>
+      </div>
+
+      <div id="c-properties" class="sub-page">
+        <div class="card">
+          <div class="card-title">Registered properties (2)</div>
+          <div class="prop-card">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div class="prop-title">Flat 4B, Sunshine Apartments, Koramangala, Bengaluru</div>
+              <span class="badge badge-green">Clear</span>
+            </div>
+            <div class="prop-detail">Type: Residential · Area: 1,240 sqft · Registered: Mar 2019</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:8px;font-size:12px">
+              <div><div style="color:var(--color-text-secondary)">Declared value</div><div style="font-weight:500">₹72L</div></div>
+              <div><div style="color:var(--color-text-secondary)">Circle rate value</div><div style="font-weight:500">₹68L</div></div>
+              <div><div style="color:var(--color-text-secondary)">Encumbrance</div><div style="font-weight:500">Mortgaged — ₹40L</div></div>
+            </div>
+          </div>
+          <div class="prop-card">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div class="prop-title">Agricultural Land, Survey 142, Mandya District, Karnataka</div>
+              <span class="badge badge-green">Clear</span>
+            </div>
+            <div class="prop-detail">Type: Agricultural · Area: 2.4 acres · Registered: Jan 2014 (inherited)</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:8px;font-size:12px">
+              <div><div style="color:var(--color-text-secondary)">Declared value</div><div style="font-weight:500">₹18L</div></div>
+              <div><div style="color:var(--color-text-secondary)">Circle rate value</div><div style="font-weight:500">₹22L</div></div>
+              <div><div style="color:var(--color-text-secondary)">Encumbrance</div><div style="font-weight:500">Clear</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="c-financial" class="sub-page">
+        <div class="card">
+          <div class="card-title">Financial assets (5 linked)</div>
+          <table>
+            <thead><tr><th>Institution</th><th>Type</th><th>Balance range</th><th>Last synced</th><th>Source</th></tr></thead>
+            <tbody>
+              <tr><td>HDFC Bank</td><td>Savings account</td><td>₹1L – ₹10L</td><td>Apr 1, 2026</td><td><span class="badge badge-blue">Bank reported</span></td></tr>
+              <tr><td>SBI</td><td>Fixed deposit</td><td>₹10L – ₹1Cr</td><td>Apr 1, 2026</td><td><span class="badge badge-blue">Bank reported</span></td></tr>
+              <tr><td>Zerodha / BSE</td><td>Equity portfolio</td><td>₹1L – ₹10L</td><td>Mar 31, 2026</td><td><span class="badge badge-blue">SEBI reported</span></td></tr>
+              <tr><td>EPFO</td><td>Provident fund</td><td>₹10L – ₹1Cr</td><td>Mar 31, 2026</td><td><span class="badge badge-blue">EPFO reported</span></td></tr>
+              <tr><td>LIC of India</td><td>Life insurance</td><td>₹1L – ₹10L</td><td>Mar 28, 2026</td><td><span class="badge badge-blue">IRDAI reported</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="c-access" class="sub-page">
+        <div class="card">
+          <div class="card-title">Data access log — every access to your node is recorded permanently</div>
+          <div class="access-row"><span style="color:var(--color-text-secondary);min-width:110px">Apr 1, 2026</span><span class="agency-pill" style="background:var(--color-background-secondary);color:var(--color-text-secondary)">EPFO</span><span style="flex:1">Quarterly balance sync — automated</span><span class="badge badge-gray">Automated</span></div>
+          <div class="access-row"><span style="color:var(--color-text-secondary);min-width:110px">Mar 31, 2026</span><span class="agency-pill" style="background:var(--color-background-info);color:var(--color-text-info)">Smart contract</span><span style="flex:1">Annual anomaly check — WEALTH_ANOMALY_DETECTOR</span><span class="badge badge-green">Clear</span></div>
+          <div class="access-row"><span style="color:var(--color-text-secondary);min-width:110px">Mar 15, 2026</span><span class="agency-pill" style="background:var(--color-background-warning);color:var(--color-text-warning)">IT Dept</span><span style="flex:1">ITR FY24–25 linkage — officer ID: ITO-KA-0234</span><span class="badge badge-blue">Authorised</span></div>
+          <div class="access-row"><span style="color:var(--color-text-secondary);min-width:110px">Feb 10, 2026</span><span class="agency-pill" style="background:var(--color-background-secondary);color:var(--color-text-secondary)">HDFC Bank</span><span style="flex:1">Credit score verification — loan application BSN-9921</span><span class="badge badge-blue">Consented</span></div>
+          <div class="access-row"><span style="color:var(--color-text-secondary);min-width:110px">Jan 5, 2026</span><span class="agency-pill" style="background:var(--color-background-secondary);color:var(--color-text-secondary)">SEBI</span><span style="flex:1">Demat account quarterly sync — automated</span><span class="badge badge-gray">Automated</span></div>
+        </div>
+      </div>
+
+      <div id="c-flags" class="sub-page">
+        <div class="card">
+          <div class="flag-green flag-card">
+            <div style="display:flex;justify-content:space-between"><div style="font-size:13px;font-weight:500;color:var(--color-text-primary)">Annual anomaly check — FY 2024–25</div><span class="badge badge-green">Cleared</span></div>
+            <div style="font-size:12px;color:var(--color-text-secondary);margin-top:4px">Declared income: ₹14.2L · Total asset acquisition this year: ₹8.4L · Gap within normal range. No action needed.</div>
+          </div>
+          <div style="font-size:13px;color:var(--color-text-secondary);text-align:center;padding:1rem">No active flags on your node. Your declared income is consistent with your assets.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- IT OFFICER CONSOLE -->
+    <div id="page-officer" class="page">
+      <div class="page-title">IT officer investigation console</div>
+      <div class="page-sub">Officer: ITO-KA-0234 · Jurisdiction: Karnataka & UP · Active investigations: 3</div>
+
+      <div class="metric-grid">
+        <div class="metric"><div class="metric-label">Open red flags</div><div class="metric-value" style="color:#E24B4A">143</div><div class="metric-sub up">Requires action</div></div>
+        <div class="metric"><div class="metric-label">Assigned to me</div><div class="metric-value">12</div><div class="metric-sub">Active cases</div></div>
+        <div class="metric"><div class="metric-label">Resolved this month</div><div class="metric-value">7</div><div class="metric-sub ok">Cleared or escalated</div></div>
+        <div class="metric"><div class="metric-label">Avg gap amount</div><div class="metric-value">₹4.2Cr</div><div class="metric-sub up">Unexplained wealth</div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Active flag queue — priority ordered</div>
+        <table>
+          <thead><tr><th>Case ID</th><th>Node</th><th>Flag type</th><th>Gap amount</th><th>Severity</th><th>Days open</th><th>Action</th></tr></thead>
+          <tbody>
+            <tr>
+              <td style="font-family:var(--font-mono);font-size:12px">BSC-FL-4492</td>
+              <td>Vikram Singh Chauhan · UP</td>
+              <td>Income-asset mismatch</td>
+              <td style="color:#E24B4A;font-weight:500">₹21.3Cr</td>
+              <td><span class="badge badge-red">Red</span></td>
+              <td>142 days</td>
+              <td><button class="btn-small" onclick="showInvestigation()">Investigate</button></td>
+            </tr>
+            <tr>
+              <td style="font-family:var(--font-mono);font-size:12px">BSC-FL-4387</td>
+              <td>Rajesh Kumar Sharma · UP</td>
+              <td>Sudden wealth gain</td>
+              <td style="color:#E24B4A;font-weight:500">₹12.7Cr</td>
+              <td><span class="badge badge-red">Red</span></td>
+              <td>98 days</td>
+              <td><button class="btn-small">Investigate</button></td>
+            </tr>
+            <tr>
+              <td style="font-family:var(--font-mono);font-size:12px">BSC-FL-4301</td>
+              <td>Arun Mehta · Delhi</td>
+              <td>Benami suspicion</td>
+              <td style="color:#E24B4A;font-weight:500">₹5.8Cr</td>
+              <td><span class="badge badge-red">Red</span></td>
+              <td>74 days</td>
+              <td><button class="btn-small">Investigate</button></td>
+            </tr>
+            <tr>
+              <td style="font-family:var(--font-mono);font-size:12px">BSC-FL-4280</td>
+              <td>Sunita Devi Patel · MH</td>
+              <td>Income-asset mismatch</td>
+              <td style="color:#EF9F27;font-weight:500">₹6.2Cr</td>
+              <td><span class="badge badge-yellow">Yellow</span></td>
+              <td>61 days</td>
+              <td><button class="btn-small">Investigate</button></td>
+            </tr>
+            <tr>
+              <td style="font-family:var(--font-mono);font-size:12px">BSC-FL-4241</td>
+              <td>Mohammad Farouk · KA</td>
+              <td>Lifestyle mismatch</td>
+              <td style="color:#EF9F27;font-weight:500">₹2.1Cr</td>
+              <td><span class="badge badge-yellow">Yellow</span></td>
+              <td>45 days</td>
+              <td><button class="btn-small">Investigate</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div id="investigation-panel" style="display:none">
+        <div class="card" style="border:0.5px solid var(--color-border-danger)">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+            <div class="card-title" style="margin:0">Case BSC-FL-4492 — Vikram Singh Chauhan</div>
+            <span class="badge badge-red">Red — Income-asset mismatch</span>
+          </div>
+          <div class="three-col" style="margin-bottom:1rem">
+            <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:0.75rem">
+              <div style="font-size:11px;color:var(--color-text-secondary)">5yr cumulative declared income</div>
+              <div style="font-size:20px;font-weight:500;color:var(--color-text-primary)">₹1.58Cr</div>
+              <div style="font-size:11px;color:var(--color-text-secondary)">MP salary + allowances</div>
+            </div>
+            <div style="background:var(--color-background-danger);border-radius:var(--border-radius-md);padding:0.75rem">
+              <div style="font-size:11px;color:var(--color-text-danger)">Verified net worth on BSC</div>
+              <div style="font-size:20px;font-weight:500;color:var(--color-text-danger)">₹22.88Cr</div>
+              <div style="font-size:11px;color:var(--color-text-danger)">14 properties + financial assets</div>
+            </div>
+            <div style="background:var(--color-background-danger);border-radius:var(--border-radius-md);padding:0.75rem">
+              <div style="font-size:11px;color:var(--color-text-danger)">Unexplained gap</div>
+              <div style="font-size:20px;font-weight:500;color:var(--color-text-danger)">₹21.3Cr</div>
+              <div style="font-size:11px;color:var(--color-text-danger)">No legitimate source found</div>
+            </div>
+          </div>
+          <div style="font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:8px">Smart contract rules triggered</div>
+          <div style="font-size:12px;font-family:var(--font-mono);background:var(--color-background-secondary);padding:0.75rem;border-radius:var(--border-radius-md);color:var(--color-text-secondary);margin-bottom:1rem">
+            RULE 2: net_worth (22.88Cr) > cumulative_5yr_income (1.58Cr) × 4 → TRIGGERED<br>
+            RULE 3: public_official=true AND wealth_growth=1,240% > 300% threshold → TRIGGERED<br>
+            RULE 4: properties_in_family_names=6 AND family_declared_income insufficient → TRIGGERED
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="btn-small" style="background:var(--color-background-danger);color:var(--color-text-danger);border-color:var(--color-border-danger)">Escalate to ED + CBI</button>
+            <button class="btn-small">Request explanation</button>
+            <button class="btn-small">View all 14 properties</button>
+            <button class="btn-small" onclick="document.getElementById('investigation-panel').style.display='none'">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ZKP VERIFIER -->
+    <div id="page-zkp" class="page">
+      <div class="page-title">Zero-knowledge proof verifier</div>
+      <div class="page-sub">Verify facts about a citizen's wealth without ever seeing their actual data. The system proves YES or NO — nothing more.</div>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-title">How ZKP works in BSC</div>
+          <div style="font-size:13px;color:var(--color-text-secondary);line-height:1.7;margin-bottom:1rem">Traditional system: Government asks "Show me your bank balance" and you must reveal ₹47,83,291. Privacy violated.</div>
+          <div style="font-size:13px;color:var(--color-text-secondary);line-height:1.7">BSC ZKP: System asks "Does net worth exceed ₹1 crore?" Blockchain cryptographically proves YES or NO. Your actual balance is never revealed to anyone.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Query log — recent verifications</div>
+          <div class="access-row"><span style="color:var(--color-text-secondary);min-width:80px;font-size:11px">Today 14:32</span><span style="flex:1;font-size:12px">Net worth > ₹1Cr? · HDFC Bank · BSC-8821</span><span class="badge badge-green">YES</span></div>
+          <div class="access-row"><span style="color:var(--color-text-secondary);min-width:80px;font-size:11px">Today 11:10</span><span style="flex:1;font-size:12px">Income consistent with assets? · IT Dept · BSC-4492</span><span class="badge badge-red">INCONSISTENT</span></div>
+          <div class="access-row"><span style="color:var(--color-text-secondary);min-width:80px;font-size:11px">Yesterday</span><span style="flex:1;font-size:12px">Property in Maharashtra? · Court Order · BSC-3301</span><span class="badge badge-green">YES</span></div>
+          <div class="access-row"><span style="color:var(--color-text-secondary);min-width:80px;font-size:11px">Apr 12</span><span style="flex:1;font-size:12px">Wealth grew > 300% in 3yr? · Lokpal · BSC-4492</span><span class="badge badge-red">YES</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Run a ZKP query (demo)</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:1rem">
+          <div>
+            <div style="font-size:12px;color:var(--color-text-secondary);margin-bottom:4px">Citizen node ID</div>
+            <input type="text" value="BSC-7f3a9d" style="width:100%;font-size:13px" />
+          </div>
+          <div>
+            <div style="font-size:12px;color:var(--color-text-secondary);margin-bottom:4px">Query type</div>
+            <select style="width:100%;font-size:13px" id="zkp-query">
+              <option>Net worth exceeds threshold?</option>
+              <option>Income consistent with assets?</option>
+              <option>Property in specific state?</option>
+              <option>Wealth grew more than X% in Y years?</option>
+            </select>
+          </div>
+          <div>
+            <div style="font-size:12px;color:var(--color-text-secondary);margin-bottom:4px">Threshold / value</div>
+            <input type="text" value="₹50 lakh" style="width:100%;font-size:13px" />
+          </div>
+        </div>
+        <button class="btn-small" onclick="runZkp()">Run ZKP verification</button>
+        <div id="zkp-result" style="display:none;margin-top:1rem;background:var(--color-background-success);border-radius:var(--border-radius-md);padding:0.75rem">
+          <div style="font-size:13px;font-weight:500;color:var(--color-text-success)">Verification result: YES</div>
+          <div style="font-size:12px;color:var(--color-text-success);margin-top:4px">Proof hash: zkp_0x8a3f91bc…d4e2 · Verified at: Apr 14, 2026 15:41 IST</div>
+          <div style="font-size:12px;color:var(--color-text-success);margin-top:4px">Raw data accessed: NONE. Only the proof was computed.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADMIN PANEL -->
+    <div id="page-admin" class="page">
+      <div class="page-title">Admin panel — system health</div>
+      <div class="page-sub">BSC Authority technical administrator · Access level: System</div>
+
+      <div class="metric-grid">
+        <div class="metric"><div class="metric-label">Blockchain nodes</div><div class="metric-value" style="color:#639922">3 / 3</div><div class="metric-sub ok">All online</div></div>
+        <div class="metric"><div class="metric-label">Tx per minute</div><div class="metric-value">247</div><div class="metric-sub ok">Normal</div></div>
+        <div class="metric"><div class="metric-label">Smart contract queue</div><div class="metric-value">14</div><div class="metric-sub">Pending execution</div></div>
+        <div class="metric"><div class="metric-label">API response avg</div><div class="metric-value">180ms</div><div class="metric-sub ok">Within SLA</div></div>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-title">Data freshness by agency</div>
+          <div class="stat-row"><span>DILRMP (land records)</span><div><div class="bar-wrap"><div class="bar-fill bar-green" style="width:92%"></div></div><span style="font-size:11px;color:var(--color-text-secondary)">92%</span></div></div>
+          <div class="stat-row"><span>RBI / Banks</span><div><div class="bar-wrap"><div class="bar-fill bar-green" style="width:88%"></div></div><span style="font-size:11px;color:var(--color-text-secondary)">88%</span></div></div>
+          <div class="stat-row"><span>SEBI</span><div><div class="bar-wrap"><div class="bar-fill bar-green" style="width:95%"></div></div><span style="font-size:11px;color:var(--color-text-secondary)">95%</span></div></div>
+          <div class="stat-row"><span>EPFO / NPS</span><div><div class="bar-wrap"><div class="bar-fill bar-amber" style="width:74%"></div></div><span style="font-size:11px;color:var(--color-text-secondary)">74%</span></div></div>
+          <div class="stat-row"><span>MCA21 (companies)</span><div><div class="bar-wrap"><div class="bar-fill bar-amber" style="width:68%"></div></div><span style="font-size:11px;color:var(--color-text-secondary)">68%</span></div></div>
+          <div class="stat-row"><span>e-Courts</span><div><div class="bar-wrap"><div class="bar-fill bar-red" style="width:41%"></div></div><span style="font-size:11px;color:var(--color-text-secondary)">41%</span></div></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Access events today — by agency</div>
+          <div class="chart-bar-row"><div class="chart-bar-label">Smart contracts</div><div class="chart-bar-outer"><div class="chart-bar-inner" style="width:100%;background:#7F77DD;color:#26215C">12,441</div></div></div>
+          <div class="chart-bar-row"><div class="chart-bar-label">Banks (ZKP)</div><div class="chart-bar-outer"><div class="chart-bar-inner" style="width:60%;background:#378ADD;color:#042C53">7,820</div></div></div>
+          <div class="chart-bar-row"><div class="chart-bar-label">IT Dept</div><div class="chart-bar-outer"><div class="chart-bar-inner" style="width:18%;background:#EF9F27;color:#412402">2,341</div></div></div>
+          <div class="chart-bar-row"><div class="chart-bar-label">Citizens (self)</div><div class="chart-bar-outer"><div class="chart-bar-inner" style="width:12%;background:#1D9E75;color:#04342C">1,590</div></div></div>
+          <div class="chart-bar-row"><div class="chart-bar-label">ED / CBI</div><div class="chart-bar-outer"><div class="chart-bar-inner" style="width:4%;background:#E24B4A;color:#501313">420</div></div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+function showPage(p){
+  document.querySelectorAll('.page').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active'));
+  document.getElementById('page-'+p).classList.add('active');
+  event.currentTarget.classList.add('active');
+}
+function showTab(prefix,tab){
+  const tabs=document.querySelectorAll('[id^="'+prefix+'-"]');
+  tabs.forEach(el=>el.classList.remove('active'));
+  document.getElementById(prefix+'-'+tab).classList.add('active');
+  event.currentTarget.closest('.page').querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+}
+function showInvestigation(){
+  const p=document.getElementById('investigation-panel');
+  p.style.display=p.style.display==='none'?'block':'none';
+}
+function runZkp(){
+  const r=document.getElementById('zkp-result');
+  r.style.display='block';
+}
+</script>
+</body>
+</html>
