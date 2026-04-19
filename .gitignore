@@ -1,0 +1,72 @@
+# ============================================================
+# Bharat Sampada Chain — .gitignore
+# ============================================================
+
+# ---- Node.js ----
+node_modules/
+dist/
+build/
+.cache/
+*.log
+npm-debug.log*
+
+# ---- Environment ----
+.env
+.env.local
+.env.production
+# Keep the example file — it documents required variables
+!.env.example
+
+# ---- ZKP Keys (NEVER commit — contain sensitive randomness) ----
+zkp/keys/
+zkp/circuits/**/*.r1cs
+zkp/circuits/**/*.wasm
+zkp/circuits/**/*.sym
+zkp/circuits/**/*_js/
+zkp/circuits/**/witness.wtns
+
+# ---- Hyperledger Fabric generated material ----
+blockchain/network/crypto-config/
+blockchain/network/channel-artifacts/
+blockchain/network/system-genesis-block/
+
+# ---- Database ----
+*.sql.bak
+postgres-data/
+
+# ---- Docker volumes ----
+fabric-data/
+redis-data/
+ipfs-data/
+
+# ---- IDE ----
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# ---- OS ----
+.DS_Store
+desktop.ini
+
+# ---- Test coverage ----
+coverage/
+*.lcov
+
+# ---- TypeScript compiled output ----
+api/dist/
+frontend/*/dist/
+
+# ---- Go build artifacts ----
+blockchain/chaincode/*/vendor/
+*.test
+
+# ---- Temporary files ----
+*.tmp
+*.temp
+proof.json
+witness.json
+
+commitRules.md
