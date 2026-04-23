@@ -1,0 +1,39 @@
+OrdererOrgs:
+  - Name: Orderer
+    Domain: bsc.gov
+    Specs:
+      - Hostname: orderer
+        SANS:
+          - localhost
+          - orderer.bsc.gov
+
+PeerOrgs:
+  - Name: ITDept
+    Domain: itdept.bsc.gov
+    EnableNodeOUs: true
+    Template:
+      Count: 1
+      SANS:
+        - localhost
+    Users:
+      Count: 1
+
+  - Name: Registrar
+    Domain: registrar.bsc.gov
+    EnableNodeOUs: true
+    Template:
+      Count: 1
+      SANS:
+        - localhost
+    Users:
+      Count: 1
+
+  - Name: MCA
+    Domain: mca.bsc.gov
+    EnableNodeOUs: true
+    Template:
+      Count: 1
+      SANS:
+        - localhost
+    Users:
+      Count: 1

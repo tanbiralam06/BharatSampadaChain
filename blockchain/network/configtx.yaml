@@ -1,0 +1,176 @@
+---
+Organizations:
+  - &OrdererOrg
+    Name: OrdererMSP
+    ID: OrdererMSP
+    MSPDir: crypto-config/ordererOrganizations/bsc.gov/msp
+    Policies:
+      Readers:
+        Type: Signature
+        Rule: "OR('OrdererMSP.member')"
+      Writers:
+        Type: Signature
+        Rule: "OR('OrdererMSP.member')"
+      Admins:
+        Type: Signature
+        Rule: "OR('OrdererMSP.admin')"
+
+  - &ITDept
+    Name: ITDeptMSP
+    ID: ITDeptMSP
+    MSPDir: crypto-config/peerOrganizations/itdept.bsc.gov/msp
+    Policies:
+      Readers:
+        Type: Signature
+        Rule: "OR('ITDeptMSP.admin', 'ITDeptMSP.peer', 'ITDeptMSP.client')"
+      Writers:
+        Type: Signature
+        Rule: "OR('ITDeptMSP.admin', 'ITDeptMSP.client')"
+      Admins:
+        Type: Signature
+        Rule: "OR('ITDeptMSP.admin')"
+      Endorsement:
+        Type: Signature
+        Rule: "OR('ITDeptMSP.peer')"
+    AnchorPeers:
+      - Host: peer0.itdept.bsc.gov
+        Port: 7051
+
+  - &Registrar
+    Name: RegistrarMSP
+    ID: RegistrarMSP
+    MSPDir: crypto-config/peerOrganizations/registrar.bsc.gov/msp
+    Policies:
+      Readers:
+        Type: Signature
+        Rule: "OR('RegistrarMSP.admin', 'RegistrarMSP.peer', 'RegistrarMSP.client')"
+      Writers:
+        Type: Signature
+        Rule: "OR('RegistrarMSP.admin', 'RegistrarMSP.client')"
+      Admins:
+        Type: Signature
+        Rule: "OR('RegistrarMSP.admin')"
+      Endorsement:
+        Type: Signature
+        Rule: "OR('RegistrarMSP.peer')"
+    AnchorPeers:
+      - Host: peer0.registrar.bsc.gov
+        Port: 8051
+
+  - &MCA
+    Name: MCAMSP
+    ID: MCAMSP
+    MSPDir: crypto-config/peerOrganizations/mca.bsc.gov/msp
+    Policies:
+      Readers:
+        Type: Signature
+        Rule: "OR('MCAMSP.admin', 'MCAMSP.peer', 'MCAMSP.client')"
+      Writers:
+        Type: Signature
+        Rule: "OR('MCAMSP.admin', 'MCAMSP.client')"
+      Admins:
+        Type: Signature
+        Rule: "OR('MCAMSP.admin')"
+      Endorsement:
+        Type: Signature
+        Rule: "OR('MCAMSP.peer')"
+    AnchorPeers:
+      - Host: peer0.mca.bsc.gov
+        Port: 9051
+
+Capabilities:
+  Channel: &ChannelCapabilities
+    V2_0: true
+  Orderer: &OrdererCapabilities
+    V2_0: true
+  Application: &ApplicationCapabilities
+    V2_5: true
+
+Application: &ApplicationDefaults
+  Organizations:
+  Policies:
+    Readers:
+      Type: ImplicitMeta
+      Rule: "ANY Readers"
+    Writers:
+      Type: ImplicitMeta
+      Rule: "ANY Writers"
+    Admins:
+      Type: ImplicitMeta
+      Rule: "MAJORITY Admins"
+    LifecycleEndorsement:
+      Type: ImplicitMeta
+      Rule: "MAJORITY Endorsement"
+    Endorsement:
+      Type: ImplicitMeta
+      Rule: "MAJORITY Endorsement"
+  Capabilities:
+    <<: *ApplicationCapabilities
+
+Orderer: &OrdererDefaults
+  OrdererType: solo
+  Addresses:
+    - orderer.bsc.gov:7050
+  BatchTimeout: 2s
+  BatchSize:
+    MaxMessageCount: 10
+    AbsoluteMaxBytes: 99 MB
+    PreferredMaxBytes: 512 KB
+  Organizations:
+  Policies:
+    Readers:
+      Type: ImplicitMeta
+      Rule: "ANY Readers"
+    Writers:
+      Type: ImplicitMeta
+      Rule: "ANY Writers"
+    Admins:
+      Type: ImplicitMeta
+      Rule: "MAJORITY Admins"
+    BlockValidation:
+      Type: ImplicitMeta
+      Rule: "ANY Writers"
+  Capabilities:
+    <<: *OrdererCapabilities
+
+Channel: &ChannelDefaults
+  Policies:
+    Readers:
+      Type: ImplicitMeta
+      Rule: "ANY Readers"
+    Writers:
+      Type: ImplicitMeta
+      Rule: "ANY Writers"
+    Admins:
+      Type: ImplicitMeta
+      Rule: "MAJORITY Admins"
+  Capabilities:
+    <<: *ChannelCapabilities
+
+Profiles:
+  BSCGenesis:
+    <<: *ChannelDefaults
+    Orderer:
+      <<: *OrdererDefaults
+      Organizations:
+        - *OrdererOrg
+      Capabilities:
+        <<: *OrdererCapabilities
+    Consortiums:
+      BSCConsortium:
+        Organizations:
+          - *ITDept
+          - *Registrar
+          - *MCA
+
+  BSCChannel:
+    Consortium: BSCConsortium
+    <<: *ChannelDefaults
+    Application:
+      <<: *ApplicationDefaults
+      Organizations:
+        - *ITDept
+        - *Registrar
+        - *MCA
+      Capabilities:
+        <<: *ApplicationCapabilities

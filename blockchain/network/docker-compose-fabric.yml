@@ -1,0 +1,193 @@
+version: '3.8'
+
+networks:
+  bsc-fabric-net:
+    name: bsc-fabric-net
+
+volumes:
+  orderer.bsc.gov:
+  peer0.itdept.bsc.gov:
+  peer0.registrar.bsc.gov:
+  peer0.mca.bsc.gov:
+
+services:
+
+  orderer.bsc.gov:
+    container_name: orderer.bsc.gov
+    image: hyperledger/fabric-orderer:2.5
+    environment:
+      - FABRIC_LOGGING_SPEC=INFO
+      - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
+      - ORDERER_GENERAL_LISTENPORT=7050
+      - ORDERER_GENERAL_LOCALMSPID=OrdererMSP
+      - ORDERER_GENERAL_LOCALMSPDIR=/var/hyperledger/orderer/msp
+      - ORDERER_GENERAL_TLS_ENABLED=true
+      - ORDERER_GENERAL_TLS_PRIVATEKEY=/var/hyperledger/orderer/tls/server.key
+      - ORDERER_GENERAL_TLS_CERTIFICATE=/var/hyperledger/orderer/tls/server.crt
+      - ORDERER_GENERAL_TLS_ROOTCAS=[/var/hyperledger/orderer/tls/ca.crt]
+      - ORDERER_GENERAL_BOOTSTRAPMETHOD=file
+      - ORDERER_GENERAL_BOOTSTRAPFILE=/var/hyperledger/orderer/orderer.genesis.block
+      - ORDERER_OPERATIONS_LISTENADDRESS=0.0.0.0:8443
+    working_dir: /root
+    command: orderer
+    volumes:
+      - ./channel-artifacts/genesis.block:/var/hyperledger/orderer/orderer.genesis.block
+      - ./crypto-config/ordererOrganizations/bsc.gov/orderers/orderer.bsc.gov/msp:/var/hyperledger/orderer/msp
+      - ./crypto-config/ordererOrganizations/bsc.gov/orderers/orderer.bsc.gov/tls:/var/hyperledger/orderer/tls
+      - orderer.bsc.gov:/var/hyperledger/production/orderer
+    ports:
+      - 7050:7050
+      - 8443:8443
+    networks:
+      - bsc-fabric-net
+
+  peer0.itdept.bsc.gov:
+    container_name: peer0.itdept.bsc.gov
+    image: hyperledger/fabric-peer:2.5
+    environment:
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=bsc-fabric-net
+      - FABRIC_LOGGING_SPEC=INFO
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_PROFILE_ENABLED=false
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
+      - CORE_PEER_ID=peer0.itdept.bsc.gov
+      - CORE_PEER_ADDRESS=peer0.itdept.bsc.gov:7051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:7051
+      - CORE_PEER_CHAINCODEADDRESS=peer0.itdept.bsc.gov:7052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.itdept.bsc.gov:7051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.itdept.bsc.gov:7051
+      - CORE_PEER_GOSSIP_USELEADERELECTION=true
+      - CORE_PEER_GOSSIP_ORGLEADER=false
+      - CORE_PEER_LOCALMSPID=ITDeptMSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/msp
+      - CORE_LEDGER_STATE_STATEDATABASE=leveldb
+      - CORE_OPERATIONS_LISTENADDRESS=0.0.0.0:9444
+    volumes:
+      - /var/run/docker.sock:/host/var/run/docker.sock
+      - ./crypto-config/peerOrganizations/itdept.bsc.gov/peers/peer0.itdept.bsc.gov/msp:/etc/hyperledger/fabric/msp
+      - ./crypto-config/peerOrganizations/itdept.bsc.gov/peers/peer0.itdept.bsc.gov/tls:/etc/hyperledger/fabric/tls
+      - peer0.itdept.bsc.gov:/var/hyperledger/production
+    working_dir: /root
+    command: peer node start
+    ports:
+      - 7051:7051
+      - 9444:9444
+    depends_on:
+      - orderer.bsc.gov
+    networks:
+      - bsc-fabric-net
+
+  peer0.registrar.bsc.gov:
+    container_name: peer0.registrar.bsc.gov
+    image: hyperledger/fabric-peer:2.5
+    environment:
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=bsc-fabric-net
+      - FABRIC_LOGGING_SPEC=INFO
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_PROFILE_ENABLED=false
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
+      - CORE_PEER_ID=peer0.registrar.bsc.gov
+      - CORE_PEER_ADDRESS=peer0.registrar.bsc.gov:8051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:8051
+      - CORE_PEER_CHAINCODEADDRESS=peer0.registrar.bsc.gov:8052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:8052
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.registrar.bsc.gov:8051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.registrar.bsc.gov:8051
+      - CORE_PEER_GOSSIP_USELEADERELECTION=true
+      - CORE_PEER_GOSSIP_ORGLEADER=false
+      - CORE_PEER_LOCALMSPID=RegistrarMSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/msp
+      - CORE_LEDGER_STATE_STATEDATABASE=leveldb
+      - CORE_OPERATIONS_LISTENADDRESS=0.0.0.0:9445
+    volumes:
+      - /var/run/docker.sock:/host/var/run/docker.sock
+      - ./crypto-config/peerOrganizations/registrar.bsc.gov/peers/peer0.registrar.bsc.gov/msp:/etc/hyperledger/fabric/msp
+      - ./crypto-config/peerOrganizations/registrar.bsc.gov/peers/peer0.registrar.bsc.gov/tls:/etc/hyperledger/fabric/tls
+      - peer0.registrar.bsc.gov:/var/hyperledger/production
+    working_dir: /root
+    command: peer node start
+    ports:
+      - 8051:8051
+      - 9445:9445
+    depends_on:
+      - orderer.bsc.gov
+    networks:
+      - bsc-fabric-net
+
+  peer0.mca.bsc.gov:
+    container_name: peer0.mca.bsc.gov
+    image: hyperledger/fabric-peer:2.5
+    environment:
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=bsc-fabric-net
+      - FABRIC_LOGGING_SPEC=INFO
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_PROFILE_ENABLED=false
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
+      - CORE_PEER_ID=peer0.mca.bsc.gov
+      - CORE_PEER_ADDRESS=peer0.mca.bsc.gov:9051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:9051
+      - CORE_PEER_CHAINCODEADDRESS=peer0.mca.bsc.gov:9052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:9052
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.mca.bsc.gov:9051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.mca.bsc.gov:9051
+      - CORE_PEER_GOSSIP_USELEADERELECTION=true
+      - CORE_PEER_GOSSIP_ORGLEADER=false
+      - CORE_PEER_LOCALMSPID=MCAMSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/msp
+      - CORE_LEDGER_STATE_STATEDATABASE=leveldb
+      - CORE_OPERATIONS_LISTENADDRESS=0.0.0.0:9446
+    volumes:
+      - /var/run/docker.sock:/host/var/run/docker.sock
+      - ./crypto-config/peerOrganizations/mca.bsc.gov/peers/peer0.mca.bsc.gov/msp:/etc/hyperledger/fabric/msp
+      - ./crypto-config/peerOrganizations/mca.bsc.gov/peers/peer0.mca.bsc.gov/tls:/etc/hyperledger/fabric/tls
+      - peer0.mca.bsc.gov:/var/hyperledger/production
+    working_dir: /root
+    command: peer node start
+    ports:
+      - 9051:9051
+      - 9446:9446
+    depends_on:
+      - orderer.bsc.gov
+    networks:
+      - bsc-fabric-net
+
+  cli:
+    container_name: bsc-cli
+    image: hyperledger/fabric-tools:2.5
+    tty: true
+    stdin_open: true
+    environment:
+      - GOPATH=/opt/gopath
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - FABRIC_LOGGING_SPEC=INFO
+      - CORE_PEER_ID=cli
+      - CORE_PEER_ADDRESS=peer0.itdept.bsc.gov:7051
+      - CORE_PEER_LOCALMSPID=ITDeptMSP
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_TLS_CERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/itdept.bsc.gov/peers/peer0.itdept.bsc.gov/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/itdept.bsc.gov/peers/peer0.itdept.bsc.gov/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/itdept.bsc.gov/peers/peer0.itdept.bsc.gov/tls/ca.crt
+      - CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/itdept.bsc.gov/users/Admin@itdept.bsc.gov/msp
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+    command: /bin/bash
+    volumes:
+      - /var/run/docker.sock:/host/var/run/docker.sock
+      - ./crypto-config:/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto
+      - ./channel-artifacts:/opt/gopath/src/github.com/hyperledger/fabric/peer/channel-artifacts
+      - ../../blockchain/chaincode:/opt/gopath/src/github.com/hyperledger/fabric/peer/chaincode
+    depends_on:
+      - peer0.itdept.bsc.gov
+      - peer0.registrar.bsc.gov
+      - peer0.mca.bsc.gov
+    networks:
+      - bsc-fabric-net
