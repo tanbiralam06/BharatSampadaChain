@@ -1,5 +1,3 @@
-version: '3.8'
-
 networks:
   bsc-fabric-net:
     name: bsc-fabric-net
