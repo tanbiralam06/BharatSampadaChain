@@ -2,7 +2,7 @@
 -- 50 citizens, matching the prototype's dummy data structure
 
 -- ── Admin user ────────────────────────────────────────────────────
--- Password for all seed users: "BSC@dev2026!" (bcrypt hash below)
+-- Password for all seed users: "password" (bcrypt hash below — dev only, change in production)
 INSERT INTO bsc_users (subject_hash, name, role, password_hash) VALUES
 ('admin001hashabcdef0123456789abcdef0123456789abcdef0123456789abc', 'BSC System Admin', 'ADMIN',    '$2b$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi'),
 ('itoff001hashabcdef0123456789abcdef0123456789abcdef0123456789abc', 'Rajesh Kumar (IT Dept)', 'IT_DEPT', '$2b$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi'),
