@@ -1,0 +1,67 @@
+import { Router, Response } from 'express';
+import { z } from 'zod';
+import { authenticate, requireRole, AuthRequest } from '../middleware/auth';
+import * as fabric from '../fabric/contracts';
+
+const router = Router();
+
+// GET /flags — get flags by severity (officer view)
+router.get('/', authenticate, requireRole('IT_DEPT', 'ED', 'CBI', 'ADMIN'), async (req: AuthRequest, res: Response) => {
+  const { severity } = req.query;
+
+  if (severity && typeof severity === 'string') {
+    const flags = await fabric.getFlagsBySeverity(severity.toUpperCase());
+    res.json({ success: true, data: flags });
+    return;
+  }
+
+  // Return flags for all severities combined
+  const [red, orange, yellow] = await Promise.all([
+    fabric.getFlagsBySeverity('RED'),
+    fabric.getFlagsBySeverity('ORANGE'),
+    fabric.getFlagsBySeverity('YELLOW'),
+  ]);
+
+  res.json({ success: true, data: [...red, ...orange, ...yellow] });
+});
+
+const UpdateStatusSchema = z.object({
+  status: z.enum(['OPEN', 'UNDER_INVESTIGATION', 'CLEARED', 'ESCALATED']),
+  resolutionNotes: z.string().optional().default(''),
+});
+
+// PUT /flags/:id — update flag status (officers only)
+router.put('/:id', authenticate, requireRole('IT_DEPT', 'ED', 'CBI', 'ADMIN'), async (req: AuthRequest, res: Response) => {
+  const parsed = UpdateStatusSchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ success: false, error: parsed.error.issues[0].message });
+    return;
+  }
+
+  await fabric.updateFlagStatus(req.params.id, parsed.data.status, parsed.data.resolutionNotes);
+  res.json({ success: true, data: { message: 'Flag status updated' } });
+});
+
+const ManualFlagSchema = z.object({
+  citizenHash: z.string().length(64),
+  ruleTriggered: z.enum(['BENAMI_SUSPICION', 'SHELL_COMPANY_LINK', 'FOREIGN_ASSET_UNDECLARED', 'LIFESTYLE_MISMATCH']),
+  severity: z.enum(['YELLOW', 'ORANGE', 'RED']),
+  description: z.string().min(10),
+  assetValue: z.number().int().min(0),
+  incomeValue: z.number().int().min(0),
+  gapAmount: z.number().int().min(0),
+});
+
+// POST /flags/manual — submit a manual flag (benami, shell company, etc.)
+router.post('/manual', authenticate, requireRole('IT_DEPT', 'ED', 'CBI'), async (req: AuthRequest, res: Response) => {
+  const parsed = ManualFlagSchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ success: false, error: parsed.error.issues[0].message });
+    return;
+  }
+
+  const flag = await fabric.submitManualFlag(parsed.data);
+  res.status(201).json({ success: true, data: flag });
+});
+
+export default router;
