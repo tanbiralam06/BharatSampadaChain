@@ -62,9 +62,14 @@ for CC_NAME in "${CHAINCODES[@]}"; do
   for ORG_DOMAIN in "${!ORGS[@]}"; do
     IFS='|' read -r PEER_ADDR MSP_ID TLS_CERT <<< "${ORGS[$ORG_DOMAIN]}"
     echo "→ Installing on peer ${PEER_ADDR}..."
-    peer_cmd "${ORG_DOMAIN}" "${PEER_ADDR}" "${MSP_ID}" "${TLS_CERT}" \
-      lifecycle chaincode install /tmp/${CC_NAME}.tar.gz
-    echo "   ✓ Installed on ${ORG_DOMAIN}"
+    INSTALL_OUT=$(peer_cmd "${ORG_DOMAIN}" "${PEER_ADDR}" "${MSP_ID}" "${TLS_CERT}" \
+      lifecycle chaincode install /tmp/${CC_NAME}.tar.gz 2>&1) || true
+    if echo "${INSTALL_OUT}" | grep -q "already successfully installed"; then
+      echo "   ✓ Already installed on ${ORG_DOMAIN} (skipping)"
+    else
+      echo "${INSTALL_OUT}"
+      echo "   ✓ Installed on ${ORG_DOMAIN}"
+    fi
   done
 
   # ── Get package ID from ITDept peer ──────────────────────────
