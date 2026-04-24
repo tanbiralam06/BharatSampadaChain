@@ -19,7 +19,7 @@ type AccessLog struct {
 	AccessType      string   `json:"accessType"`   // VIEW | EXPORT | FLAG_RAISED | FLAG_CLEARED | FULL_DISCLOSURE
 	DataTypes       []string `json:"dataTypes"`    // which fields were accessed
 	Purpose         string   `json:"purpose"`
-	AuthorizationRef string  `json:"authorizationRef,omitempty"` // investigation/court order number
+	AuthorizationRef string `json:"authorizationRef"`
 	Timestamp       string   `json:"timestamp"`
 	TxID            string   `json:"txId"`
 }

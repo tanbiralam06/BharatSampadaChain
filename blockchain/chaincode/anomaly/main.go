@@ -38,8 +38,8 @@ type AnomalyFlag struct {
 	GapAmount       int64  `json:"gapAmount"`
 	Status          string `json:"status"` // OPEN | UNDER_INVESTIGATION | CLEARED | ESCALATED
 	RaisedAt        string  `json:"raisedAt"`
-	ResolvedAt      *string `json:"resolvedAt"`      // pointer = optional in contractapi schema
-	ResolutionNotes *string `json:"resolutionNotes"` // pointer = optional in contractapi schema
+	ResolvedAt      string `json:"resolvedAt"`
+	ResolutionNotes string `json:"resolutionNotes"`
 }
 
 // ── Contract ──────────────────────────────────────────────────────
@@ -217,11 +217,9 @@ func (s *SmartContract) UpdateFlagStatus(
 		return err
 	}
 	flag.Status = status
-	notes := resolutionNotes
-	flag.ResolutionNotes = &notes
+	flag.ResolutionNotes = resolutionNotes
 	if status == "CLEARED" || status == "ESCALATED" {
-		t := now()
-		flag.ResolvedAt = &t
+		flag.ResolvedAt = now()
 	}
 	updated, _ := json.Marshal(flag)
 	return ctx.GetStub().PutState("FLAG_"+flagID, updated)

@@ -21,7 +21,7 @@ type ZKPProof struct {
 	Proof         string `json:"proof"`         // Groth16 proof JSON (base64 in Phase 3)
 	PublicInputs  string `json:"publicInputs"`  // public signals as JSON
 	IsVerified    bool    `json:"isVerified"`
-	VerifiedAt    *string `json:"verifiedAt"` // pointer = optional in contractapi schema
+	VerifiedAt    string `json:"verifiedAt"`
 	ExpiresAt     string  `json:"expiresAt"`
 	SubmittedAt   string `json:"submittedAt"`
 	SubmittedBy   string `json:"submittedBy"` // accessor requesting the proof
@@ -80,8 +80,7 @@ func (s *SmartContract) SubmitProof(
 		SubmittedBy:  submittedBy,
 	}
 	if isVerified {
-		t := timestamp
-		record.VerifiedAt = &t
+		record.VerifiedAt = timestamp
 	}
 
 	data, err := json.Marshal(record)

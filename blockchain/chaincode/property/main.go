@@ -14,7 +14,7 @@ import (
 type PropertyRecord struct {
 	PropertyID       string  `json:"propertyId"`
 	OwnerHash        string  `json:"ownerHash"`
-	PrevOwnerHash    *string `json:"prevOwnerHash"`   // pointer = optional in contractapi schema
+	PrevOwnerHash    string `json:"prevOwnerHash"`
 	RegistrationNo   string  `json:"registrationNo"`
 	PropertyType     string  `json:"propertyType"`
 	DeclaredValue    int64   `json:"declaredValue"`
@@ -157,8 +157,7 @@ func (s *SmartContract) TransferProperty(
 	_ = ctx.GetStub().DelState(oldCK)
 
 	// Update property
-	prevOwner := prop.OwnerHash
-	prop.PrevOwnerHash = &prevOwner
+	prop.PrevOwnerHash = prop.OwnerHash
 	prop.OwnerHash = newOwnerHash
 	prop.DeclaredValue = transferValue
 	prop.TransferType = transferType
