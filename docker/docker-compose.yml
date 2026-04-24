@@ -220,6 +220,7 @@ services:
   # ── API Gateway ──────────────────────────────────────────────────
   api:
     container_name: bsc-api
+    image: bsc/api:latest
     build:
       context: ../api
       dockerfile: Dockerfile
