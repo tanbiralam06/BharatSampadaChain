@@ -12,35 +12,35 @@ import (
 // ── Data types ────────────────────────────────────────────────────
 
 type PropertyRecord struct {
-	PropertyID       string  `json:"propertyId"`
-	OwnerHash        string  `json:"ownerHash"`
+	PropertyID       string `json:"propertyId"`
+	OwnerHash        string `json:"ownerHash"`
 	PrevOwnerHash    string `json:"prevOwnerHash"`
-	RegistrationNo   string  `json:"registrationNo"`
-	PropertyType     string  `json:"propertyType"`
-	DeclaredValue    int64   `json:"declaredValue"`
-	CircleRateValue  int64   `json:"circleRateValue"`
-	AreaSqft         int64   `json:"areaSqft"`
-	District         string  `json:"district"`
-	State            string  `json:"state"`
+	RegistrationNo   string `json:"registrationNo"`
+	PropertyType     string `json:"propertyType"`
+	DeclaredValue    int64  `json:"declaredValue"`
+	CircleRateValue  int64  `json:"circleRateValue"`
+	AreaSqft         int64  `json:"areaSqft"`
+	District         string `json:"district"`
+	State            string `json:"state"`
 	RegistrationDate string `json:"registrationDate"`
 	TransferType     string `json:"transferType"` // PURCHASE | INHERITANCE | GIFT | COURT_ORDER
 	StampDutyPaid    int64  `json:"stampDutyPaid"`
 	Encumbrance      string `json:"encumbrance"` // CLEAR | MORTGAGED | DISPUTED | COURT_STAY
-	MortgageAmount   int64  `json:"mortgageAmount"`          // zero means no mortgage
+	MortgageAmount   int64  `json:"mortgageAmount"`
 	IsActive         bool   `json:"isActive"`
 	CreatedAt        string `json:"createdAt"`
 	LastUpdated      string `json:"lastUpdated"`
 }
 
 type TransferRecord struct {
-	TransferID     string `json:"transferId"`
-	PropertyID     string `json:"propertyId"`
-	FromOwnerHash  string `json:"fromOwnerHash"`
-	ToOwnerHash    string `json:"toOwnerHash"`
-	TransferValue  int64  `json:"transferValue"`
-	TransferType   string `json:"transferType"`
-	TransferDate   string `json:"transferDate"`
-	Reason         string `json:"reason"`
+	TransferID    string `json:"transferId"`
+	PropertyID    string `json:"propertyId"`
+	FromOwnerHash string `json:"fromOwnerHash"`
+	ToOwnerHash   string `json:"toOwnerHash"`
+	TransferValue int64  `json:"transferValue"`
+	TransferType  string `json:"transferType"`
+	TransferDate  string `json:"transferDate"`
+	Reason        string `json:"reason"`
 }
 
 // ── Contract ──────────────────────────────────────────────────────
@@ -49,8 +49,13 @@ type SmartContract struct {
 	contractapi.Contract
 }
 
-func now() string {
-	return time.Now().UTC().Format(time.RFC3339)
+// txTime returns the transaction proposal timestamp — identical on all endorsing peers.
+func txTime(ctx contractapi.TransactionContextInterface) string {
+	ts, err := ctx.GetStub().GetTxTimestamp()
+	if err != nil {
+		return time.Now().UTC().Format(time.RFC3339)
+	}
+	return ts.AsTime().UTC().Format(time.RFC3339)
 }
 
 // RegisterProperty records a new property on the ledger.
@@ -78,6 +83,7 @@ func (s *SmartContract) RegisterProperty(
 		)
 	}
 
+	ts := txTime(ctx)
 	prop := PropertyRecord{
 		PropertyID:       propertyID,
 		OwnerHash:        ownerHash,
@@ -93,8 +99,8 @@ func (s *SmartContract) RegisterProperty(
 		StampDutyPaid:    stampDutyPaid,
 		Encumbrance:      "CLEAR",
 		IsActive:         true,
-		CreatedAt:        now(),
-		LastUpdated:      now(),
+		CreatedAt:        ts,
+		LastUpdated:      ts,
 	}
 
 	data, err := json.Marshal(prop)
@@ -140,6 +146,7 @@ func (s *SmartContract) TransferProperty(
 		)
 	}
 
+	ts := txTime(ctx)
 	txID := ctx.GetStub().GetTxID()
 	transfer := &TransferRecord{
 		TransferID:    fmt.Sprintf("TXR-%s", txID[:12]),
@@ -148,7 +155,7 @@ func (s *SmartContract) TransferProperty(
 		ToOwnerHash:   newOwnerHash,
 		TransferValue: transferValue,
 		TransferType:  transferType,
-		TransferDate:  now(),
+		TransferDate:  ts,
 		Reason:        reason,
 	}
 
@@ -161,7 +168,7 @@ func (s *SmartContract) TransferProperty(
 	prop.OwnerHash = newOwnerHash
 	prop.DeclaredValue = transferValue
 	prop.TransferType = transferType
-	prop.LastUpdated = now()
+	prop.LastUpdated = ts
 
 	data, err := json.Marshal(prop)
 	if err != nil {
@@ -232,7 +239,7 @@ func (s *SmartContract) UpdateEncumbrance(
 	}
 	prop.Encumbrance = encumbrance
 	prop.MortgageAmount = mortgageAmount
-	prop.LastUpdated = now()
+	prop.LastUpdated = txTime(ctx)
 
 	data, _ := json.Marshal(prop)
 	return ctx.GetStub().PutState("PROP_"+propertyID, data)

@@ -37,7 +37,7 @@ type AnomalyFlag struct {
 	IncomeValueUsed int64  `json:"incomeValueUsed"`
 	GapAmount       int64  `json:"gapAmount"`
 	Status          string `json:"status"` // OPEN | UNDER_INVESTIGATION | CLEARED | ESCALATED
-	RaisedAt        string  `json:"raisedAt"`
+	RaisedAt        string `json:"raisedAt"`
 	ResolvedAt      string `json:"resolvedAt"`
 	ResolutionNotes string `json:"resolutionNotes"`
 }
@@ -48,8 +48,13 @@ type SmartContract struct {
 	contractapi.Contract
 }
 
-func now() string {
-	return time.Now().UTC().Format(time.RFC3339)
+// txTime returns the transaction proposal timestamp — identical on all endorsing peers.
+func txTime(ctx contractapi.TransactionContextInterface) string {
+	ts, err := ctx.GetStub().GetTxTimestamp()
+	if err != nil {
+		return time.Now().UTC().Format(time.RFC3339)
+	}
+	return ts.AsTime().UTC().Format(time.RFC3339)
 }
 
 // CreateCitizenNode writes a new citizen identity node to the ledger.
@@ -66,6 +71,7 @@ func (s *SmartContract) CreateCitizenNode(
 		return nil, fmt.Errorf("citizen %s already exists", citizenHash)
 	}
 
+	ts := txTime(ctx)
 	citizen := CitizenNode{
 		CitizenHash:         citizenHash,
 		PanHash:             panHash,
@@ -78,8 +84,8 @@ func (s *SmartContract) CreateCitizenNode(
 		PrevYearAssets:      prevYearAssets,
 		Assets5YrAgo:        assets5YrAgo,
 		AnomalyScore:        0,
-		CreatedAt:           now(),
-		LastUpdated:         now(),
+		CreatedAt:           ts,
+		LastUpdated:         ts,
 	}
 
 	data, err := json.Marshal(citizen)
@@ -106,7 +112,7 @@ func (s *SmartContract) UpdateCitizenAssets(
 	citizen.TotalIncome5Yr = totalIncome5Yr
 	citizen.PrevYearAssets = prevYearAssets
 	citizen.Assets5YrAgo = assets5YrAgo
-	citizen.LastUpdated = now()
+	citizen.LastUpdated = txTime(ctx)
 
 	data, err := json.Marshal(citizen)
 	if err != nil {
@@ -123,7 +129,7 @@ func (s *SmartContract) GetCitizenNode(
 	return s.getCitizen(ctx, citizenHash)
 }
 
-// RunAnomalyCheck evaluates all 5 rules and writes any new flags to the ledger.
+// RunAnomalyCheck evaluates all 3 rules and writes any new flags to the ledger.
 func (s *SmartContract) RunAnomalyCheck(
 	ctx contractapi.TransactionContextInterface,
 	citizenHash string,
@@ -133,15 +139,16 @@ func (s *SmartContract) RunAnomalyCheck(
 		return nil, err
 	}
 
+	ts := txTime(ctx)
 	var flags []*AnomalyFlag
 
-	if f := s.ruleIncomeAssetMismatch(citizen); f != nil {
+	if f := s.ruleIncomeAssetMismatch(citizen, ts); f != nil {
 		flags = append(flags, f)
 	}
-	if f := s.ruleUnexplainedWealth(citizen); f != nil {
+	if f := s.ruleUnexplainedWealth(citizen, ts); f != nil {
 		flags = append(flags, f)
 	}
-	if f := s.ruleOfficialWealthSurge(citizen); f != nil {
+	if f := s.ruleOfficialWealthSurge(citizen, ts); f != nil {
 		flags = append(flags, f)
 	}
 
@@ -170,7 +177,7 @@ func (s *SmartContract) RunAnomalyCheck(
 		}
 	}
 	citizen.AnomalyScore = score
-	citizen.LastUpdated = now()
+	citizen.LastUpdated = ts
 	data, _ := json.Marshal(citizen)
 	_ = ctx.GetStub().PutState("CITIZEN_"+citizenHash, data)
 
@@ -195,7 +202,7 @@ func (s *SmartContract) SubmitManualFlag(
 		IncomeValueUsed: incomeValue,
 		GapAmount:       gapAmount,
 		Status:          "OPEN",
-		RaisedAt:        now(),
+		RaisedAt:        txTime(ctx),
 	}
 	if err := s.saveFlag(ctx, flag); err != nil {
 		return nil, err
@@ -219,7 +226,7 @@ func (s *SmartContract) UpdateFlagStatus(
 	flag.Status = status
 	flag.ResolutionNotes = resolutionNotes
 	if status == "CLEARED" || status == "ESCALATED" {
-		flag.ResolvedAt = now()
+		flag.ResolvedAt = txTime(ctx)
 	}
 	updated, _ := json.Marshal(flag)
 	return ctx.GetStub().PutState("FLAG_"+flagID, updated)
@@ -242,7 +249,6 @@ func (s *SmartContract) GetFlagsByCitizen(
 		if err != nil {
 			return nil, err
 		}
-		// Composite key value is the flag ID — fetch the actual flag record
 		_, parts, err := ctx.GetStub().SplitCompositeKey(kv.Key)
 		if err != nil {
 			continue
@@ -300,7 +306,7 @@ func (s *SmartContract) GetFlagsBySeverity(
 // ── Anomaly rules ─────────────────────────────────────────────────
 
 // Rule 1 (YELLOW): declared assets > 5× total 5-year income
-func (s *SmartContract) ruleIncomeAssetMismatch(c *CitizenNode) *AnomalyFlag {
+func (s *SmartContract) ruleIncomeAssetMismatch(c *CitizenNode, raisedAt string) *AnomalyFlag {
 	if c.TotalIncome5Yr <= 0 {
 		return nil
 	}
@@ -319,12 +325,12 @@ func (s *SmartContract) ruleIncomeAssetMismatch(c *CitizenNode) *AnomalyFlag {
 		IncomeValueUsed: c.TotalIncome5Yr,
 		GapAmount:       gap,
 		Status:          "OPEN",
-		RaisedAt:        now(),
+		RaisedAt:        raisedAt,
 	}
 }
 
 // Rule 2 (ORANGE): asset growth in 1 year > 2× annual income
-func (s *SmartContract) ruleUnexplainedWealth(c *CitizenNode) *AnomalyFlag {
+func (s *SmartContract) ruleUnexplainedWealth(c *CitizenNode, raisedAt string) *AnomalyFlag {
 	if c.PrevYearAssets <= 0 || c.TotalIncome5Yr <= 0 {
 		return nil
 	}
@@ -344,12 +350,12 @@ func (s *SmartContract) ruleUnexplainedWealth(c *CitizenNode) *AnomalyFlag {
 		IncomeValueUsed: annualIncome,
 		GapAmount:       gap,
 		Status:          "OPEN",
-		RaisedAt:        now(),
+		RaisedAt:        raisedAt,
 	}
 }
 
 // Rule 3 (RED): government official with >300% wealth growth over 5 years
-func (s *SmartContract) ruleOfficialWealthSurge(c *CitizenNode) *AnomalyFlag {
+func (s *SmartContract) ruleOfficialWealthSurge(c *CitizenNode, raisedAt string) *AnomalyFlag {
 	if c.CitizenType != "government_official" && c.CitizenType != "politician" {
 		return nil
 	}
@@ -371,7 +377,7 @@ func (s *SmartContract) ruleOfficialWealthSurge(c *CitizenNode) *AnomalyFlag {
 		IncomeValueUsed: c.Assets5YrAgo,
 		GapAmount:       gap,
 		Status:          "OPEN",
-		RaisedAt:        now(),
+		RaisedAt:        raisedAt,
 	}
 }
 

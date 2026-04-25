@@ -12,16 +12,16 @@ import (
 // ── Data types ────────────────────────────────────────────────────
 
 type AccessLog struct {
-	LogID           string   `json:"logId"`
-	CitizenHash     string   `json:"citizenHash"` // whose data was accessed
-	AccessorHash    string   `json:"accessorHash"`
-	AccessorRole    string   `json:"accessorRole"` // CITIZEN | IT_DEPT | ED | CBI | COURT | BANK | ADMIN
-	AccessType      string   `json:"accessType"`   // VIEW | EXPORT | FLAG_RAISED | FLAG_CLEARED | FULL_DISCLOSURE
-	DataTypes       []string `json:"dataTypes"`    // which fields were accessed
-	Purpose         string   `json:"purpose"`
-	AuthorizationRef string `json:"authorizationRef"`
-	Timestamp       string   `json:"timestamp"`
-	TxID            string   `json:"txId"`
+	LogID            string   `json:"logId"`
+	CitizenHash      string   `json:"citizenHash"` // whose data was accessed
+	AccessorHash     string   `json:"accessorHash"`
+	AccessorRole     string   `json:"accessorRole"` // CITIZEN | IT_DEPT | ED | CBI | COURT | BANK | ADMIN
+	AccessType       string   `json:"accessType"`   // VIEW | EXPORT | FLAG_RAISED | FLAG_CLEARED | FULL_DISCLOSURE
+	DataTypes        []string `json:"dataTypes"`    // which fields were accessed
+	Purpose          string   `json:"purpose"`
+	AuthorizationRef string   `json:"authorizationRef"`
+	Timestamp        string   `json:"timestamp"`
+	TxID             string   `json:"txId"`
 }
 
 // Permission matrix entry — stored on-chain so it can be audited and updated via governance
@@ -37,8 +37,13 @@ type SmartContract struct {
 	contractapi.Contract
 }
 
-func now() string {
-	return time.Now().UTC().Format(time.RFC3339)
+// txTime returns the transaction proposal timestamp — identical on all endorsing peers.
+func txTime(ctx contractapi.TransactionContextInterface) string {
+	ts, err := ctx.GetStub().GetTxTimestamp()
+	if err != nil {
+		return time.Now().UTC().Format(time.RFC3339)
+	}
+	return ts.AsTime().UTC().Format(time.RFC3339)
 }
 
 // InitLedger seeds the permission matrix with the BSC access control rules.
@@ -96,7 +101,7 @@ func (s *SmartContract) LogAccess(
 	citizenHash, accessorHash, accessorRole, accessType, dataTypesJSON, purpose string,
 ) (*AccessLog, error) {
 	txID := ctx.GetStub().GetTxID()
-	timestamp := now()
+	timestamp := txTime(ctx)
 
 	var dataTypes []string
 	if err := json.Unmarshal([]byte(dataTypesJSON), &dataTypes); err != nil {

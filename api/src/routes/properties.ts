@@ -2,6 +2,7 @@ import { Router, Response } from 'express';
 import { z } from 'zod';
 import { authenticate, requireRole, AuthRequest } from '../middleware/auth';
 import * as propertyService from '../services/property.service';
+import { asyncHandler } from '../utils/asyncHandler';
 
 const router = Router();
 
@@ -21,7 +22,7 @@ const RegisterSchema = z.object({
 });
 
 // POST /properties
-router.post('/', authenticate, requireRole('ADMIN', 'IT_DEPT'), async (req: AuthRequest, res: Response) => {
+router.post('/', authenticate, requireRole('ADMIN', 'IT_DEPT'), asyncHandler(async (req: AuthRequest, res: Response) => {
   const parsed = RegisterSchema.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ success: false, error: parsed.error.issues[0].message });
@@ -29,13 +30,13 @@ router.post('/', authenticate, requireRole('ADMIN', 'IT_DEPT'), async (req: Auth
   }
   const property = await propertyService.registerProperty(parsed.data);
   res.status(201).json({ success: true, data: property });
-});
+}));
 
 // GET /properties/:id
-router.get('/:id', authenticate, async (req: AuthRequest, res: Response) => {
+router.get('/:id', authenticate, asyncHandler(async (req: AuthRequest, res: Response) => {
   const property = await propertyService.getProperty(req.params.id);
   res.json({ success: true, data: property });
-});
+}));
 
 const TransferSchema = z.object({
   newOwnerHash: z.string().length(64),
@@ -45,7 +46,7 @@ const TransferSchema = z.object({
 });
 
 // PUT /properties/:id/transfer
-router.put('/:id/transfer', authenticate, requireRole('ADMIN', 'IT_DEPT'), async (req: AuthRequest, res: Response) => {
+router.put('/:id/transfer', authenticate, requireRole('ADMIN', 'IT_DEPT'), asyncHandler(async (req: AuthRequest, res: Response) => {
   const parsed = TransferSchema.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ success: false, error: parsed.error.issues[0].message });
@@ -53,6 +54,6 @@ router.put('/:id/transfer', authenticate, requireRole('ADMIN', 'IT_DEPT'), async
   }
   await propertyService.transferProperty({ propertyId: req.params.id, ...parsed.data });
   res.json({ success: true, data: { message: 'Transfer completed' } });
-});
+}));
 
 export default router;

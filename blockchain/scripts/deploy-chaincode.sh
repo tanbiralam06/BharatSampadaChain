@@ -11,12 +11,18 @@ CHANNEL=bsc-channel
 ORDERER=orderer.bsc.gov:7050
 ORDERER_CA=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/bsc.gov/orderers/orderer.bsc.gov/tls/ca.crt
 
-CC_VERSION="1.0"
-CC_SEQUENCE=1
+# Allow overrides via env vars: CC_VERSION, CC_SEQUENCE, CHAINCODES
+CC_VERSION="${CC_VERSION:-1.0}"
+CC_SEQUENCE="${CC_SEQUENCE:-1}"
 
 # Chaincode names and source paths (inside CLI container)
 CC_BASE=/opt/gopath/src/github.com/hyperledger/fabric/peer/chaincode
-CHAINCODES=("anomaly" "property" "access" "zkp")
+# Allow space-separated list via env: CHAINCODES="anomaly property" bash deploy-chaincode.sh
+if [[ -n "${CHAINCODES:-}" && ! "$(declare -p CHAINCODES 2>/dev/null)" =~ "declare -a" ]]; then
+  read -ra CHAINCODES <<< "${CHAINCODES}"
+else
+  CHAINCODES=("anomaly" "property" "access" "zkp")
+fi
 
 echo "============================================================"
 echo " BSC — Deploying chaincode v${CC_VERSION}"
@@ -76,10 +82,12 @@ for CC_NAME in "${CHAINCODES[@]}"; do
   ITDEPT_INFO="${ORGS[itdept.bsc.gov]}"
   IFS='|' read -r PEER_ADDR MSP_ID TLS_CERT <<< "${ITDEPT_INFO}"
 
+  # Pick the last matching package ID (latest install wins when same version is reinstalled)
   PKG_ID=$(peer_cmd "itdept.bsc.gov" "${PEER_ADDR}" "${MSP_ID}" "${TLS_CERT}" \
     lifecycle chaincode queryinstalled 2>&1 \
     | grep "Package ID: ${CC_NAME}_${CC_VERSION}" \
-    | sed -n "s/Package ID: \(.*\), Label:.*/\1/p")
+    | sed -n "s/Package ID: \(.*\), Label:.*/\1/p" \
+    | tail -1)
   echo "   Package ID: ${PKG_ID}"
 
   # ── Approve from each org ─────────────────────────────────────

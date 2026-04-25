@@ -3,6 +3,7 @@ import { config } from '../config';
 import type { AnomalyFlag, CitizenNode, AccessLog, PropertyRecord, ZKPProof } from '../models';
 
 function decode(bytes: Uint8Array): unknown {
+  if (!bytes || bytes.length === 0) return null;
   return JSON.parse(Buffer.from(bytes).toString());
 }
 

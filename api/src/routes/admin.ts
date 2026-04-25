@@ -2,11 +2,12 @@ import { Router, Response } from 'express';
 import { authenticate, requireRole, AuthRequest } from '../middleware/auth';
 import { db } from '../db/client';
 import { redis } from '../cache/redis';
+import { asyncHandler } from '../utils/asyncHandler';
 
 const router = Router();
 
 // GET /admin/health — system health check
-router.get('/health', authenticate, requireRole('ADMIN'), async (_req: AuthRequest, res: Response) => {
+router.get('/health', authenticate, requireRole('ADMIN'), asyncHandler(async (_req: AuthRequest, res: Response) => {
   const [pgOk, redisOk] = await Promise.all([
     db.query('SELECT 1').then(() => true).catch(() => false),
     redis.ping().then(() => true).catch(() => false),
@@ -21,15 +22,15 @@ router.get('/health', authenticate, requireRole('ADMIN'), async (_req: AuthReque
       services: {
         postgres: pgOk ? 'up' : 'down',
         redis: redisOk ? 'up' : 'down',
-        fabric: 'connected', // connection maintained by gateway singleton
+        fabric: 'connected',
       },
       timestamp: new Date().toISOString(),
     },
   });
-});
+}));
 
 // GET /admin/stats — high-level ledger statistics (PostgreSQL off-chain index)
-router.get('/stats', authenticate, requireRole('ADMIN'), async (_req: AuthRequest, res: Response) => {
+router.get('/stats', authenticate, requireRole('ADMIN'), asyncHandler(async (_req: AuthRequest, res: Response) => {
   const results = await Promise.allSettled([
     db.query('SELECT COUNT(*) AS count FROM citizens'),
     db.query('SELECT COUNT(*) AS count FROM properties'),
@@ -49,6 +50,6 @@ router.get('/stats', authenticate, requireRole('ADMIN'), async (_req: AuthReques
       redFlags: safe(results[3] as PromiseSettledResult<{ rows: { count: string }[] }>),
     },
   });
-});
+}));
 
 export default router;

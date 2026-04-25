@@ -8,16 +8,19 @@ import { config } from '../config';
 let gateway: Gateway | null = null;
 let grpcClient: grpc.Client | null = null;
 
-function getMspCertsPath(): { certPath: string; keyPath: string; tlsCertPath: string } {
-  const { cryptoPath, mspId } = config.fabric;
+const ORG_DOMAINS: Record<string, string> = {
+  ITDeptMSP: 'itdept.bsc.gov',
+  RegistrarMSP: 'registrar.bsc.gov',
+  MCAMSP: 'mca.bsc.gov',
+};
 
-  // Map MSP ID to org domain
-  const orgDomains: Record<string, string> = {
-    ITDeptMSP: 'itdept.bsc.gov',
-    RegistrarMSP: 'registrar.bsc.gov',
-    MCAMSP: 'mca.bsc.gov',
-  };
-  const orgDomain = orgDomains[mspId] ?? 'itdept.bsc.gov';
+function getOrgDomain(): string {
+  return ORG_DOMAINS[config.fabric.mspId] ?? 'itdept.bsc.gov';
+}
+
+function getMspCertsPath(): { certPath: string; keyPath: string; tlsCertPath: string } {
+  const { cryptoPath } = config.fabric;
+  const orgDomain = getOrgDomain();
 
   const certPath = path.join(
     cryptoPath,
@@ -54,7 +57,7 @@ export async function connectToFabric(): Promise<Gateway> {
   const credentials = grpc.credentials.createSsl(tlsRootCert);
 
   grpcClient = new grpc.Client(config.fabric.peerEndpoint, credentials, {
-    'grpc.ssl_target_name_override': `peer0.${config.fabric.peerEndpoint.split(':')[0]}`,
+    'grpc.ssl_target_name_override': `peer0.${getOrgDomain()}`,
   });
 
   const certificate = fs.readFileSync(certPath).toString();

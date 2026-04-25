@@ -15,16 +15,16 @@ import (
 // Phase 1: stores proof metadata and simulates verification.
 // Phase 3: will integrate actual Groth16 verification via circom/snarkjs.
 type ZKPProof struct {
-	ProofID       string `json:"proofId"`
-	CitizenHash   string `json:"citizenHash"`
-	QueryType     string `json:"queryType"` // INCOME_ABOVE_THRESHOLD | ASSET_RANGE | RESIDENCE | TAX_COMPLIANCE
-	Proof         string `json:"proof"`         // Groth16 proof JSON (base64 in Phase 3)
-	PublicInputs  string `json:"publicInputs"`  // public signals as JSON
-	IsVerified    bool    `json:"isVerified"`
-	VerifiedAt    string `json:"verifiedAt"`
-	ExpiresAt     string  `json:"expiresAt"`
-	SubmittedAt   string `json:"submittedAt"`
-	SubmittedBy   string `json:"submittedBy"` // accessor requesting the proof
+	ProofID      string `json:"proofId"`
+	CitizenHash  string `json:"citizenHash"`
+	QueryType    string `json:"queryType"` // INCOME_ABOVE_THRESHOLD | ASSET_RANGE | RESIDENCE | TAX_COMPLIANCE
+	Proof        string `json:"proof"`        // Groth16 proof JSON (base64 in Phase 3)
+	PublicInputs string `json:"publicInputs"` // public signals as JSON
+	IsVerified   bool   `json:"isVerified"`
+	VerifiedAt   string `json:"verifiedAt"`
+	ExpiresAt    string `json:"expiresAt"`
+	SubmittedAt  string `json:"submittedAt"`
+	SubmittedBy  string `json:"submittedBy"` // accessor requesting the proof
 }
 
 // VerifiedClaim is a lightweight record proving a claim was verified without exposing the data.
@@ -44,8 +44,13 @@ type SmartContract struct {
 	contractapi.Contract
 }
 
-func now() string {
-	return time.Now().UTC().Format(time.RFC3339)
+// txTime returns the transaction proposal timestamp — identical on all endorsing peers.
+func txTime(ctx contractapi.TransactionContextInterface) string {
+	ts, err := ctx.GetStub().GetTxTimestamp()
+	if err != nil {
+		return time.Now().UTC().Format(time.RFC3339)
+	}
+	return ts.AsTime().UTC().Format(time.RFC3339)
 }
 
 // SubmitProof accepts a ZKP proof submission and performs verification.
@@ -60,13 +65,19 @@ func (s *SmartContract) SubmitProof(
 	}
 
 	txID := ctx.GetStub().GetTxID()
-	timestamp := now()
+	ts := txTime(ctx)
 
 	// Phase 1: simulate verification by checking proof is non-empty and valid JSON structure
 	isVerified := s.simulateVerification(proof, publicInputs)
 
-	// Proof expires in 30 days
-	expiry := time.Now().UTC().AddDate(0, 0, 30).Format(time.RFC3339)
+	// Proof expires 30 days from the transaction timestamp
+	expiresAt := func() string {
+		rawTs, err := ctx.GetStub().GetTxTimestamp()
+		if err != nil {
+			return time.Now().UTC().AddDate(0, 0, 30).Format(time.RFC3339)
+		}
+		return rawTs.AsTime().UTC().AddDate(0, 0, 30).Format(time.RFC3339)
+	}()
 
 	record := ZKPProof{
 		ProofID:      fmt.Sprintf("ZKP-%s", txID[:16]),
@@ -75,12 +86,12 @@ func (s *SmartContract) SubmitProof(
 		Proof:        proof,
 		PublicInputs: publicInputs,
 		IsVerified:   isVerified,
-		ExpiresAt:    expiry,
-		SubmittedAt:  timestamp,
+		ExpiresAt:    expiresAt,
+		SubmittedAt:  ts,
 		SubmittedBy:  submittedBy,
 	}
 	if isVerified {
-		record.VerifiedAt = timestamp
+		record.VerifiedAt = ts
 	}
 
 	data, err := json.Marshal(record)
@@ -99,7 +110,7 @@ func (s *SmartContract) SubmitProof(
 
 	// If verified, also issue a VerifiedClaim
 	if isVerified {
-		if err := s.issueVerifiedClaim(ctx, citizenHash, queryType, record.ProofID, expiry); err != nil {
+		if err := s.issueVerifiedClaim(ctx, citizenHash, queryType, record.ProofID, expiresAt, ts); err != nil {
 			return nil, err
 		}
 	}
@@ -137,9 +148,11 @@ func (s *SmartContract) GetVerifiedClaims(
 	}
 	defer iter.Close()
 
-	var claims []*VerifiedClaim
-	currentTime := now()
+	// Use wall-clock time for expiry comparison — this is a read (evaluateTransaction),
+	// so non-determinism here does not affect endorsement consistency.
+	currentTime := time.Now().UTC().Format(time.RFC3339)
 
+	var claims []*VerifiedClaim
 	for iter.HasNext() {
 		kv, err := iter.Next()
 		if err != nil {
@@ -217,7 +230,7 @@ func (s *SmartContract) simulateVerification(proof, publicInputs string) bool {
 
 func (s *SmartContract) issueVerifiedClaim(
 	ctx contractapi.TransactionContextInterface,
-	citizenHash, queryType, proofID, validUntil string,
+	citizenHash, queryType, proofID, validUntil, issuedAt string,
 ) error {
 	claimID := fmt.Sprintf("CLAIM-%s-%s", citizenHash[:8], queryType)
 	claim := VerifiedClaim{
@@ -227,7 +240,7 @@ func (s *SmartContract) issueVerifiedClaim(
 		IsValid:     true,
 		ValidUntil:  validUntil,
 		ProofID:     proofID,
-		IssuedAt:    now(),
+		IssuedAt:    issuedAt,
 	}
 	data, err := json.Marshal(claim)
 	if err != nil {

@@ -2,11 +2,12 @@ import { Router, Response } from 'express';
 import { z } from 'zod';
 import { authenticate, requireRole, AuthRequest } from '../middleware/auth';
 import * as fabric from '../fabric/contracts';
+import { asyncHandler } from '../utils/asyncHandler';
 
 const router = Router();
 
 // GET /flags — get flags by severity (officer view)
-router.get('/', authenticate, requireRole('IT_DEPT', 'ED', 'CBI', 'ADMIN'), async (req: AuthRequest, res: Response) => {
+router.get('/', authenticate, requireRole('IT_DEPT', 'ED', 'CBI', 'ADMIN'), asyncHandler(async (req: AuthRequest, res: Response) => {
   const { severity } = req.query;
 
   if (severity && typeof severity === 'string') {
@@ -15,7 +16,6 @@ router.get('/', authenticate, requireRole('IT_DEPT', 'ED', 'CBI', 'ADMIN'), asyn
     return;
   }
 
-  // Return flags for all severities combined
   const [red, orange, yellow] = await Promise.all([
     fabric.getFlagsBySeverity('RED'),
     fabric.getFlagsBySeverity('ORANGE'),
@@ -23,7 +23,7 @@ router.get('/', authenticate, requireRole('IT_DEPT', 'ED', 'CBI', 'ADMIN'), asyn
   ]);
 
   res.json({ success: true, data: [...red, ...orange, ...yellow] });
-});
+}));
 
 const UpdateStatusSchema = z.object({
   status: z.enum(['OPEN', 'UNDER_INVESTIGATION', 'CLEARED', 'ESCALATED']),
@@ -31,7 +31,7 @@ const UpdateStatusSchema = z.object({
 });
 
 // PUT /flags/:id — update flag status (officers only)
-router.put('/:id', authenticate, requireRole('IT_DEPT', 'ED', 'CBI', 'ADMIN'), async (req: AuthRequest, res: Response) => {
+router.put('/:id', authenticate, requireRole('IT_DEPT', 'ED', 'CBI', 'ADMIN'), asyncHandler(async (req: AuthRequest, res: Response) => {
   const parsed = UpdateStatusSchema.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ success: false, error: parsed.error.issues[0].message });
@@ -40,7 +40,7 @@ router.put('/:id', authenticate, requireRole('IT_DEPT', 'ED', 'CBI', 'ADMIN'), a
 
   await fabric.updateFlagStatus(req.params.id, parsed.data.status, parsed.data.resolutionNotes);
   res.json({ success: true, data: { message: 'Flag status updated' } });
-});
+}));
 
 const ManualFlagSchema = z.object({
   citizenHash: z.string().length(64),
@@ -53,7 +53,7 @@ const ManualFlagSchema = z.object({
 });
 
 // POST /flags/manual — submit a manual flag (benami, shell company, etc.)
-router.post('/manual', authenticate, requireRole('IT_DEPT', 'ED', 'CBI'), async (req: AuthRequest, res: Response) => {
+router.post('/manual', authenticate, requireRole('IT_DEPT', 'ED', 'CBI'), asyncHandler(async (req: AuthRequest, res: Response) => {
   const parsed = ManualFlagSchema.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ success: false, error: parsed.error.issues[0].message });
@@ -62,6 +62,6 @@ router.post('/manual', authenticate, requireRole('IT_DEPT', 'ED', 'CBI'), async 
 
   const flag = await fabric.submitManualFlag(parsed.data);
   res.status(201).json({ success: true, data: flag });
-});
+}));
 
 export default router;
