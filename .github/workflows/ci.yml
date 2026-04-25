@@ -58,13 +58,13 @@ jobs:
         with:
           go-version: '1.22'
       - name: Test anomaly detector
-        run: cd blockchain/chaincode/anomaly && go test ./... -v
+        run: cd blockchain/chaincode/anomaly && go mod tidy && go test ./... -v -count=1
       - name: Test property validator
-        run: cd blockchain/chaincode/property && go test ./... -v
+        run: cd blockchain/chaincode/property && go mod tidy && go test ./... -v -count=1
       - name: Test access enforcer
-        run: cd blockchain/chaincode/access && go test ./... -v
+        run: cd blockchain/chaincode/access && go mod tidy && go test ./... -v -count=1
       - name: Test ZKP verifier
-        run: cd blockchain/chaincode/zkp && go test ./... -v
+        run: cd blockchain/chaincode/zkp && go mod tidy && go test ./... -v -count=1
 
   # ── Frontend build check ─────────────────────────────────────────────
   frontend-build:
