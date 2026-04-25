@@ -11,8 +11,8 @@ const OFFICER_ROLES: { value: AccessorRole; label: string }[] = [
 ];
 
 const SEED_ACCOUNTS = [
-  { name: 'Rajesh Kumar (IT Dept)', hash: 'itoff001hashabcdef0123456789abcdef0123456789abcdef0123456789abc', role: 'IT_DEPT' as AccessorRole },
-  { name: 'Priya Sharma (CBI)',     hash: 'cbi001hash0abcdef0123456789abcdef0123456789abcdef0123456789abcd', role: 'CBI'     as AccessorRole },
+  { name: 'Rajesh Kumar (IT Dept)', loginId: 'rajesh.kumar@itdept.bsc.gov', role: 'IT_DEPT' as AccessorRole },
+  { name: 'Priya Sharma (CBI)',     loginId: 'priya.sharma@cbi.gov.in',     role: 'CBI'     as AccessorRole },
 ];
 
 export default function Login() {
@@ -28,7 +28,7 @@ export default function Login() {
 
   if (isAuthenticated) { navigate('/', { replace: true }); return null; }
 
-  const fill = (hash: string, r: AccessorRole) => { setIdentifier(hash); setRole(r); };
+  const fill = (loginId: string, r: AccessorRole) => { setIdentifier(loginId); setRole(r); };
 
   const submit = async (e: FormEvent) => {
     e.preventDefault();
@@ -56,11 +56,12 @@ export default function Login() {
         <div className="bg-[#0a1628] border border-white/5 rounded-2xl p-8">
           <form onSubmit={submit} className="space-y-5">
             <div>
-              <label className="block text-xs font-medium text-slate-400 mb-1.5 uppercase tracking-widest">Officer ID Hash</label>
+              <label className="block text-xs font-medium text-slate-400 mb-1.5 uppercase tracking-widest">Government Email</label>
               <input
-                type="text" value={identifier} onChange={(e) => setIdentifier(e.target.value)}
-                placeholder="64-character hex hash"
-                className="w-full rounded-lg bg-white/5 border border-white/10 px-4 py-3 font-mono text-sm text-white placeholder-slate-600 focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/25 transition-colors"
+                type="email" value={identifier} onChange={(e) => setIdentifier(e.target.value)}
+                placeholder="officer@dept.gov.in"
+                className="w-full rounded-lg bg-white/5 border border-white/10 px-4 py-3 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/25 transition-colors"
+                autoComplete="email"
                 spellCheck={false}
               />
             </div>
@@ -106,10 +107,10 @@ export default function Login() {
             Dev accounts — password: <span className="font-mono text-slate-400">password</span>
           </p>
           {SEED_ACCOUNTS.map((a) => (
-            <button key={a.hash} onClick={() => fill(a.hash, a.role)}
+            <button key={a.loginId} onClick={() => fill(a.loginId, a.role)}
               className="w-full text-left rounded-lg px-3 py-2 hover:bg-white/5 transition-colors">
               <p className="text-xs font-medium text-slate-300">{a.name}</p>
-              <p className="font-mono text-[10px] text-slate-600 mt-0.5 truncate">{a.hash}</p>
+              <p className="text-[11px] text-slate-500 mt-0.5">{a.loginId}</p>
             </button>
           ))}
         </div>

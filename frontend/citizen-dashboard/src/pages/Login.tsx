@@ -4,9 +4,9 @@ import { Shield, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 const SEED_CREDENTIALS = [
-  { name: 'Arjun Mehta',    hash: 'a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1' },
-  { name: 'Sunita Rao',    hash: 'b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6b2c3' },
-  { name: 'Priya Krishnan', hash: 'd4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6d4e5f6a1' },
+  { name: 'Arjun Mehta',    aadhaar: '123456789012' },
+  { name: 'Sunita Rao',     aadhaar: '234567890123' },
+  { name: 'Priya Krishnan', aadhaar: '345678901234' },
 ];
 
 export default function Login() {
@@ -60,19 +60,20 @@ export default function Login() {
             {/* Identifier */}
             <div>
               <label className="block text-xs font-medium text-slate-400 mb-1.5 uppercase tracking-widest">
-                Citizen Hash
+                Aadhaar Number
               </label>
               <input
                 type="text"
                 value={identifier}
-                onChange={(e) => setIdentifier(e.target.value)}
-                placeholder="64-character hex hash"
+                onChange={(e) => setIdentifier(e.target.value.replace(/\D/g, '').slice(0, 12))}
+                placeholder="12-digit Aadhaar number"
                 className="w-full rounded-lg bg-white/5 border border-white/10 px-4 py-3
-                  font-mono text-sm text-white placeholder-slate-600
+                  text-sm text-white placeholder-slate-600
                   focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/25
                   transition-colors"
-                autoComplete="username"
-                spellCheck={false}
+                autoComplete="off"
+                inputMode="numeric"
+                maxLength={12}
               />
             </div>
 
@@ -132,12 +133,12 @@ export default function Login() {
           <div className="space-y-2">
             {SEED_CREDENTIALS.map((c) => (
               <button
-                key={c.hash}
-                onClick={() => setIdentifier(c.hash)}
+                key={c.aadhaar}
+                onClick={() => setIdentifier(c.aadhaar)}
                 className="w-full text-left rounded-lg px-3 py-2 hover:bg-white/5 transition-colors"
               >
                 <p className="text-xs font-medium text-slate-300">{c.name}</p>
-                <p className="font-mono text-[10px] text-slate-600 mt-0.5 truncate">{c.hash}</p>
+                <p className="text-[11px] text-slate-500 mt-0.5">Aadhaar: <span className="text-slate-400">{c.aadhaar}</span></p>
               </button>
             ))}
           </div>
