@@ -1,0 +1,27 @@
+import express from 'express';
+
+import authRouter from './routes/auth';
+import citizensRouter from './routes/citizens';
+import propertiesRouter from './routes/properties';
+import flagsRouter from './routes/flags';
+import zkpRouter from './routes/zkp';
+import adminRouter from './routes/admin';
+
+const app = express();
+app.use(express.json());
+
+app.get('/health', (_req, res) => res.json({ status: 'ok', version: '1.0.0' }));
+
+app.use('/auth', authRouter);
+app.use('/citizens', citizensRouter);
+app.use('/properties', propertiesRouter);
+app.use('/flags', flagsRouter);
+app.use('/zkp', zkpRouter);
+app.use('/admin', adminRouter);
+
+app.use((err: Error, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+  console.error('Unhandled error:', err.message);
+  res.status(500).json({ success: false, error: err.message ?? 'Internal server error' });
+});
+
+export default app;
