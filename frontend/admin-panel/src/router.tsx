@@ -1,0 +1,21 @@
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { Layout }         from './components/Layout';
+import { ProtectedRoute } from './components/ProtectedRoute';
+import Login            from './pages/Login';
+import SystemHealth     from './pages/SystemHealth';
+import AgencyManagement from './pages/AgencyManagement';
+import AuditOverview    from './pages/AuditOverview';
+
+export function AppRoutes() {
+  return (
+    <Routes>
+      <Route path="/login" element={<Login />} />
+      <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
+        <Route index            element={<SystemHealth />} />
+        <Route path="agencies"  element={<AgencyManagement />} />
+        <Route path="audit"     element={<AuditOverview />} />
+      </Route>
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+  );
+}
