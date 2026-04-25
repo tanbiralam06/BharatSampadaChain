@@ -1,0 +1,33 @@
+{
+  "name": "bsc-frontend",
+  "private": true,
+  "workspaces": [
+    "shared",
+    "public-dashboard",
+    "citizen-dashboard",
+    "officer-console",
+    "admin-panel"
+  ],
+  "scripts": {
+    "dev:public":   "npm run dev --workspace=public-dashboard",
+    "dev:citizen":  "npm run dev --workspace=citizen-dashboard",
+    "dev:officer":  "npm run dev --workspace=officer-console",
+    "dev:admin":    "npm run dev --workspace=admin-panel",
+    "lint":         "eslint '*/src/**/*.{ts,tsx}'",
+    "format":       "prettier --write '*/src/**/*.{ts,tsx,css}'"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^7.18.0",
+    "@typescript-eslint/parser": "^7.18.0",
+    "eslint": "^8.57.0",
+    "eslint-plugin-react": "^7.34.3",
+    "eslint-plugin-react-hooks": "^4.6.2",
+    "husky": "^9.1.4",
+    "lint-staged": "^15.2.7",
+    "prettier": "^3.3.3"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": ["eslint --fix", "prettier --write"],
+    "*.css":      ["prettier --write"]
+  }
+}
