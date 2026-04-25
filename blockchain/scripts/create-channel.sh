@@ -105,7 +105,7 @@ cli env \
   CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/mca.bsc.gov/peers/peer0.mca.bsc.gov/tls/ca.crt \
   peer channel update \
     -o ${ORDERER} -c ${CHANNEL} \
-    -f /opt/gopath/src/github.com/hyperledger/fabric/peer/channel-artifacts/MCAmspanchors.tx \
+    -f /opt/gopath/src/github.com/hyperledger/fabric/peer/channel-artifacts/MCAMSPanchors.tx \
     --tls --cafile ${ORDERER_CA}
 
 echo "   ✓ Anchor peers updated"
