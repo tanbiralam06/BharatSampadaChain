@@ -1,7 +1,7 @@
 # BSC — Implementation Status
 
 > Read this before starting any session. Updated after every significant merge to `main`.
-> Last updated: 2026-04-25 · Branch: `main` · Phase: 2 complete → Phase 3 next
+> Last updated: 2026-04-25 · Branch: `main` · Phase: 2 complete → Phase 3 P1 items in progress
 
 ---
 
@@ -178,10 +178,10 @@ Default dev password for all seed users: `password` — **change before any demo
 
 | Task | Priority | Notes |
 |---|---|---|
-| Chaincode unit tests (Go test files) | P1 | `blockchain/chaincode/*/` — no `_test.go` files yet |
-| `Makefile` with `setup`, `seed`, `reset` targets | P1 | Replaces manual docker + script commands |
-| Anchor peer configuration (gossip optimisation) | P1 | Currently using default peer discovery |
-| Cold-start validation on Linux / macOS | P1 | Only tested on Windows so far |
+| Chaincode unit tests (Go test files) | ✅ Done | 44 tests across 4 files; CI `chaincode-test` job green |
+| `Makefile` with `setup`, `seed`, `reset` targets | ✅ Done | `Makefile` at repo root — `make help` for all targets |
+| Anchor peer fix (`MCAmspanchors.tx` typo) | ✅ Done | Fixed `create-channel.sh:108` — was failing silently on Linux |
+| Cold-start validation on Linux / macOS | P1 | Only tested on Windows so far — see plan for checklist |
 | Fabric Explorer block browser UI | P2 | Visibility into raw block data |
 
 ### Phase 3 — Advanced Features
