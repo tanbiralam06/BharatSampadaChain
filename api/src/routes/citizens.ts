@@ -3,8 +3,82 @@ import { z } from 'zod';
 import { authenticate, requireRole, AuthRequest } from '../middleware/auth';
 import * as citizenService from '../services/citizen.service';
 import { asyncHandler } from '../utils/asyncHandler';
+import { query } from '../db/client';
 
 const router = Router();
+
+// GET /citizens — list citizens from PostgreSQL mirror (public-safe: no PAN hash or DOB)
+// Roles: all authenticated roles including PUBLIC
+// Query params: type (civilian|government_official|politician), state, search (name ILIKE), limit
+router.get('/', authenticate, asyncHandler(async (req: AuthRequest, res: Response) => {
+  const { type, state, search, limit = '50' } = req.query;
+
+  const conditions: string[] = ['is_active = true'];
+  const params: unknown[] = [];
+
+  if (type && typeof type === 'string') {
+    params.push(type);
+    conditions.push(`citizen_type = $${params.length}`);
+  }
+  if (state && typeof state === 'string') {
+    params.push(state);
+    conditions.push(`aadhaar_state = $${params.length}`);
+  }
+  if (search && typeof search === 'string') {
+    params.push(`%${search}%`);
+    conditions.push(`name ILIKE $${params.length}`);
+  }
+
+  params.push(Math.min(parseInt(limit as string, 10) || 50, 200));
+  const limitClause = `LIMIT $${params.length}`;
+
+  const rows = await query<{
+    citizen_hash: string; name: string; citizen_type: string;
+    aadhaar_state: string; total_declared_assets: number;
+    total_income_5yr: number; anomaly_score: number; created_at: string;
+  }>(
+    `SELECT citizen_hash, name, citizen_type, aadhaar_state,
+            total_declared_assets, total_income_5yr, anomaly_score, created_at
+     FROM citizens
+     WHERE ${conditions.join(' AND ')}
+     ORDER BY anomaly_score DESC, name ASC
+     ${limitClause}`,
+    params
+  );
+
+  res.json({ success: true, data: rows });
+}));
+
+// GET /citizens/:hash/financial-assets — off-chain assets from PostgreSQL
+// Roles: CITIZEN (own only), officers and above
+router.get('/:hash/financial-assets', authenticate, asyncHandler(async (req: AuthRequest, res: Response) => {
+  const { hash } = req.params;
+  const { role, sub } = req.user!;
+
+  if (role === 'CITIZEN' && sub !== hash) {
+    res.status(403).json({ success: false, error: 'You can only view your own financial assets' });
+    return;
+  }
+
+  const rows = await query<{
+    asset_id: string; owner_hash: string; asset_type: string;
+    institution_name: string | null; balance_range: string | null;
+    approximate_value: number; as_of_date: string | null;
+    source_agency: string | null; verification_status: string;
+    is_joint_account: boolean; joint_owner_hash: string | null;
+    created_at: string;
+  }>(
+    `SELECT asset_id, owner_hash, asset_type, institution_name, balance_range,
+            approximate_value, as_of_date, source_agency, verification_status,
+            is_joint_account, joint_owner_hash, created_at
+     FROM financial_assets
+     WHERE owner_hash = $1
+     ORDER BY approximate_value DESC`,
+    [hash]
+  );
+
+  res.json({ success: true, data: rows });
+}));
 
 // GET /citizens/:hash
 router.get('/:hash', authenticate, asyncHandler(async (req: AuthRequest, res: Response) => {
