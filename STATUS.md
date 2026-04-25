@@ -1,7 +1,7 @@
 # BSC — Implementation Status
 
 > Read this before starting any session. Updated after every significant merge to `main`.
-> Last updated: 2026-04-25 · Branch: `main` · Phase: 2 in progress
+> Last updated: 2026-04-25 · Branch: `main` · Phase: 2 complete → Phase 3 next
 
 ---
 
@@ -16,22 +16,24 @@
 | Chaincode — `zkp` | ✅ Deployed v1.0 | Simulated verification (real circom: Phase 3) |
 | PostgreSQL schema | ✅ Live | 7 tables, indexes, 10 seed citizens |
 | Redis | ✅ Running | Session cache (60s TTL on citizen reads) |
-| API Gateway | ✅ Running on :4000 | All 16 routes live, JWT auth, rate limiting, Winston logging |
-| Ledger → PostgreSQL sync | ✅ Done | Service-layer dual-write: every chaincode write mirrors to PostgreSQL immediately |
-| Officer access notifications | ✅ Done | `notifyOfficerAccess()` writes to `system_audit` on every non-citizen data read |
+| API Gateway | ✅ Running on :4000 | 18 routes live, JWT auth, rate limiting, Winston logging |
+| Ledger → PostgreSQL sync | ✅ Done | Service-layer dual-write on every chaincode write |
+| Officer access notifications | ✅ Done | `notifyOfficerAccess()` writes to `system_audit` on every non-citizen read |
 | API tests | ✅ Done | 40 tests across 6 files (Jest + Supertest), all passing |
-| OpenAPI spec | ✅ Done | `docs/api/openapi.yaml` — all 16 endpoints, full schemas, role annotations |
+| OpenAPI spec | ✅ Done | `docs/api/openapi.yaml` — all endpoints, full schemas, role annotations |
 | Rate limiting | ✅ Done | 200 req/15 min global; 20 req/15 min on `/auth` |
 | Structured logging | ✅ Done | Winston — colored dev output, JSON in production |
-| Frontend — `citizen-dashboard`  | ✅ Built  | Port 5174 · 5 pages · JWT auth · React Query · all endpoints wired |
-| Frontend — `officer-console`    | ✅ Built  | Port 5175 · ActiveFlags, CaseInvestigation (flag actions), FamilyAnalysis |
-| Frontend — `admin-panel`        | ✅ Built  | Port 5176 · SystemHealth (auto-refresh), AgencyManagement, AuditOverview |
-| Frontend — `public-dashboard`   | ✅ Built  | Port 5173 · Guest JWT · BrowseOfficials, OfficialProfile, Compare |
-| Frontend — `shared/`            | ✅ Built  | Types, apiClient, endpoints, formatters, Badge/Card/Spinner/Error/Empty/Hash |
-| CORS (API)                      | ✅ Done   | Allows ports 5173–5176 |
-| `GET /citizens` list endpoint   | ✅ Done   | Filters: type, state, search, limit — PostgreSQL mirror |
+| CORS | ✅ Done | Allows origins on ports 5173–5176 |
+| `GET /citizens` list endpoint | ✅ Done | Filters: type, state, search, limit — PostgreSQL mirror |
 | `GET /citizens/:hash/financial-assets` | ✅ Done | PostgreSQL off-chain read |
-| `POST /auth/guest`              | ✅ Done   | Issues PUBLIC-role JWT for unauthenticated dashboard |
+| `POST /auth/guest` | ✅ Done | Issues PUBLIC-role JWT for unauthenticated dashboard |
+| Authentication model | ✅ Done | `login_id` column — Aadhaar / email / username; hash resolved server-side |
+| Frontend — `citizen-dashboard` | ✅ Built | Port 5174 · 5 pages · JWT auth · React Query · all endpoints wired |
+| Frontend — `officer-console` | ✅ Built | Port 5175 · ActiveFlags, CaseInvestigation, FamilyAnalysis |
+| Frontend — `admin-panel` | ✅ Built | Port 5176 · SystemHealth (auto-refresh), AgencyManagement, AuditOverview |
+| Frontend — `public-dashboard` | ✅ Built | Port 5173 · Guest JWT · BrowseOfficials, OfficialProfile, Compare |
+| Frontend — `shared/` | ✅ Built | Types, apiClient, endpoints, formatters, Badge/Card/Spinner/Error/Empty/Hash |
+| Dev credentials reference | ✅ Done | `DEV_CREDENTIALS.md` — all seed logins + curl examples |
 
 ---
 
@@ -60,20 +62,24 @@ All chaincodes use `txTime(ctx)` — deterministic timestamps across all endorsi
 #### PostgreSQL Off-Chain Index (`database/`)
 - 7 tables: `bsc_users`, `citizens`, `properties`, `anomaly_flags`, `access_logs`, `financial_assets`, `system_audit`
 - Seed data: 3 system users (ADMIN, IT_DEPT, CBI) + 10 citizens across 8 states
-- All hashes are valid 64-char hex strings
+- `login_id` column on `bsc_users` — human-readable credential that resolves to `subject_hash` server-side
+- Migrations: `001_initial_schema.sql`, `002_seed_data.sql`, `003_add_login_id.sql`
 
 #### API Gateway (`api/` — TypeScript + Express, port 4000)
 
 | Route | Auth | Who can call |
 |---|---|---|
 | `POST /auth/login` | Public | Anyone |
+| `POST /auth/guest` | Public | Anyone (issues PUBLIC-role JWT) |
 | `GET /health` | Public | Anyone |
+| `GET /citizens` | JWT | IT_DEPT, ED, CBI, ADMIN, PUBLIC |
 | `GET /citizens/:hash` | JWT | Any role; CITIZEN sees own only |
 | `POST /citizens` | JWT | ADMIN, IT_DEPT |
 | `POST /citizens/:hash/check-anomaly` | JWT | IT_DEPT, ADMIN |
 | `GET /citizens/:hash/flags` | JWT | Any role; CITIZEN sees own only |
 | `GET /citizens/:hash/access-log` | JWT | Any role; CITIZEN sees own only |
 | `GET /citizens/:hash/properties` | JWT | Any role; CITIZEN sees own only |
+| `GET /citizens/:hash/financial-assets` | JWT | Any role; CITIZEN sees own only |
 | `POST /properties` | JWT | ADMIN, IT_DEPT |
 | `GET /properties/:id` | JWT | Any role |
 | `PUT /properties/:id/transfer` | JWT | ADMIN, IT_DEPT |
@@ -85,13 +91,11 @@ All chaincodes use `txTime(ctx)` — deterministic timestamps across all endorsi
 | `GET /admin/health` | JWT | ADMIN only |
 | `GET /admin/stats` | JWT | ADMIN only |
 
-Request flow: `routes/` → `services/` → `fabric/contracts.ts` → chaincode, with immediate PostgreSQL mirror write after every chaincode mutation.
-
 #### Sync Architecture
 - **Pattern**: service-layer dual-write (`void syncX(...)` — best-effort, never throws)
 - `syncCitizen`, `syncProperty`, `syncFlag`, `syncFlags`, `syncAccessLog` in `api/src/db/sync.ts`
-- `notifyOfficerAccess` writes to `system_audit` with `action = 'OFFICER_ACCESS'` whenever a non-CITIZEN role reads citizen data
-- `updateFlagStatus` uses a direct SQL partial update (chaincode returns void, so no read-back needed)
+- `notifyOfficerAccess` writes to `system_audit` with `action = 'OFFICER_ACCESS'` on every non-CITIZEN citizen data read
+- `updateFlagStatus` uses a direct SQL partial update (chaincode returns void, no read-back needed)
 - Redis cache invalidated on `updateCitizenAssets`
 
 #### Tests (`api/tests/` — Jest + Supertest)
@@ -101,46 +105,31 @@ Request flow: `routes/` → `services/` → `fabric/contracts.ts` → chaincode,
 
 ---
 
-## What Is NOT Done (Phase 3)
+### Phase 2 — Frontend (complete)
 
-### Phase 2 Frontend — complete. Pending items before Phase 3:
+#### Authentication Model
+- `login_id` column added to `bsc_users` — decouples login credential from blockchain identity
+- Citizens log in with their **12-digit Aadhaar number**
+- Officers log in with their **government email address**
+- Admin logs in with a **username**
+- `subject_hash` (blockchain key) is resolved server-side after credential check — never typed by users
+- JWT `sub` claim, all API routes, and all chaincode interactions are unchanged
 
-### Frontend install (run once after clone)
+#### Frontend Apps (npm workspaces — `frontend/`)
 
-```bash
-cd frontend && npm install
-```
+| App | Port | Role | Pages |
+|---|---|---|---|
+| `public-dashboard` | 5173 | PUBLIC (guest JWT, no login) | BrowseOfficials, OfficialProfile, Compare |
+| `citizen-dashboard` | 5174 | CITIZEN | Overview, Properties, Financial Assets, Access Log, Flags |
+| `officer-console` | 5175 | IT_DEPT / ED / CBI | ActiveFlags, CaseInvestigation, FamilyAnalysis |
+| `admin-panel` | 5176 | ADMIN | SystemHealth, AgencyManagement, AuditOverview |
 
-### Running the frontend apps
-
-```bash
-# From frontend/ root (each in a separate terminal):
-npm run dev:public    # → http://localhost:5173  (no login required)
-npm run dev:citizen   # → http://localhost:5174  (CITIZEN role)
-npm run dev:officer   # → http://localhost:5175  (IT_DEPT / ED / CBI)
-npm run dev:admin     # → http://localhost:5176  (ADMIN role)
-```
-
-### Seed credentials (all use password: `password`)
-
-| App | Name | Hash |
-|---|---|---|
-| citizen-dashboard | Arjun Mehta | `a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1` |
-| citizen-dashboard | Sunita Rao | `b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6b2c3` |
-| citizen-dashboard | Priya Krishnan | `d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6d4e5f6a1` |
-| officer-console | Rajesh Kumar (IT_DEPT) | `itoff001hashabcdef0123456789abcdef0123456789abcdef0123456789abc` |
-| officer-console | Priya Sharma (CBI) | `cbi001hash0abcdef0123456789abcdef0123456789abcdef0123456789abcd` |
-| admin-panel | BSC System Admin | `admin001hashabcdef0123456789abcdef0123456789abcdef0123456789abc` |
-
-### Nice-to-have before Phase 3
-
-| Task | Priority |
-|---|---|
-| Chaincode unit tests (Go test files) | P1 |
-| `Makefile` with `setup`, `seed`, `reset` targets | P1 |
-| Anchor peer configuration (gossip optimisation) | P1 |
-| Cold-start validation on Linux / macOS | P1 |
-| Fabric Explorer block browser UI | P2 |
+#### Shared Library (`frontend/shared/`)
+- TypeScript interfaces mirroring all chaincode and API models
+- Typed axios client — reads JWT from `sessionStorage`, 401 → redirect to login
+- All API endpoint functions with full return types
+- Formatters: `formatCrore` (paisa → crore/lakh/rupee), `formatDate`, `formatHash`
+- Components: `Badge`, `Card`, `Spinner`, `ErrorBanner`, `EmptyState`, `HashDisplay`
 
 ---
 
@@ -154,19 +143,60 @@ bash blockchain/scripts/deploy-chaincode.sh
 # Subsequent restarts
 docker compose -f docker/docker-compose.yml --project-name bsc up -d
 
+# Rebuild API after code changes
+docker stop bsc-api && docker rm bsc-api
+docker compose -f docker/docker-compose.yml --project-name bsc up -d --build api --no-deps
+
 # Run API tests (no live services needed)
 cd api && npm test
 
-# Start React prototype (dummy data — not yet wired)
-cd bsc-prototype && npm run dev
+# Frontend — install once after clone
+cd frontend && npm install
+
+# Frontend — start each app in a separate terminal
+npm run dev:public    # → http://localhost:5173  (no login)
+npm run dev:citizen   # → http://localhost:5174  (CITIZEN)
+npm run dev:officer   # → http://localhost:5175  (IT_DEPT / ED / CBI)
+npm run dev:admin     # → http://localhost:5176  (ADMIN)
 ```
 
-**Login (seed credentials):**
-```json
-POST http://localhost:4000/auth/login
-{ "identifier": "<64-char-hash>", "password": "password", "role": "ADMIN" }
-```
+**Seed credentials** — see `DEV_CREDENTIALS.md` for the full table and curl examples.
+
+| App | Login field | Value |
+|---|---|---|
+| admin-panel | Username | `admin` |
+| officer-console | Email | `rajesh.kumar@itdept.bsc.gov` · `priya.sharma@cbi.gov.in` |
+| citizen-dashboard | Aadhaar | `123456789012` · `234567890123` · `345678901234` |
+
 Default dev password for all seed users: `password` — **change before any demo**.
+
+---
+
+## What Is NOT Done (Phase 3)
+
+### Must-have before Phase 3
+
+| Task | Priority | Notes |
+|---|---|---|
+| Chaincode unit tests (Go test files) | P1 | `blockchain/chaincode/*/` — no `_test.go` files yet |
+| `Makefile` with `setup`, `seed`, `reset` targets | P1 | Replaces manual docker + script commands |
+| Anchor peer configuration (gossip optimisation) | P1 | Currently using default peer discovery |
+| Cold-start validation on Linux / macOS | P1 | Only tested on Windows so far |
+| Fabric Explorer block browser UI | P2 | Visibility into raw block data |
+
+### Phase 3 — Advanced Features
+
+| Feature | Notes |
+|---|---|
+| Real ZKP (Groth16 via circom) | Replace simulated `zkp` chaincode with actual proof verification |
+| Aadhaar OTP login (UIDAI sandbox) | Replace static password with one-time passcode for citizens |
+| Officer onboarding flow | Admin UI to create officer accounts (sets `login_id` + `subject_hash`) |
+| Raft consensus orderer | Replace solo orderer for production fault tolerance |
+| NIC / Government SSO integration | Single sign-on for officer roles |
+| Admin TOTP (2FA) | Time-based OTP for the ADMIN role |
+| Cross-ministry data sharing rules | Fine-grained `access` chaincode permission updates |
+| Benami detection (cross-citizen ML rules) | Shell company and proxy ownership analysis |
+| Court + Bank role integrations | Court order enforcement, bank-reported discrepancy flags |
 
 ---
 
@@ -184,6 +214,7 @@ Default dev password for all seed users: `password` — **change before any demo
 | JWT auth, not sessions | Stateless — trivial to scale |
 | `string` fields in chaincode structs | `*string` pointer fields caused proto-marshal errors in `fabric-contract-api-go` |
 | All monetary values in paisa | 1 INR = 100 paisa, stored as `int64` — never floats |
+| `login_id` separate from `subject_hash` | Users authenticate with human-readable credentials; hash is resolved server-side and stays internal |
 
 ---
 
