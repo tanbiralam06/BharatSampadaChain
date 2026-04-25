@@ -44,6 +44,13 @@ router.post('/login', async (req: Request, res: Response) => {
   res.json({ success: true, data: { token, name: user.name, role: user.role } });
 });
 
+// POST /auth/guest — issues a short-lived PUBLIC-role token (no credentials required)
+// Used by public-dashboard to authenticate read-only, PII-stripped API calls.
+router.post('/guest', (_req: Request, res: Response) => {
+  const token = signToken({ sub: 'public-guest', role: 'PUBLIC', name: 'Public Visitor' });
+  res.json({ success: true, data: { token, role: 'PUBLIC', name: 'Public Visitor' } });
+});
+
 // POST /auth/refresh — returns a new token if current one is still valid
 router.post('/refresh', async (req: Request, res: Response) => {
   // authenticate middleware validates the old token; this just issues a fresh one
