@@ -1,7 +1,7 @@
 # BSC — Implementation Status
 
 > Read this before starting any session. Updated after every significant merge to `main`.
-> Last updated: 2026-04-25 · Branch: `main` · Phase: 1 complete → Phase 2 next
+> Last updated: 2026-04-25 · Branch: `main` · Phase: 2 in progress
 
 ---
 
@@ -23,7 +23,15 @@
 | OpenAPI spec | ✅ Done | `docs/api/openapi.yaml` — all 16 endpoints, full schemas, role annotations |
 | Rate limiting | ✅ Done | 200 req/15 min global; 20 req/15 min on `/auth` |
 | Structured logging | ✅ Done | Winston — colored dev output, JSON in production |
-| Frontend | ⚠️ Disconnected | React prototype uses dummy JSON — not wired to live API |
+| Frontend — `citizen-dashboard`  | ✅ Built  | Port 5174 · 5 pages · JWT auth · React Query · all endpoints wired |
+| Frontend — `officer-console`    | ✅ Built  | Port 5175 · ActiveFlags, CaseInvestigation (flag actions), FamilyAnalysis |
+| Frontend — `admin-panel`        | ✅ Built  | Port 5176 · SystemHealth (auto-refresh), AgencyManagement, AuditOverview |
+| Frontend — `public-dashboard`   | ✅ Built  | Port 5173 · Guest JWT · BrowseOfficials, OfficialProfile, Compare |
+| Frontend — `shared/`            | ✅ Built  | Types, apiClient, endpoints, formatters, Badge/Card/Spinner/Error/Empty/Hash |
+| CORS (API)                      | ✅ Done   | Allows ports 5173–5176 |
+| `GET /citizens` list endpoint   | ✅ Done   | Filters: type, state, search, limit — PostgreSQL mirror |
+| `GET /citizens/:hash/financial-assets` | ✅ Done | PostgreSQL off-chain read |
+| `POST /auth/guest`              | ✅ Done   | Issues PUBLIC-role JWT for unauthenticated dashboard |
 
 ---
 
@@ -93,17 +101,35 @@ Request flow: `routes/` → `services/` → `fabric/contracts.ts` → chaincode,
 
 ---
 
-## What Is NOT Done (Phase 2)
+## What Is NOT Done (Phase 3)
 
-### Must complete for Phase 2 — Live Frontend
+### Phase 2 Frontend — complete. Pending items before Phase 3:
 
-| Task | Details |
-|---|---|
-| **Wire React prototype to API** | `bsc-prototype/` uses static dummy JSON in `src/data/`. Replace with `fetch`/`axios` calls to `http://localhost:4000`. Start with auth flow (login → JWT), then citizen dashboard, then flag views. |
-| **Auth context in React** | Store JWT in `localStorage` or `sessionStorage`. Provide `AuthContext` with `login()`, `logout()`, `token`, `role`. Guard routes by role. |
-| **Role-specific views** | CITIZEN sees own profile + flags + properties. Officer (IT_DEPT/ED/CBI) sees flag queue + search. ADMIN sees stats dashboard + system health. |
-| **Error/loading states** | All API calls need loading spinners, error banners, and empty states. |
-| **CORS config on API** | Add `cors` middleware to `api/src/app.ts` allowing `http://localhost:5173` (Vite dev server). |
+### Frontend install (run once after clone)
+
+```bash
+cd frontend && npm install
+```
+
+### Running the frontend apps
+
+```bash
+# From frontend/ root (each in a separate terminal):
+npm run dev:public    # → http://localhost:5173  (no login required)
+npm run dev:citizen   # → http://localhost:5174  (CITIZEN role)
+npm run dev:officer   # → http://localhost:5175  (IT_DEPT / ED / CBI)
+npm run dev:admin     # → http://localhost:5176  (ADMIN role)
+```
+
+### Seed credentials (all use password: `password`)
+
+| App | Name | Hash |
+|---|---|---|
+| citizen-dashboard | Arjun Mehta | `a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2` |
+| citizen-dashboard | Priya Krishnan | `d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6d4e5f6a1b2` |
+| officer-console | Rajesh Kumar (IT_DEPT) | `itoff001hashabcdef0123456789abcdef0123456789abcdef0123456789abcd` |
+| officer-console | Priya Sharma (CBI) | `cbi001hash0abcdef0123456789abcdef0123456789abcdef0123456789abcde` |
+| admin-panel | BSC System Admin | `admin001hashabcdef0123456789abcdef0123456789abcdef0123456789abcd` |
 
 ### Nice-to-have before Phase 3
 
