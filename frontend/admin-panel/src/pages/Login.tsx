@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Settings2, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
-const ADMIN_HASH = 'admin001hashabcdef0123456789abcdef0123456789abcdef0123456789abcd';
+const ADMIN_HASH = 'admin001hashabcdef0123456789abcdef0123456789abcdef0123456789abc';
 
 export default function Login() {
   const { login, isAuthenticated } = useAuth();

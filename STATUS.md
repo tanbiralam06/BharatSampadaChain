@@ -125,11 +125,12 @@ npm run dev:admin     # → http://localhost:5176  (ADMIN role)
 
 | App | Name | Hash |
 |---|---|---|
-| citizen-dashboard | Arjun Mehta | `a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2` |
-| citizen-dashboard | Priya Krishnan | `d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6d4e5f6a1b2` |
-| officer-console | Rajesh Kumar (IT_DEPT) | `itoff001hashabcdef0123456789abcdef0123456789abcdef0123456789abcd` |
-| officer-console | Priya Sharma (CBI) | `cbi001hash0abcdef0123456789abcdef0123456789abcdef0123456789abcde` |
-| admin-panel | BSC System Admin | `admin001hashabcdef0123456789abcdef0123456789abcdef0123456789abcd` |
+| citizen-dashboard | Arjun Mehta | `a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1` |
+| citizen-dashboard | Sunita Rao | `b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6b2c3` |
+| citizen-dashboard | Priya Krishnan | `d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6d4e5f6a1` |
+| officer-console | Rajesh Kumar (IT_DEPT) | `itoff001hashabcdef0123456789abcdef0123456789abcdef0123456789abc` |
+| officer-console | Priya Sharma (CBI) | `cbi001hash0abcdef0123456789abcdef0123456789abcdef0123456789abcd` |
+| admin-panel | BSC System Admin | `admin001hashabcdef0123456789abcdef0123456789abcdef0123456789abc` |
 
 ### Nice-to-have before Phase 3
 

@@ -11,8 +11,8 @@ const OFFICER_ROLES: { value: AccessorRole; label: string }[] = [
 ];
 
 const SEED_ACCOUNTS = [
-  { name: 'Rajesh Kumar (IT Dept)', hash: 'itoff001hashabcdef0123456789abcdef0123456789abcdef0123456789abcd', role: 'IT_DEPT' as AccessorRole },
-  { name: 'Priya Sharma (CBI)',     hash: 'cbi001hash0abcdef0123456789abcdef0123456789abcdef0123456789abcde', role: 'CBI'     as AccessorRole },
+  { name: 'Rajesh Kumar (IT Dept)', hash: 'itoff001hashabcdef0123456789abcdef0123456789abcdef0123456789abc', role: 'IT_DEPT' as AccessorRole },
+  { name: 'Priya Sharma (CBI)',     hash: 'cbi001hash0abcdef0123456789abcdef0123456789abcdef0123456789abcd', role: 'CBI'     as AccessorRole },
 ];
 
 export default function Login() {
