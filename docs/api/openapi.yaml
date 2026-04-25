@@ -1,0 +1,980 @@
+openapi: 3.1.0
+info:
+  title: Bharat Sampada Chain API
+  version: 1.0.0
+  description: |
+    REST gateway to the BSC Hyperledger Fabric blockchain.
+    Fabric is the source of truth. PostgreSQL is a best-effort read mirror.
+
+    All monetary values are in **paisa** (1 INR = 100 paisa), stored as integers.
+    All citizen/PAN/officer identifiers are 64-character lowercase hex strings (SHA-256).
+
+servers:
+  - url: http://localhost:4000
+    description: Local development
+
+tags:
+  - name: auth
+    description: Authentication
+  - name: citizens
+    description: Citizen identity nodes and anomaly operations
+  - name: properties
+    description: Property registration and transfer
+  - name: flags
+    description: Anomaly flags (automated and manual)
+  - name: zkp
+    description: Zero-knowledge proof claims
+  - name: admin
+    description: System health and statistics (ADMIN only)
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  responses:
+    ValidationError:
+      description: Request body failed validation
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Forbidden:
+      description: Insufficient role permissions
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Unauthorized:
+      description: Missing or invalid JWT
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+  schemas:
+    Error:
+      type: object
+      required: [success, error]
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: string
+
+    CitizenNode:
+      type: object
+      required: [citizenHash, panHash, name, dateOfBirth, aadhaarState, citizenType,
+                 totalDeclaredAssets, totalIncome5Yr, prevYearAssets, assets5YrAgo,
+                 anomalyScore, lastUpdated, createdAt]
+      properties:
+        citizenHash:
+          type: string
+          minLength: 64
+          maxLength: 64
+        panHash:
+          type: string
+          minLength: 64
+          maxLength: 64
+        name:
+          type: string
+        dateOfBirth:
+          type: string
+          format: date
+        aadhaarState:
+          type: string
+        citizenType:
+          type: string
+          enum: [civilian, government_official, politician]
+        totalDeclaredAssets:
+          type: integer
+          description: Total declared assets in paisa
+        totalIncome5Yr:
+          type: integer
+          description: Total income over past 5 years in paisa
+        prevYearAssets:
+          type: integer
+        assets5YrAgo:
+          type: integer
+        anomalyScore:
+          type: integer
+          description: Max severity score across open flags (0=clean, 1=YELLOW, 2=ORANGE, 3=RED)
+        lastUpdated:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+
+    PropertyRecord:
+      type: object
+      required: [propertyId, ownerHash, registrationNo, propertyType, declaredValue,
+                 circleRateValue, areaSqft, district, state, registrationDate,
+                 transferType, stampDutyPaid, encumbrance, isActive, createdAt, lastUpdated]
+      properties:
+        propertyId:
+          type: string
+        ownerHash:
+          type: string
+          minLength: 64
+          maxLength: 64
+        prevOwnerHash:
+          type: string
+          minLength: 64
+          maxLength: 64
+        registrationNo:
+          type: string
+        propertyType:
+          type: string
+          enum: [RESIDENTIAL, COMMERCIAL, AGRICULTURAL, INDUSTRIAL, PLOT]
+        declaredValue:
+          type: integer
+          description: Declared value in paisa
+        circleRateValue:
+          type: integer
+          description: Government circle rate in paisa
+        areaSqft:
+          type: integer
+        district:
+          type: string
+        state:
+          type: string
+        registrationDate:
+          type: string
+          format: date
+        transferType:
+          type: string
+          enum: [PURCHASE, INHERITANCE, GIFT, COURT_ORDER]
+        stampDutyPaid:
+          type: integer
+        encumbrance:
+          type: string
+          enum: [CLEAR, MORTGAGED, DISPUTED, COURT_STAY]
+        mortgageAmount:
+          type: integer
+        isActive:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        lastUpdated:
+          type: string
+          format: date-time
+
+    TransferRecord:
+      type: object
+      required: [transferId, propertyId, fromOwnerHash, toOwnerHash, transferValue,
+                 transferType, transferDate, reason]
+      properties:
+        transferId:
+          type: string
+        propertyId:
+          type: string
+        fromOwnerHash:
+          type: string
+          minLength: 64
+          maxLength: 64
+        toOwnerHash:
+          type: string
+          minLength: 64
+          maxLength: 64
+        transferValue:
+          type: integer
+          description: Transfer value in paisa
+        transferType:
+          type: string
+          enum: [PURCHASE, INHERITANCE, GIFT, COURT_ORDER]
+        transferDate:
+          type: string
+          format: date
+        reason:
+          type: string
+
+    AnomalyFlag:
+      type: object
+      required: [flagId, citizenHash, ruleTriggered, severity, description,
+                 assetValueUsed, incomeValueUsed, gapAmount, status, raisedAt]
+      properties:
+        flagId:
+          type: string
+        citizenHash:
+          type: string
+          minLength: 64
+          maxLength: 64
+        ruleTriggered:
+          type: string
+          enum: [ASSET_TO_INCOME_RATIO, RAPID_ASSET_GROWTH, INCOME_TAX_GAP,
+                 BENAMI_SUSPICION, SHELL_COMPANY_LINK, FOREIGN_ASSET_UNDECLARED, LIFESTYLE_MISMATCH]
+        severity:
+          type: string
+          enum: [YELLOW, ORANGE, RED]
+        description:
+          type: string
+        assetValueUsed:
+          type: integer
+        incomeValueUsed:
+          type: integer
+        gapAmount:
+          type: integer
+        status:
+          type: string
+          enum: [OPEN, UNDER_INVESTIGATION, CLEARED, ESCALATED]
+        raisedAt:
+          type: string
+          format: date-time
+        resolvedAt:
+          type: string
+          format: date-time
+        resolutionNotes:
+          type: string
+
+    AccessLog:
+      type: object
+      required: [logId, citizenHash, accessorHash, accessorRole, accessType,
+                 dataTypes, purpose, timestamp, txId]
+      properties:
+        logId:
+          type: string
+        citizenHash:
+          type: string
+        accessorHash:
+          type: string
+        accessorRole:
+          type: string
+          enum: [CITIZEN, IT_DEPT, ED, CBI, COURT, BANK, ADMIN, PUBLIC]
+        accessType:
+          type: string
+        dataTypes:
+          type: array
+          items:
+            type: string
+        purpose:
+          type: string
+        authorizationRef:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        txId:
+          type: string
+
+    ZKPProof:
+      type: object
+      required: [proofId, citizenHash, queryType, isVerified, expiresAt, submittedAt, submittedBy]
+      properties:
+        proofId:
+          type: string
+        citizenHash:
+          type: string
+        queryType:
+          type: string
+          enum: [INCOME_ABOVE_THRESHOLD, ASSET_RANGE, RESIDENCE, TAX_COMPLIANCE]
+        isVerified:
+          type: boolean
+        verifiedAt:
+          type: string
+          format: date-time
+        expiresAt:
+          type: string
+          format: date-time
+        submittedAt:
+          type: string
+          format: date-time
+        submittedBy:
+          type: string
+
+security:
+  - bearerAuth: []
+
+paths:
+  /health:
+    get:
+      summary: Public health probe
+      security: []
+      tags: [admin]
+      responses:
+        '200':
+          description: API is reachable
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  version:
+                    type: string
+                    example: 1.0.0
+
+  /auth/login:
+    post:
+      summary: Log in and receive a JWT
+      security: []
+      tags: [auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [identifier, password, role]
+              properties:
+                identifier:
+                  type: string
+                  description: 64-char citizen/officer hash or admin ID
+                password:
+                  type: string
+                  minLength: 8
+                role:
+                  type: string
+                  enum: [CITIZEN, IT_DEPT, ED, CBI, COURT, BANK, ADMIN, PUBLIC]
+            example:
+              identifier: aabbccdd0000000000000000000000000000000000000000000000000000aabb
+              password: securepassword
+              role: IT_DEPT
+      responses:
+        '200':
+          description: Token issued
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      token:
+                        type: string
+                      name:
+                        type: string
+                      role:
+                        type: string
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /citizens:
+    post:
+      summary: Register a new citizen node on the ledger
+      tags: [citizens]
+      description: Requires ADMIN or IT_DEPT role.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [citizenHash, panHash, name, dateOfBirth, aadhaarState, citizenType,
+                         totalDeclaredAssets, totalIncome5Yr, prevYearAssets, assets5YrAgo]
+              properties:
+                citizenHash:
+                  type: string
+                  minLength: 8
+                  maxLength: 128
+                panHash:
+                  type: string
+                  minLength: 8
+                  maxLength: 128
+                name:
+                  type: string
+                dateOfBirth:
+                  type: string
+                  format: date
+                aadhaarState:
+                  type: string
+                citizenType:
+                  type: string
+                  enum: [civilian, government_official, politician]
+                totalDeclaredAssets:
+                  type: integer
+                  minimum: 0
+                totalIncome5Yr:
+                  type: integer
+                  minimum: 0
+                prevYearAssets:
+                  type: integer
+                  minimum: 0
+                assets5YrAgo:
+                  type: integer
+                  minimum: 0
+      responses:
+        '201':
+          description: Citizen node created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/CitizenNode'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /citizens/{hash}:
+    get:
+      summary: Get a citizen node by hash
+      tags: [citizens]
+      description: |
+        CITIZEN role can only view their own profile.
+        Officers (IT_DEPT, ED, CBI, etc.) can view any citizen.
+      parameters:
+        - name: hash
+          in: path
+          required: true
+          schema:
+            type: string
+            minLength: 64
+            maxLength: 64
+      responses:
+        '200':
+          description: Citizen record
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/CitizenNode'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /citizens/{hash}/check-anomaly:
+    post:
+      summary: Run automated anomaly check on a citizen
+      tags: [citizens]
+      description: |
+        Evaluates 3 rules inline on the chaincode (asset-to-income ratio, rapid asset growth,
+        income-tax gap). Writes any new flags directly to the ledger. Requires IT_DEPT or ADMIN.
+      parameters:
+        - name: hash
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Anomaly check result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      flagsRaised:
+                        type: integer
+                      flags:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/AnomalyFlag'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /citizens/{hash}/flags:
+    get:
+      summary: Get all anomaly flags for a citizen
+      tags: [citizens]
+      description: CITIZEN can only view their own flags.
+      parameters:
+        - name: hash
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Flag list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/AnomalyFlag'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /citizens/{hash}/access-log:
+    get:
+      summary: Get the on-chain access audit log for a citizen
+      tags: [citizens]
+      description: CITIZEN can only view their own log.
+      parameters:
+        - name: hash
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Access log entries
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/AccessLog'
+
+  /citizens/{hash}/properties:
+    get:
+      summary: Get all properties owned by a citizen
+      tags: [citizens]
+      parameters:
+        - name: hash
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Property list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PropertyRecord'
+
+  /properties:
+    post:
+      summary: Register a property on the ledger
+      tags: [properties]
+      description: Requires ADMIN or IT_DEPT role.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [propertyId, ownerHash, registrationNo, propertyType, declaredValue,
+                         circleRateValue, areaSqft, district, state, registrationDate,
+                         transferType, stampDutyPaid]
+              properties:
+                propertyId:
+                  type: string
+                ownerHash:
+                  type: string
+                  minLength: 64
+                  maxLength: 64
+                registrationNo:
+                  type: string
+                propertyType:
+                  type: string
+                  enum: [RESIDENTIAL, COMMERCIAL, AGRICULTURAL, INDUSTRIAL, PLOT]
+                declaredValue:
+                  type: integer
+                  minimum: 1
+                circleRateValue:
+                  type: integer
+                  minimum: 0
+                areaSqft:
+                  type: integer
+                  minimum: 1
+                district:
+                  type: string
+                state:
+                  type: string
+                registrationDate:
+                  type: string
+                  format: date
+                transferType:
+                  type: string
+                  enum: [PURCHASE, INHERITANCE, GIFT, COURT_ORDER]
+                stampDutyPaid:
+                  type: integer
+                  minimum: 0
+      responses:
+        '201':
+          description: Property registered
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/PropertyRecord'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /properties/{id}:
+    get:
+      summary: Get a property by ID
+      tags: [properties]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Property record
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/PropertyRecord'
+
+  /properties/{id}/transfer:
+    put:
+      summary: Transfer property to a new owner
+      tags: [properties]
+      description: |
+        Writes an immutable TransferRecord to the ledger and updates ownerHash.
+        Requires ADMIN or IT_DEPT. Chaincode flags undervaluation automatically
+        when declaredValue < circleRateValue × 0.9.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [newOwnerHash, transferType, reason, transferValue]
+              properties:
+                newOwnerHash:
+                  type: string
+                  minLength: 64
+                  maxLength: 64
+                transferType:
+                  type: string
+                  enum: [PURCHASE, INHERITANCE, GIFT, COURT_ORDER]
+                reason:
+                  type: string
+                transferValue:
+                  type: integer
+                  minimum: 1
+      responses:
+        '200':
+          description: Transfer record
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/TransferRecord'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /flags:
+    get:
+      summary: List anomaly flags (officer view)
+      tags: [flags]
+      description: |
+        Returns all flags, or filtered by severity.
+        Requires IT_DEPT, ED, CBI, or ADMIN role.
+      parameters:
+        - name: severity
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [YELLOW, ORANGE, RED]
+      responses:
+        '200':
+          description: Flag list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/AnomalyFlag'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /flags/{id}:
+    put:
+      summary: Update the status of an anomaly flag
+      tags: [flags]
+      description: Requires IT_DEPT, ED, CBI, or ADMIN role.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status:
+                  type: string
+                  enum: [OPEN, UNDER_INVESTIGATION, CLEARED, ESCALATED]
+                resolutionNotes:
+                  type: string
+      responses:
+        '200':
+          description: Status updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /flags/manual:
+    post:
+      summary: Submit a manual anomaly flag
+      tags: [flags]
+      description: |
+        For rules that require cross-citizen data (benami suspicion, shell company link,
+        foreign asset undeclared, lifestyle mismatch). Requires IT_DEPT, ED, or CBI.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [citizenHash, ruleTriggered, severity, description,
+                         assetValue, incomeValue, gapAmount]
+              properties:
+                citizenHash:
+                  type: string
+                  minLength: 64
+                  maxLength: 64
+                ruleTriggered:
+                  type: string
+                  enum: [BENAMI_SUSPICION, SHELL_COMPANY_LINK, FOREIGN_ASSET_UNDECLARED, LIFESTYLE_MISMATCH]
+                severity:
+                  type: string
+                  enum: [YELLOW, ORANGE, RED]
+                description:
+                  type: string
+                  minLength: 10
+                assetValue:
+                  type: integer
+                  minimum: 0
+                incomeValue:
+                  type: integer
+                  minimum: 0
+                gapAmount:
+                  type: integer
+                  minimum: 0
+      responses:
+        '201':
+          description: Flag created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/AnomalyFlag'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /zkp/{citizenHash}:
+    post:
+      summary: Submit a ZKP proof for a citizen
+      tags: [zkp]
+      description: |
+        Phase 1: proof payload is stored and marked verified without real Groth16 verification.
+        Real verification is planned for Phase 3.
+      parameters:
+        - name: citizenHash
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [queryType, proof, publicInputs]
+              properties:
+                queryType:
+                  type: string
+                  enum: [INCOME_ABOVE_THRESHOLD, ASSET_RANGE, RESIDENCE, TAX_COMPLIANCE]
+                proof:
+                  type: string
+                  minLength: 1
+                publicInputs:
+                  type: string
+                  minLength: 1
+      responses:
+        '201':
+          description: Proof stored
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/ZKPProof'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+
+  /zkp/{citizenHash}/claims:
+    get:
+      summary: Get verified ZKP claims for a citizen
+      tags: [zkp]
+      parameters:
+        - name: citizenHash
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Verified claims list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ZKPProof'
+
+  /admin/health:
+    get:
+      summary: Detailed system health (ADMIN only)
+      tags: [admin]
+      responses:
+        '200':
+          description: Service health status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      status:
+                        type: string
+                        enum: [healthy, degraded]
+                      services:
+                        type: object
+                        properties:
+                          postgres:
+                            type: string
+                            enum: [up, down]
+                          redis:
+                            type: string
+                            enum: [up, down]
+                          fabric:
+                            type: string
+                      timestamp:
+                        type: string
+                        format: date-time
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /admin/stats:
+    get:
+      summary: High-level ledger statistics (ADMIN only)
+      tags: [admin]
+      description: Counts are served from the PostgreSQL off-chain index.
+      responses:
+        '200':
+          description: Statistics
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      totalCitizens:
+                        type: integer
+                      totalProperties:
+                        type: integer
+                      openFlags:
+                        type: integer
+                      redFlags:
+                        type: integer
+        '403':
+          $ref: '#/components/responses/Forbidden'
+

@@ -1,4 +1,6 @@
 import express from 'express';
+import { logger } from './utils/logger';
+import { apiLimiter, authLimiter } from './middleware/rateLimiter';
 
 import authRouter from './routes/auth';
 import citizensRouter from './routes/citizens';
@@ -9,10 +11,17 @@ import adminRouter from './routes/admin';
 
 const app = express();
 app.use(express.json());
+app.use(apiLimiter);
+
+// HTTP request logger
+app.use((req, _res, next) => {
+  logger.debug(`${req.method} ${req.path}`, { ip: req.ip });
+  next();
+});
 
 app.get('/health', (_req, res) => res.json({ status: 'ok', version: '1.0.0' }));
 
-app.use('/auth', authRouter);
+app.use('/auth', authLimiter, authRouter);
 app.use('/citizens', citizensRouter);
 app.use('/properties', propertiesRouter);
 app.use('/flags', flagsRouter);
@@ -20,7 +29,7 @@ app.use('/zkp', zkpRouter);
 app.use('/admin', adminRouter);
 
 app.use((err: Error, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
-  console.error('Unhandled error:', err.message);
+  logger.error('Unhandled error', { message: err.message, stack: err.stack });
   res.status(500).json({ success: false, error: err.message ?? 'Internal server error' });
 });
 
