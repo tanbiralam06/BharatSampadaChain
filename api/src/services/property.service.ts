@@ -1,5 +1,6 @@
 import * as fabric from '../fabric/contracts';
-import type { PropertyRecord } from '../models';
+import { syncProperty } from '../db/sync';
+import type { PropertyRecord, TransferRecord } from '../models';
 
 export async function registerProperty(params: {
   propertyId: string; ownerHash: string; registrationNo: string;
@@ -7,7 +8,9 @@ export async function registerProperty(params: {
   areaSqft: number; district: string; state: string;
   registrationDate: string; transferType: string; stampDutyPaid: number;
 }): Promise<PropertyRecord> {
-  return fabric.registerProperty(params);
+  const property = await fabric.registerProperty(params);
+  void syncProperty(property);
+  return property;
 }
 
 export async function getProperty(propertyId: string): Promise<PropertyRecord> {
@@ -17,6 +20,12 @@ export async function getProperty(propertyId: string): Promise<PropertyRecord> {
 export async function transferProperty(params: {
   propertyId: string; newOwnerHash: string;
   transferType: string; reason: string; transferValue: number;
-}): Promise<void> {
-  return fabric.transferProperty(params);
+}): Promise<TransferRecord> {
+  const transfer = await fabric.transferProperty(params);
+
+  // Read the updated property state back from the ledger and sync it
+  const updated = await fabric.getProperty(params.propertyId).catch(() => null);
+  if (updated) void syncProperty(updated);
+
+  return transfer;
 }

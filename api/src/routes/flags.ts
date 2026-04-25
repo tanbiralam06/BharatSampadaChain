@@ -1,7 +1,7 @@
 import { Router, Response } from 'express';
 import { z } from 'zod';
 import { authenticate, requireRole, AuthRequest } from '../middleware/auth';
-import * as fabric from '../fabric/contracts';
+import * as flagService from '../services/flag.service';
 import { asyncHandler } from '../utils/asyncHandler';
 
 const router = Router();
@@ -11,18 +11,13 @@ router.get('/', authenticate, requireRole('IT_DEPT', 'ED', 'CBI', 'ADMIN'), asyn
   const { severity } = req.query;
 
   if (severity && typeof severity === 'string') {
-    const flags = await fabric.getFlagsBySeverity(severity.toUpperCase());
+    const flags = await flagService.getFlagsBySeverity(severity);
     res.json({ success: true, data: flags });
     return;
   }
 
-  const [red, orange, yellow] = await Promise.all([
-    fabric.getFlagsBySeverity('RED'),
-    fabric.getFlagsBySeverity('ORANGE'),
-    fabric.getFlagsBySeverity('YELLOW'),
-  ]);
-
-  res.json({ success: true, data: [...red, ...orange, ...yellow] });
+  const flags = await flagService.getAllFlags();
+  res.json({ success: true, data: flags });
 }));
 
 const UpdateStatusSchema = z.object({
@@ -38,7 +33,7 @@ router.put('/:id', authenticate, requireRole('IT_DEPT', 'ED', 'CBI', 'ADMIN'), a
     return;
   }
 
-  await fabric.updateFlagStatus(req.params.id, parsed.data.status, parsed.data.resolutionNotes);
+  await flagService.updateFlagStatus(req.params.id, parsed.data.status, parsed.data.resolutionNotes);
   res.json({ success: true, data: { message: 'Flag status updated' } });
 }));
 
@@ -60,7 +55,7 @@ router.post('/manual', authenticate, requireRole('IT_DEPT', 'ED', 'CBI'), asyncH
     return;
   }
 
-  const flag = await fabric.submitManualFlag(parsed.data);
+  const flag = await flagService.submitManualFlag(parsed.data);
   res.status(201).json({ success: true, data: flag });
 }));
 

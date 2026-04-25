@@ -1,6 +1,6 @@
 import { getContract } from './connection';
 import { config } from '../config';
-import type { AnomalyFlag, CitizenNode, AccessLog, PropertyRecord, ZKPProof } from '../models';
+import type { AnomalyFlag, CitizenNode, AccessLog, PropertyRecord, TransferRecord, ZKPProof } from '../models';
 
 function decode(bytes: Uint8Array): unknown {
   if (!bytes || bytes.length === 0) return null;
@@ -116,13 +116,14 @@ export async function getPropertiesByOwner(ownerHash: string): Promise<PropertyR
 export async function transferProperty(params: {
   propertyId: string; newOwnerHash: string;
   transferType: string; reason: string; transferValue: number;
-}): Promise<void> {
+}): Promise<TransferRecord> {
   const cc = await getContract(config.fabric.chaincodes.property);
-  await cc.submitTransaction(
+  const result = await cc.submitTransaction(
     'TransferProperty',
     params.propertyId, params.newOwnerHash,
     params.transferType, params.reason, String(params.transferValue)
   );
+  return decode(result) as TransferRecord;
 }
 
 // ── Access chaincode ──────────────────────────────────────────────

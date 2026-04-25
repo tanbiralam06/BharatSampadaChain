@@ -52,8 +52,8 @@ router.put('/:id/transfer', authenticate, requireRole('ADMIN', 'IT_DEPT'), async
     res.status(400).json({ success: false, error: parsed.error.issues[0].message });
     return;
   }
-  await propertyService.transferProperty({ propertyId: req.params.id, ...parsed.data });
-  res.json({ success: true, data: { message: 'Transfer completed' } });
+  const transfer = await propertyService.transferProperty({ propertyId: req.params.id, ...parsed.data });
+  res.json({ success: true, data: transfer });
 }));
 
 export default router;

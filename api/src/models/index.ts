@@ -89,6 +89,17 @@ export interface JWTPayload {
   exp?: number;
 }
 
+export interface TransferRecord {
+  transferId: string;
+  propertyId: string;
+  fromOwnerHash: string;
+  toOwnerHash: string;
+  transferValue: number;
+  transferType: string;
+  transferDate: string;
+  reason: string;
+}
+
 export interface ApiResponse<T = unknown> {
   success: boolean;
   data?: T;
