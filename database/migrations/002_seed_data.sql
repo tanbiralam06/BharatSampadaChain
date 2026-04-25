@@ -3,10 +3,10 @@
 
 -- ── Admin user ────────────────────────────────────────────────────
 -- Password for all seed users: "password" (bcrypt hash below — dev only, change in production)
-INSERT INTO bsc_users (subject_hash, name, role, password_hash) VALUES
-('admin001hashabcdef0123456789abcdef0123456789abcdef0123456789abcd', 'BSC System Admin',       'ADMIN',   '$2b$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi'),
-('itoff001hashabcdef0123456789abcdef0123456789abcdef0123456789abcd', 'Rajesh Kumar (IT Dept)', 'IT_DEPT', '$2b$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi'),
-('cbi001hash0abcdef0123456789abcdef0123456789abcdef0123456789abcde', 'Priya Sharma (CBI)',     'CBI',     '$2b$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi');
+INSERT INTO bsc_users (subject_hash, login_id, name, role, password_hash) VALUES
+('admin001hashabcdef0123456789abcdef0123456789abcdef0123456789abcd', 'admin',                       'BSC System Admin',       'ADMIN',   '$2b$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi'),
+('itoff001hashabcdef0123456789abcdef0123456789abcdef0123456789abcd', 'rajesh.kumar@itdept.bsc.gov', 'Rajesh Kumar (IT Dept)', 'IT_DEPT', '$2b$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi'),
+('cbi001hash0abcdef0123456789abcdef0123456789abcdef0123456789abcde', 'priya.sharma@cbi.gov.in',    'Priya Sharma (CBI)',     'CBI',     '$2b$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi');
 
 -- ── Seed citizens (64-char hex hashes) ───────────────────────────
 INSERT INTO citizens (citizen_hash, pan_hash, name, date_of_birth, aadhaar_state, citizen_type, total_declared_assets, total_income_5yr, anomaly_score) VALUES
@@ -22,10 +22,10 @@ INSERT INTO citizens (citizen_hash, pan_hash, name, date_of_birth, aadhaar_state
 ('d0e1f2a3b4c5d0e1f2a3b4c5d0e1f2a3b4c5d0e1f2a3b4c5d0e1f2d0e1f2a3b4', '0de1f2a3b4c5d0e1f2a3b4c5d0e1f2a3b4c5d0e1f2a3b4c5d0e1f2d0e1f2a3b4', 'Kavitha Reddy',  '1988-01-25', 'Andhra Pradesh', 'civilian',            22000000,   14500000,  0);
 
 -- Add seed users for the first 3 citizens so they can log in
-INSERT INTO bsc_users (subject_hash, name, role, password_hash) VALUES
-('a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2', 'Arjun Mehta',    'CITIZEN', '$2b$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi'),
-('b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6b2c3d4', 'Sunita Rao',     'CITIZEN', '$2b$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi'),
-('d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6d4e5f6a1b2', 'Priya Krishnan', 'CITIZEN', '$2b$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi');
+INSERT INTO bsc_users (subject_hash, login_id, name, role, password_hash) VALUES
+('a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2', '123456789012', 'Arjun Mehta',    'CITIZEN', '$2b$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi'),
+('b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6b2c3d4', '234567890123', 'Sunita Rao',     'CITIZEN', '$2b$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi'),
+('d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6d4e5f6a1b2', '345678901234', 'Priya Krishnan', 'CITIZEN', '$2b$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi');
 
 -- ── Seed anomaly flags ────────────────────────────────────────────
 INSERT INTO anomaly_flags (flag_id, citizen_hash, rule_triggered, severity, description, asset_value_used, income_value_used, gap_amount, status, raised_at) VALUES

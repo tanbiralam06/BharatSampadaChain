@@ -4,7 +4,8 @@
 
 -- ── Users (for API authentication) ──────────────────────────────
 CREATE TABLE IF NOT EXISTS bsc_users (
-    subject_hash    VARCHAR(64) PRIMARY KEY,  -- citizenHash or officerID hash
+    subject_hash    VARCHAR(64) PRIMARY KEY,  -- blockchain identity key (SHA-256 of real ID)
+    login_id        VARCHAR(100) UNIQUE NOT NULL, -- human-readable login: Aadhaar (citizens), email (officers), username (admin)
     name            VARCHAR(200) NOT NULL,
     role            VARCHAR(20) NOT NULL CHECK (role IN ('CITIZEN','IT_DEPT','ED','CBI','COURT','BANK','ADMIN','PUBLIC')),
     password_hash   VARCHAR(60) NOT NULL,     -- bcrypt

@@ -7,7 +7,7 @@ import { signToken } from '../middleware/auth';
 const router = Router();
 
 const LoginSchema = z.object({
-  identifier: z.string().min(1), // citizenHash, officerID, or admin ID
+  identifier: z.string().min(1), // Aadhaar (citizens), email (officers), username (admin)
   password: z.string().min(8),
   role: z.enum(['CITIZEN', 'IT_DEPT', 'ED', 'CBI', 'COURT', 'BANK', 'ADMIN', 'PUBLIC']),
 });
@@ -25,7 +25,7 @@ router.post('/login', async (req: Request, res: Response) => {
   const user = await queryOne<{
     subject_hash: string; name: string; password_hash: string; role: string;
   }>(
-    'SELECT subject_hash, name, password_hash, role FROM bsc_users WHERE subject_hash = $1 AND role = $2',
+    'SELECT subject_hash, name, password_hash, role FROM bsc_users WHERE login_id = $1 AND role = $2 AND is_active = true',
     [identifier, role]
   );
 
