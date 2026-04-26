@@ -1,0 +1,22 @@
+# Always store shell scripts with LF so they run correctly on Linux/macOS
+# without needing dos2unix after cloning on Windows.
+*.sh text eol=lf
+
+# Text files — let Git normalise line endings per platform
+*.go   text
+*.ts   text
+*.tsx  text
+*.js   text
+*.json text
+*.yaml text
+*.yml  text
+*.sql  text
+*.md   text
+*.env  text
+Makefile text
+
+# Binary files — never touch line endings
+*.png  binary
+*.jpg  binary
+*.tar  binary
+*.gz   binary
