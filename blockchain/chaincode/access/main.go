@@ -168,6 +168,61 @@ func (s *SmartContract) GetPermissionRule(
 	return s.getPermissionRule(ctx, accessorRole)
 }
 
+// GetAllPermissionRules returns every PERM_* entry in the ledger.
+func (s *SmartContract) GetAllPermissionRules(
+	ctx contractapi.TransactionContextInterface,
+) ([]*PermissionRule, error) {
+	iter, err := ctx.GetStub().GetStateByRange("PERM_", "PERM_~")
+	if err != nil {
+		return nil, err
+	}
+	defer iter.Close()
+
+	var rules []*PermissionRule
+	for iter.HasNext() {
+		kv, err := iter.Next()
+		if err != nil {
+			return nil, err
+		}
+		var rule PermissionRule
+		if err := json.Unmarshal(kv.Value, &rule); err != nil {
+			continue
+		}
+		rules = append(rules, &rule)
+	}
+	return rules, nil
+}
+
+// UpdatePermissionRule replaces the allowed data types and requiresRef flag for a role.
+// dataTypesJSON is a JSON-encoded []string (e.g. '["INCOME_SUMMARY","ASSET_SUMMARY"]').
+// requiresRefStr is "true" or "false".
+func (s *SmartContract) UpdatePermissionRule(
+	ctx contractapi.TransactionContextInterface,
+	accessorRole, dataTypesJSON, requiresRefStr string,
+) (*PermissionRule, error) {
+	var dataTypes []string
+	if err := json.Unmarshal([]byte(dataTypesJSON), &dataTypes); err != nil {
+		return nil, fmt.Errorf("invalid dataTypesJSON: %w", err)
+	}
+
+	requiresRef := requiresRefStr == "true"
+
+	rule := PermissionRule{
+		AccessorRole: accessorRole,
+		DataTypes:    dataTypes,
+		RequiresRef:  requiresRef,
+	}
+
+	data, err := json.Marshal(rule)
+	if err != nil {
+		return nil, err
+	}
+	if err := ctx.GetStub().PutState("PERM_"+accessorRole, data); err != nil {
+		return nil, err
+	}
+	return &rule, nil
+}
+
 // ── Helpers ───────────────────────────────────────────────────────
 
 func (s *SmartContract) getPermissionRule(ctx contractapi.TransactionContextInterface, role string) (*PermissionRule, error) {
