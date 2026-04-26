@@ -6,6 +6,8 @@ import ActiveFlags       from './pages/ActiveFlags';
 import CaseInvestigation from './pages/CaseInvestigation';
 import FamilyAnalysis    from './pages/FamilyAnalysis';
 import MyTeam            from './pages/MyTeam';
+import CourtOrders       from './pages/CourtOrders';
+import BankReports       from './pages/BankReports';
 
 export function AppRoutes() {
   return (
@@ -23,6 +25,8 @@ export function AppRoutes() {
         <Route path="investigate/:hash"     element={<CaseInvestigation />} />
         <Route path="family"                element={<FamilyAnalysis />} />
         <Route path="team"                  element={<MyTeam />} />
+        <Route path="court-orders"          element={<CourtOrders />} />
+        <Route path="bank-reports"          element={<BankReports />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

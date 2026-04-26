@@ -173,6 +173,18 @@ export interface UpdatePermissionInput {
   requiresRef: boolean;
 }
 
+// ── Court Order ───────────────────────────────────────────────────────────────
+
+export interface CourtOrder {
+  orderId:    string;
+  propertyId: string;
+  orderRef:   string;
+  orderType:  'FREEZE' | 'UNFREEZE';
+  issuedBy:   string;
+  reason:     string;
+  timestamp:  string;
+}
+
 // ── Benami Detection ──────────────────────────────────────────────────────────
 
 export interface BenamiRuleDetail {

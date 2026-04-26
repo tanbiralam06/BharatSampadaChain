@@ -7,7 +7,7 @@ import type {
   AnomalyFlag, AccessLog, FinancialAsset, LoginResponse,
   HealthData, StatsData, AccessorRole, Severity, FlagStatus, CitizenType,
   OfficerUser, CreateOfficerInput, TotpSetupData, TotpChallengeResponse,
-  PermissionRule, UpdatePermissionInput, BenamiScanResult,
+  PermissionRule, UpdatePermissionInput, BenamiScanResult, CourtOrder,
 } from './types';
 
 // ── Auth ──────────────────────────────────────────────────────────────────────
@@ -110,6 +110,26 @@ export const submitManualFlag = (payload: {
   gapAmount: number;
 }) =>
   apiClient.post<ApiResponse<AnomalyFlag>>('/flags/manual', payload)
+    .then((r) => r.data.data!);
+
+// ── Court Orders ─────────────────────────────────────────────────────────────
+
+export const freezeProperty = (propertyId: string, payload: { orderRef: string; reason: string }) =>
+  apiClient.post<ApiResponse<PropertyRecord>>(`/properties/${propertyId}/freeze`, payload)
+    .then((r) => r.data.data!);
+
+export const unfreezeProperty = (propertyId: string, payload: { orderRef: string; reason: string }) =>
+  apiClient.post<ApiResponse<PropertyRecord>>(`/properties/${propertyId}/unfreeze`, payload)
+    .then((r) => r.data.data!);
+
+export const getPropertyCourtOrders = (propertyId: string) =>
+  apiClient.get<ApiResponse<CourtOrder[]>>(`/properties/${propertyId}/court-orders`)
+    .then((r) => r.data.data!);
+
+// ── Bank Reporting ────────────────────────────────────────────────────────────
+
+export const submitBankFlag = (citizenHash: string, payload: { discrepancyAmount: number; description: string; accountRef: string }) =>
+  apiClient.post<ApiResponse<AnomalyFlag>>(`/citizens/${citizenHash}/bank-flag`, payload)
     .then((r) => r.data.data!);
 
 // ── Admin ─────────────────────────────────────────────────────────────────────

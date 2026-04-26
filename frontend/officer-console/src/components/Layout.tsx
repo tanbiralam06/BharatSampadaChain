@@ -1,13 +1,23 @@
 import { NavLink, Outlet } from 'react-router-dom';
-import { Flag, Search, Users, LogOut, Siren, UserCog } from 'lucide-react';
+import { Flag, Search, Users, LogOut, Siren, UserCog, Gavel, Landmark } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { formatHash, RoleBadge } from '@bsc/shared';
+import type { AccessorRole } from '@bsc/shared';
 
-const NAV = [
-  { to: '/',           icon: Flag,    label: 'Active Flags'    },
-  { to: '/investigate', icon: Search,  label: 'Investigate'     },
-  { to: '/family',     icon: Users,   label: 'Family Analysis' },
-  { to: '/team',       icon: UserCog, label: 'My Team'         },
+interface NavItem {
+  to: string;
+  icon: React.ElementType;
+  label: string;
+  roles?: AccessorRole[];  // undefined = visible to all roles
+}
+
+const NAV: NavItem[] = [
+  { to: '/',              icon: Flag,     label: 'Active Flags'    },
+  { to: '/investigate',   icon: Search,   label: 'Investigate'     },
+  { to: '/family',        icon: Users,    label: 'Family Analysis' },
+  { to: '/court-orders',  icon: Gavel,    label: 'Court Orders',   roles: ['COURT'] },
+  { to: '/bank-reports',  icon: Landmark, label: 'Bank Reports',   roles: ['BANK']  },
+  { to: '/team',          icon: UserCog,  label: 'My Team'         },
 ];
 
 export function Layout() {
@@ -25,7 +35,7 @@ export function Layout() {
         </div>
 
         <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-0.5">
-          {NAV.map(({ to, icon: Icon, label }) => (
+          {NAV.filter(({ roles }) => !roles || (user && roles.includes(user.role as AccessorRole))).map(({ to, icon: Icon, label }) => (
             <NavLink
               key={to}
               to={to}
