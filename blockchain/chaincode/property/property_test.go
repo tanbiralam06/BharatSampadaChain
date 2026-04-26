@@ -208,3 +208,128 @@ func TestUpdateEncumbrance(t *testing.T) {
 	assert.Equal(t, "MORTGAGED", prop.Encumbrance)
 	assert.Equal(t, int64(50_000_00000), prop.MortgageAmount)
 }
+
+// ── FreezeProperty ────────────────────────────────────────────────────────────
+
+func TestFreezeProperty_Success(t *testing.T) {
+	sc := &SmartContract{}
+	ctx := newCtx(t)
+
+	registerAndCommit(t, sc, ctx, testPropID, testOwner, 90_000_00000, 100_000_00000)
+
+	prop, err := sc.FreezeProperty(ctx, testPropID, testOwner, "HC/2024/CR-001", "Asset attachment order")
+	require.NoError(t, err)
+	assert.Equal(t, "COURT_STAY", prop.Encumbrance)
+
+	ctx.nextTx()
+
+	// Verify persisted
+	prop, err = sc.GetProperty(ctx, testPropID)
+	require.NoError(t, err)
+	assert.Equal(t, "COURT_STAY", prop.Encumbrance)
+}
+
+func TestFreezeProperty_AlreadyFrozen(t *testing.T) {
+	sc := &SmartContract{}
+	ctx := newCtx(t)
+
+	registerAndCommit(t, sc, ctx, testPropID, testOwner, 90_000_00000, 100_000_00000)
+
+	_, err := sc.FreezeProperty(ctx, testPropID, testOwner, "HC/2024/CR-001", "First freeze")
+	require.NoError(t, err)
+	ctx.nextTx()
+
+	_, err = sc.FreezeProperty(ctx, testPropID, testOwner, "HC/2024/CR-002", "Second freeze attempt")
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "already frozen")
+}
+
+func TestFreezeProperty_BlocksTransfer(t *testing.T) {
+	sc := &SmartContract{}
+	ctx := newCtx(t)
+
+	registerAndCommit(t, sc, ctx, testPropID, testOwner, 90_000_00000, 100_000_00000)
+	_, err := sc.FreezeProperty(ctx, testPropID, testOwner, "HC/2024/CR-001", "Freeze")
+	require.NoError(t, err)
+	ctx.nextTx()
+
+	_, err = sc.TransferProperty(ctx, testPropID, newOwner, "PURCHASE", "sale", 90_000_00000)
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "court stay")
+}
+
+// ── UnfreezeProperty ──────────────────────────────────────────────────────────
+
+func TestUnfreezeProperty_Success(t *testing.T) {
+	sc := &SmartContract{}
+	ctx := newCtx(t)
+
+	registerAndCommit(t, sc, ctx, testPropID, testOwner, 90_000_00000, 100_000_00000)
+
+	_, err := sc.FreezeProperty(ctx, testPropID, testOwner, "HC/2024/CR-001", "Freeze")
+	require.NoError(t, err)
+	ctx.nextTx()
+
+	prop, err := sc.UnfreezeProperty(ctx, testPropID, testOwner, "HC/2024/CR-001", "Order lifted by court")
+	require.NoError(t, err)
+	assert.Equal(t, "CLEAR", prop.Encumbrance)
+
+	ctx.nextTx()
+
+	// Transfer must succeed again
+	_, err = sc.TransferProperty(ctx, testPropID, newOwner, "PURCHASE", "sale", 90_000_00000)
+	require.NoError(t, err)
+}
+
+func TestUnfreezeProperty_NotFrozen(t *testing.T) {
+	sc := &SmartContract{}
+	ctx := newCtx(t)
+
+	registerAndCommit(t, sc, ctx, testPropID, testOwner, 90_000_00000, 100_000_00000)
+
+	_, err := sc.UnfreezeProperty(ctx, testPropID, testOwner, "HC/2024/CR-001", "Lift")
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "not frozen")
+}
+
+// ── GetCourtOrders ────────────────────────────────────────────────────────────
+
+func TestGetCourtOrders_EmptyInitially(t *testing.T) {
+	sc := &SmartContract{}
+	ctx := newCtx(t)
+
+	registerAndCommit(t, sc, ctx, testPropID, testOwner, 90_000_00000, 100_000_00000)
+
+	orders, err := sc.GetCourtOrders(ctx, testPropID)
+	require.NoError(t, err)
+	assert.Empty(t, orders)
+}
+
+func TestGetCourtOrders_RecordsHistory(t *testing.T) {
+	sc := &SmartContract{}
+	ctx := newCtx(t)
+
+	registerAndCommit(t, sc, ctx, testPropID, testOwner, 90_000_00000, 100_000_00000)
+
+	_, err := sc.FreezeProperty(ctx, testPropID, testOwner, "HC/2024/CR-001", "Freeze reason")
+	require.NoError(t, err)
+	ctx.nextTx()
+
+	_, err = sc.UnfreezeProperty(ctx, testPropID, testOwner, "HC/2024/CR-001", "Lift reason")
+	require.NoError(t, err)
+	ctx.nextTx()
+
+	orders, err := sc.GetCourtOrders(ctx, testPropID)
+	require.NoError(t, err)
+	assert.Len(t, orders, 2)
+
+	// Find FREEZE and UNFREEZE orders
+	types := map[string]bool{}
+	for _, o := range orders {
+		types[o.OrderType] = true
+		assert.Equal(t, testPropID, o.PropertyID)
+		assert.Equal(t, "HC/2024/CR-001", o.OrderRef)
+	}
+	assert.True(t, types["FREEZE"],   "should have a FREEZE order")
+	assert.True(t, types["UNFREEZE"], "should have an UNFREEZE order")
+}
