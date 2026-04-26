@@ -43,6 +43,16 @@ type TransferRecord struct {
 	Reason        string `json:"reason"`
 }
 
+type CourtOrder struct {
+	OrderID    string `json:"orderId"`
+	PropertyID string `json:"propertyId"`
+	OrderRef   string `json:"orderRef"`   // court case/order number
+	OrderType  string `json:"orderType"`  // FREEZE | UNFREEZE
+	IssuedBy   string `json:"issuedBy"`   // officer subject hash
+	Reason     string `json:"reason"`
+	Timestamp  string `json:"timestamp"`
+}
+
 // ── Contract ──────────────────────────────────────────────────────
 
 type SmartContract struct {
@@ -227,6 +237,86 @@ func (s *SmartContract) GetPropertiesByOwner(
 	return props, nil
 }
 
+// FreezeProperty issues a court stay order, blocking all transfers.
+func (s *SmartContract) FreezeProperty(
+	ctx contractapi.TransactionContextInterface,
+	propertyID, issuedBy, orderRef, reason string,
+) (*PropertyRecord, error) {
+	prop, err := s.getProperty(ctx, propertyID)
+	if err != nil {
+		return nil, err
+	}
+	if prop.Encumbrance == "COURT_STAY" {
+		return nil, fmt.Errorf("property %s is already frozen", propertyID)
+	}
+
+	prop.Encumbrance = "COURT_STAY"
+	prop.LastUpdated = txTime(ctx)
+	data, _ := json.Marshal(prop)
+	if err := ctx.GetStub().PutState("PROP_"+propertyID, data); err != nil {
+		return nil, err
+	}
+
+	return prop, s.saveCourtOrder(ctx, propertyID, issuedBy, orderRef, reason, "FREEZE")
+}
+
+// UnfreezeProperty lifts an active court stay order.
+func (s *SmartContract) UnfreezeProperty(
+	ctx contractapi.TransactionContextInterface,
+	propertyID, issuedBy, orderRef, reason string,
+) (*PropertyRecord, error) {
+	prop, err := s.getProperty(ctx, propertyID)
+	if err != nil {
+		return nil, err
+	}
+	if prop.Encumbrance != "COURT_STAY" {
+		return nil, fmt.Errorf("property %s is not frozen — current encumbrance: %s", propertyID, prop.Encumbrance)
+	}
+
+	prop.Encumbrance = "CLEAR"
+	prop.LastUpdated = txTime(ctx)
+	data, _ := json.Marshal(prop)
+	if err := ctx.GetStub().PutState("PROP_"+propertyID, data); err != nil {
+		return nil, err
+	}
+
+	return prop, s.saveCourtOrder(ctx, propertyID, issuedBy, orderRef, reason, "UNFREEZE")
+}
+
+// GetCourtOrders returns the full court order history for a property.
+func (s *SmartContract) GetCourtOrders(
+	ctx contractapi.TransactionContextInterface,
+	propertyID string,
+) ([]*CourtOrder, error) {
+	iter, err := ctx.GetStub().GetStateByPartialCompositeKey("PROP_ORDER", []string{propertyID})
+	if err != nil {
+		return nil, err
+	}
+	defer iter.Close()
+
+	var orders []*CourtOrder
+	for iter.HasNext() {
+		kv, err := iter.Next()
+		if err != nil {
+			return nil, err
+		}
+		_, parts, err := ctx.GetStub().SplitCompositeKey(kv.Key)
+		if err != nil || len(parts) < 2 {
+			continue
+		}
+		orderData, err := ctx.GetStub().GetState("CORDER_" + parts[1])
+		if err != nil || orderData == nil {
+			continue
+		}
+		var order CourtOrder
+		if err := json.Unmarshal(orderData, &order); err != nil {
+			continue
+		}
+		orders = append(orders, &order)
+	}
+	return orders, nil
+}
+
 // UpdateEncumbrance updates the encumbrance status (e.g., court orders).
 func (s *SmartContract) UpdateEncumbrance(
 	ctx contractapi.TransactionContextInterface,
@@ -246,6 +336,26 @@ func (s *SmartContract) UpdateEncumbrance(
 }
 
 // ── Helpers ───────────────────────────────────────────────────────
+
+func (s *SmartContract) saveCourtOrder(ctx contractapi.TransactionContextInterface, propertyID, issuedBy, orderRef, reason, orderType string) error {
+	txID := ctx.GetStub().GetTxID()
+	orderID := fmt.Sprintf("%s-%s-%s", orderType[:1], propertyID[:8], txID[:8])
+	order := CourtOrder{
+		OrderID:    orderID,
+		PropertyID: propertyID,
+		OrderRef:   orderRef,
+		OrderType:  orderType,
+		IssuedBy:   issuedBy,
+		Reason:     reason,
+		Timestamp:  txTime(ctx),
+	}
+	data, _ := json.Marshal(order)
+	if err := ctx.GetStub().PutState("CORDER_"+orderID, data); err != nil {
+		return err
+	}
+	ck, _ := ctx.GetStub().CreateCompositeKey("PROP_ORDER", []string{propertyID, orderID})
+	return ctx.GetStub().PutState(ck, []byte{0})
+}
 
 func (s *SmartContract) getProperty(ctx contractapi.TransactionContextInterface, propertyID string) (*PropertyRecord, error) {
 	data, err := ctx.GetStub().GetState("PROP_" + propertyID)
