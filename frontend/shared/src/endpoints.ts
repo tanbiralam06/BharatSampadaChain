@@ -6,13 +6,38 @@ import type {
   ApiResponse, CitizenNode, CitizenSummary, PropertyRecord,
   AnomalyFlag, AccessLog, FinancialAsset, LoginResponse,
   HealthData, StatsData, AccessorRole, Severity, FlagStatus, CitizenType,
-  OfficerUser, CreateOfficerInput,
+  OfficerUser, CreateOfficerInput, TotpSetupData, TotpChallengeResponse,
 } from './types';
 
 // ── Auth ──────────────────────────────────────────────────────────────────────
 
 export const login = (identifier: string, password: string, role: AccessorRole) =>
   apiClient.post<ApiResponse<LoginResponse>>('/auth/login', { identifier, password, role })
+    .then((r) => r.data.data!);
+
+// Admin login — may return a full token or a TOTP challenge depending on enrollment
+export const adminLogin = (identifier: string, password: string) =>
+  apiClient.post<ApiResponse<LoginResponse | TotpChallengeResponse>>('/auth/login', { identifier, password, role: 'ADMIN' })
+    .then((r) => r.data.data!);
+
+export const totpSetup = () =>
+  apiClient.post<ApiResponse<TotpSetupData>>('/auth/totp/setup')
+    .then((r) => r.data.data!);
+
+export const totpVerifySetup = (code: string) =>
+  apiClient.post<ApiResponse<{ enabled: boolean }>>('/auth/totp/verify-setup', { code })
+    .then((r) => r.data.data!);
+
+export const totpVerify = (challenge_token: string, code: string) =>
+  apiClient.post<ApiResponse<LoginResponse>>('/auth/totp/verify', { challenge_token, code })
+    .then((r) => r.data.data!);
+
+export const totpDisable = (code: string) =>
+  apiClient.post<ApiResponse<{ disabled: boolean }>>('/auth/totp/disable', { code })
+    .then((r) => r.data.data!);
+
+export const totpStatus = () =>
+  apiClient.get<ApiResponse<{ enabled: boolean }>>('/auth/totp/status')
     .then((r) => r.data.data!);
 
 export const refreshToken = () =>

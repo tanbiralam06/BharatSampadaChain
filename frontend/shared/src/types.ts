@@ -115,6 +115,16 @@ export interface FinancialAsset {
 
 // ── Auth ──────────────────────────────────────────────────────────────────────
 
+export interface TotpSetupData {
+  uri:    string;  // otpauth:// URI for manual entry
+  qrCode: string;  // data URL — render as <img src={qrCode} />
+}
+
+export interface TotpChallengeResponse {
+  step:            'totp_required';
+  challenge_token: string;  // short-lived JWT (5 min), passed to /auth/totp/verify
+}
+
 export interface JWTPayload {
   sub: string;
   role: AccessorRole;
