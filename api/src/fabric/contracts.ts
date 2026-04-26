@@ -189,14 +189,24 @@ export async function updatePermissionRule(
 // ── ZKP chaincode ─────────────────────────────────────────────────
 
 export async function submitZKPProof(params: {
-  citizenHash: string; queryType: string;
-  proof: string; publicInputs: string; submittedBy: string;
+  citizenHash:       string;
+  queryType:         string;
+  proofJSON:         string;
+  publicSignalsJSON: string;
+  threshold:         string;
+  submittedBy:       string;
+  isVerified:        boolean;
 }): Promise<ZKPProof> {
   const cc = await getContract(config.fabric.chaincodes.zkp);
   const result = await cc.submitTransaction(
     'SubmitProof',
-    params.citizenHash, params.queryType,
-    params.proof, params.publicInputs, params.submittedBy
+    params.citizenHash,
+    params.queryType,
+    params.proofJSON,
+    params.publicSignalsJSON,
+    params.threshold,
+    params.submittedBy,
+    String(params.isVerified)
   );
   return decode(result) as ZKPProof;
 }
