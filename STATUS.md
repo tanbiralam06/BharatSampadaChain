@@ -1,7 +1,7 @@
 # BSC — Implementation Status
 
 > Read this before starting any session. Updated after every significant merge to `main`.
-> Last updated: 2026-04-27 · Branch: `main` · Phase: 3 in progress — real ZKP (Groth16) complete
+> Last updated: 2026-04-26 · Branch: `main` · Phase: 3 in progress — benami detection complete
 
 ---
 
@@ -19,7 +19,7 @@
 | API Gateway | ✅ Running on :4000 | 18 routes live, JWT auth, rate limiting, Winston logging |
 | Ledger → PostgreSQL sync | ✅ Done | Service-layer dual-write on every chaincode write |
 | Officer access notifications | ✅ Done | `notifyOfficerAccess()` writes to `system_audit` on every non-citizen read |
-| API tests | ✅ Done | 82 tests across 10 files (Jest + Supertest), all passing |
+| API tests | ✅ Done | 94 tests across 11 files (Jest + Supertest), all passing |
 | OpenAPI spec | ✅ Done | `docs/api/openapi.yaml` — all endpoints, full schemas, role annotations |
 | Rate limiting | ✅ Done | 200 req/15 min global; 20 req/15 min on `/auth` |
 | Structured logging | ✅ Done | Winston — colored dev output, JSON in production |
@@ -88,6 +88,7 @@ All chaincodes use `txTime(ctx)` — deterministic timestamps across all endorsi
 | `POST /flags/manual` | JWT | IT_DEPT, ED, CBI |
 | `POST /zkp/:citizenHash` | JWT | Any role |
 | `GET /zkp/:citizenHash/claims` | JWT | Any role |
+| `POST /citizens/:hash/check-benami` | JWT | IT_DEPT, ED, CBI, ADMIN |
 | `GET /admin/health` | JWT | ADMIN only |
 | `GET /admin/stats` | JWT | ADMIN only |
 
@@ -152,6 +153,20 @@ All chaincodes use `txTime(ctx)` — deterministic timestamps across all endorsi
 - **Chaincode `zkp` v1.1** — stores proof HASH (SHA-256), not raw proof; anti-replay via `ZKPHASH_` sentinel; rejects unverified proofs
 - **Standalone CLI** (`zkp/scripts/prove.js`, `verify.js`) — usable without the API
 - **Circuit tests** (`zkp/tests/asset_threshold.test.js`) — 5 tests: valid proof, exact equality, below-threshold fails, tampered signals fail, tampered proof fails
+
+#### Benami Detection (complete)
+
+- `POST /citizens/:hash/check-benami` — ADMIN / IT_DEPT / ED / CBI only; evaluates 4 cross-citizen rules and writes immutable flags on Fabric
+- **Rule B1 — Proxy Ownership Pattern** (ORANGE): citizen received 3+ property transfers — typical benami proxy holding pattern
+- **Rule B2 — Systematic Undervaluation** (RED): 50%+ of properties declared below 90% of circle rate — benami properties registered cheap to hide value
+- **Rule B3 — Disproportionate Assets** (ORANGE): declared assets > 15× annual income — stricter variant of R1 targeting probable benami accumulation
+- **Rule B4 — Unexplained 5-Year Surge** (RED): 5-year asset growth > 3× total declared income — wealth accumulation exceeds any plausible legitimate explanation
+- Rules evaluate in-process using PostgreSQL mirror data (no chaincode required to evaluate); triggered rules call `SubmitManualFlag` on the anomaly chaincode → written to both Fabric ledger and PostgreSQL
+- `api/src/services/benami.service.ts` — standalone service, no cross-service dependencies
+- Frontend: officer-console CaseInvestigation page — new **Benami Scan** tab; "Run Scan" button triggers the API, shows per-rule pass/fail breakdown with gap amounts, flags on-chain instantly
+- Shared types: `BenamiRuleDetail`, `BenamiScanResult` added to `frontend/shared/src/types.ts`
+- Error middleware (`app.ts`) improved: now forwards `err.status` to response code — 404/422/503 errors from services now propagate correctly instead of becoming 500
+- 12 new API tests covering RBAC (7 roles), clean citizen (0 flags), risky citizen (4 flags, all rule codes verified), not found (404)
 
 #### Cross-Ministry Permission Matrix (complete)
 - `GET /admin/permissions` — returns all 8 role permission rules (Fabric primary, PostgreSQL fallback)
@@ -259,7 +274,7 @@ Default dev password for all seed users: `password` — **change before any demo
 | NIC / Government SSO integration | Single sign-on for officer roles |
 | Admin TOTP (2FA) | ✅ Done | Two-step login, QR enroll, Security page — see Phase 3 section above |
 | Cross-ministry data sharing rules | ✅ Done | Permission matrix API + admin UI — see Phase 3 section above |
-| Benami detection (cross-citizen ML rules) | Shell company and proxy ownership analysis |
+| Benami detection (cross-citizen ML rules) | ✅ Done | 4 rules: proxy ownership, systematic undervaluation, disproportionate assets, 5-yr surge — see Phase 3 section above |
 | Court + Bank role integrations | Court order enforcement, bank-reported discrepancy flags |
 
 ---
