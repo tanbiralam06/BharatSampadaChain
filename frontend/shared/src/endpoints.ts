@@ -7,7 +7,7 @@ import type {
   AnomalyFlag, AccessLog, FinancialAsset, LoginResponse,
   HealthData, StatsData, AccessorRole, Severity, FlagStatus, CitizenType,
   OfficerUser, CreateOfficerInput, TotpSetupData, TotpChallengeResponse,
-  PermissionRule, UpdatePermissionInput,
+  PermissionRule, UpdatePermissionInput, BenamiScanResult,
 } from './types';
 
 // ── Auth ──────────────────────────────────────────────────────────────────────
@@ -83,6 +83,11 @@ export const getCitizenFinancialAssets = (hash: string) =>
 export const triggerAnomalyCheck = (hash: string) =>
   apiClient.post<ApiResponse<{ flagsRaised: number; flags: AnomalyFlag[] }>>(
     `/citizens/${hash}/check-anomaly`
+  ).then((r) => r.data.data!);
+
+export const runBenamiScan = (hash: string) =>
+  apiClient.post<ApiResponse<BenamiScanResult>>(
+    `/citizens/${hash}/check-benami`
   ).then((r) => r.data.data!);
 
 // ── Flags ─────────────────────────────────────────────────────────────────────

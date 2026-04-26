@@ -173,6 +173,26 @@ export interface UpdatePermissionInput {
   requiresRef: boolean;
 }
 
+// ── Benami Detection ──────────────────────────────────────────────────────────
+
+export interface BenamiRuleDetail {
+  ruleCode: string;
+  description: string;
+  severity: Severity;
+  triggered: boolean;
+  assetValue: number;
+  incomeValue: number;
+  gapAmount: number;
+}
+
+export interface BenamiScanResult {
+  citizenHash: string;
+  rulesEvaluated: number;
+  flagsRaised: number;
+  flags: AnomalyFlag[];
+  ruleDetails: BenamiRuleDetail[];
+}
+
 // ── Admin ─────────────────────────────────────────────────────────────────────
 
 export interface HealthData {
