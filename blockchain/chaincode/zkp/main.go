@@ -1,6 +1,8 @@
 package main
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -11,27 +13,29 @@ import (
 
 // ── Data types ────────────────────────────────────────────────────
 
-// ZKPProof stores a submitted proof and its verification result.
-// Phase 1: stores proof metadata and simulates verification.
-// Phase 3: will integrate actual Groth16 verification via circom/snarkjs.
+// ZKPProof is the on-chain record of a verified proof submission.
+// The API verifies the Groth16 math off-chain (snarkjs), then calls
+// SubmitProof to record the result immutably on the ledger.
+// We store the proof HASH, not the raw proof, to keep state lean.
 type ZKPProof struct {
-	ProofID      string `json:"proofId"`
-	CitizenHash  string `json:"citizenHash"`
-	QueryType    string `json:"queryType"` // INCOME_ABOVE_THRESHOLD | ASSET_RANGE | RESIDENCE | TAX_COMPLIANCE
-	Proof        string `json:"proof"`        // Groth16 proof JSON (base64 in Phase 3)
-	PublicInputs string `json:"publicInputs"` // public signals as JSON
-	IsVerified   bool   `json:"isVerified"`
-	VerifiedAt   string `json:"verifiedAt"`
-	ExpiresAt    string `json:"expiresAt"`
-	SubmittedAt  string `json:"submittedAt"`
-	SubmittedBy  string `json:"submittedBy"` // accessor requesting the proof
+	ProofID       string   `json:"proofId"`
+	CitizenHash   string   `json:"citizenHash"`
+	QueryType     string   `json:"queryType"`     // e.g. ASSET_ABOVE_THRESHOLD
+	ProofHash     string   `json:"proofHash"`     // SHA-256 of the raw proof JSON
+	PublicSignals []string `json:"publicSignals"` // [threshold, commitment]
+	Threshold     string   `json:"threshold"`     // paisa — human-readable index field
+	IsVerified    bool     `json:"isVerified"`
+	VerifiedAt    string   `json:"verifiedAt"`
+	ExpiresAt     string   `json:"expiresAt"`
+	SubmittedAt   string   `json:"submittedAt"`
+	SubmittedBy   string   `json:"submittedBy"`
 }
 
-// VerifiedClaim is a lightweight record proving a claim was verified without exposing the data.
+// VerifiedClaim is a lightweight, expiring record that a claim was proven.
 type VerifiedClaim struct {
 	ClaimID     string `json:"claimId"`
 	CitizenHash string `json:"citizenHash"`
-	ClaimType   string `json:"claimType"` // e.g., "INCOME_ABOVE_5L", "TAX_COMPLIANT_3YR"
+	ClaimType   string `json:"claimType"`
 	IsValid     bool   `json:"isValid"`
 	ValidUntil  string `json:"validUntil"`
 	ProofID     string `json:"proofId"`
@@ -44,7 +48,6 @@ type SmartContract struct {
 	contractapi.Contract
 }
 
-// txTime returns the transaction proposal timestamp — identical on all endorsing peers.
 func txTime(ctx contractapi.TransactionContextInterface) string {
 	ts, err := ctx.GetStub().GetTxTimestamp()
 	if err != nil {
@@ -53,66 +56,99 @@ func txTime(ctx contractapi.TransactionContextInterface) string {
 	return ts.AsTime().UTC().Format(time.RFC3339)
 }
 
-// SubmitProof accepts a ZKP proof submission and performs verification.
-// Phase 1: simulates verification (always returns true for valid-format proofs).
-// Phase 3: will call actual Groth16 verifier with the verification key.
+// SubmitProof records the result of an API-verified Groth16 proof on-chain.
+//
+// Parameters:
+//   citizenHash     — identity the proof is bound to
+//   queryType       — e.g. "ASSET_ABOVE_THRESHOLD"
+//   proofJSON       — raw Groth16 proof JSON (used only to compute proofHash)
+//   publicSignalsJSON — JSON array of public signals: ["threshold","commitment"]
+//   threshold       — the threshold value in paisa (for indexing)
+//   submittedBy     — accessor hash of the officer/system requesting the proof
+//   isVerifiedStr   — "true" if the API verified the proof, "false" otherwise
+//
+// The chaincode trusts the API's verification result. Anyone can independently
+// re-verify using the public verification key + proofJSON + publicSignals.
 func (s *SmartContract) SubmitProof(
 	ctx contractapi.TransactionContextInterface,
-	citizenHash, queryType, proof, publicInputs, submittedBy string,
+	citizenHash, queryType, proofJSON, publicSignalsJSON, threshold, submittedBy, isVerifiedStr string,
 ) (*ZKPProof, error) {
-	if proof == "" || publicInputs == "" {
-		return nil, fmt.Errorf("proof and publicInputs are required")
+	if proofJSON == "" || publicSignalsJSON == "" {
+		return nil, fmt.Errorf("proofJSON and publicSignalsJSON are required")
+	}
+
+	// Reject if the API reported verification failure
+	isVerified := isVerifiedStr == "true"
+	if !isVerified {
+		return nil, fmt.Errorf("proof verification failed — proof rejected")
+	}
+
+	// Parse public signals
+	var publicSignals []string
+	if err := json.Unmarshal([]byte(publicSignalsJSON), &publicSignals); err != nil {
+		return nil, fmt.Errorf("invalid publicSignalsJSON: %w", err)
+	}
+
+	// Compute proof hash for anti-replay and independent verification
+	sum := sha256.Sum256([]byte(proofJSON))
+	proofHash := hex.EncodeToString(sum[:])
+
+	// Anti-replay: reject if this exact proof was already submitted
+	existing, _ := ctx.GetStub().GetState("ZKPHASH_" + proofHash)
+	if existing != nil {
+		return nil, fmt.Errorf("proof already submitted (replay detected)")
 	}
 
 	txID := ctx.GetStub().GetTxID()
 	ts := txTime(ctx)
 
-	// Phase 1: simulate verification by checking proof is non-empty and valid JSON structure
-	isVerified := s.simulateVerification(proof, publicInputs)
-
-	// Proof expires 30 days from the transaction timestamp
+	// Expires in 90 days
 	expiresAt := func() string {
 		rawTs, err := ctx.GetStub().GetTxTimestamp()
 		if err != nil {
-			return time.Now().UTC().AddDate(0, 0, 30).Format(time.RFC3339)
+			return time.Now().UTC().AddDate(0, 0, 90).Format(time.RFC3339)
 		}
-		return rawTs.AsTime().UTC().AddDate(0, 0, 30).Format(time.RFC3339)
+		return rawTs.AsTime().UTC().AddDate(0, 0, 90).Format(time.RFC3339)
 	}()
 
 	record := ZKPProof{
-		ProofID:      fmt.Sprintf("ZKP-%s", txID[:16]),
-		CitizenHash:  citizenHash,
-		QueryType:    queryType,
-		Proof:        proof,
-		PublicInputs: publicInputs,
-		IsVerified:   isVerified,
-		ExpiresAt:    expiresAt,
-		SubmittedAt:  ts,
-		SubmittedBy:  submittedBy,
-	}
-	if isVerified {
-		record.VerifiedAt = ts
+		ProofID:       fmt.Sprintf("ZKP-%s", txID[:16]),
+		CitizenHash:   citizenHash,
+		QueryType:     queryType,
+		ProofHash:     proofHash,
+		PublicSignals: publicSignals,
+		Threshold:     threshold,
+		IsVerified:    true,
+		VerifiedAt:    ts,
+		ExpiresAt:     expiresAt,
+		SubmittedAt:   ts,
+		SubmittedBy:   submittedBy,
 	}
 
 	data, err := json.Marshal(record)
 	if err != nil {
 		return nil, err
 	}
+
+	// Store the proof record
 	if err := ctx.GetStub().PutState("ZKP_"+record.ProofID, data); err != nil {
 		return nil, err
 	}
 
-	// Index by citizen + queryType for retrieval
+	// Mark hash as used (anti-replay sentinel — value is the proofId)
+	if err := ctx.GetStub().PutState("ZKPHASH_"+proofHash, []byte(record.ProofID)); err != nil {
+		return nil, err
+	}
+
+	// Composite index: citizen → queryType → proofId
 	ck, _ := ctx.GetStub().CreateCompositeKey("CITIZEN_ZKP", []string{citizenHash, queryType, record.ProofID})
 	if err := ctx.GetStub().PutState(ck, []byte{0}); err != nil {
 		return nil, err
 	}
 
-	// If verified, also issue a VerifiedClaim
-	if isVerified {
-		if err := s.issueVerifiedClaim(ctx, citizenHash, queryType, record.ProofID, expiresAt, ts); err != nil {
-			return nil, err
-		}
+	// Issue a VerifiedClaim
+	if err := s.issueVerifiedClaim(ctx, citizenHash, queryType, record.ProofID, expiresAt, ts); err != nil {
+		return nil, err
 	}
 
 	return &record, nil
@@ -137,7 +173,7 @@ func (s *SmartContract) GetProof(
 	return &proof, nil
 }
 
-// GetVerifiedClaims returns all active verified claims for a citizen.
+// GetVerifiedClaims returns all active (non-expired) verified claims for a citizen.
 func (s *SmartContract) GetVerifiedClaims(
 	ctx contractapi.TransactionContextInterface,
 	citizenHash string,
@@ -148,8 +184,6 @@ func (s *SmartContract) GetVerifiedClaims(
 	}
 	defer iter.Close()
 
-	// Use wall-clock time for expiry comparison — this is a read (evaluateTransaction),
-	// so non-determinism here does not affect endorsement consistency.
 	currentTime := time.Now().UTC().Format(time.RFC3339)
 
 	var claims []*VerifiedClaim
@@ -170,7 +204,6 @@ func (s *SmartContract) GetVerifiedClaims(
 		if err := json.Unmarshal(claimData, &claim); err != nil {
 			continue
 		}
-		// Only return non-expired claims
 		if claim.ValidUntil > currentTime {
 			claims = append(claims, &claim)
 		}
@@ -178,7 +211,7 @@ func (s *SmartContract) GetVerifiedClaims(
 	return claims, nil
 }
 
-// GetProofsByQueryType returns all proofs for a citizen of a specific query type.
+// GetProofsByQueryType returns all proofs for a citizen of a given query type.
 func (s *SmartContract) GetProofsByQueryType(
 	ctx contractapi.TransactionContextInterface,
 	citizenHash, queryType string,
@@ -213,20 +246,6 @@ func (s *SmartContract) GetProofsByQueryType(
 }
 
 // ── Helpers ───────────────────────────────────────────────────────
-
-// simulateVerification: Phase 1 stub. Phase 3 replaces this with actual Groth16.
-func (s *SmartContract) simulateVerification(proof, publicInputs string) bool {
-	// Accept proofs that are valid JSON objects with at least one field
-	var p map[string]interface{}
-	if err := json.Unmarshal([]byte(proof), &p); err != nil {
-		return false
-	}
-	var pi interface{}
-	if err := json.Unmarshal([]byte(publicInputs), &pi); err != nil {
-		return false
-	}
-	return len(p) > 0
-}
 
 func (s *SmartContract) issueVerifiedClaim(
 	ctx contractapi.TransactionContextInterface,
