@@ -3,17 +3,17 @@ import { useParams, useSearchParams } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   getCitizen, getCitizenFlags, getCitizenProperties,
-  updateFlagStatus, submitManualFlag,
+  updateFlagStatus, submitManualFlag, runBenamiScan,
   formatCrore, formatDate, daysAgo,
 } from '@bsc/shared';
 import {
   Card, Stat, DetailRow, PageSpinner, ErrorBanner, EmptyState,
   CitizenTypeBadge, ScoreBadge, SeverityBadge, StatusBadge, HashDisplay,
-  type FlagStatus, type Severity,
+  type FlagStatus, type Severity, type BenamiScanResult,
 } from '@bsc/shared';
-import { Search, ChevronRight, CheckCircle2, Loader2 } from 'lucide-react';
+import { Search, ChevronRight, CheckCircle2, Loader2, ShieldAlert } from 'lucide-react';
 
-type Tab = 'profile' | 'properties' | 'flags';
+type Tab = 'profile' | 'properties' | 'flags' | 'benami';
 
 function SearchBar({ onSearch }: { onSearch: (hash: string) => void }) {
   const [val, setVal] = useState('');
@@ -42,12 +42,13 @@ export default function CaseInvestigation() {
   const focusedFlagId  = searchParams.get('flag');
   const queryClient    = useQueryClient();
 
-  const [activeHash, setActiveHash] = useState(paramHash ?? '');
-  const [tab,        setTab]        = useState<Tab>('profile');
-  const [flagStatus, setFlagStatus] = useState<FlagStatus>('UNDER_INVESTIGATION');
-  const [notes,      setNotes]      = useState('');
-  const [manualForm, setManualForm] = useState(false);
-  const [statusMsg,  setStatusMsg]  = useState('');
+  const [activeHash,   setActiveHash]   = useState(paramHash ?? '');
+  const [tab,          setTab]          = useState<Tab>('profile');
+  const [flagStatus,   setFlagStatus]   = useState<FlagStatus>('UNDER_INVESTIGATION');
+  const [notes,        setNotes]        = useState('');
+  const [manualForm,   setManualForm]   = useState(false);
+  const [statusMsg,    setStatusMsg]    = useState('');
+  const [benamiResult, setBenamiResult] = useState<BenamiScanResult | null>(null);
 
   const citizenQ    = useQuery({ queryKey: ['citizen', activeHash],      queryFn: () => getCitizen(activeHash),             enabled: !!activeHash });
   const flagsQ      = useQuery({ queryKey: ['flags', activeHash],        queryFn: () => getCitizenFlags(activeHash),        enabled: !!activeHash });
@@ -72,6 +73,17 @@ export default function CaseInvestigation() {
       setManualForm(false);
       setStatusMsg('Manual flag submitted.');
       setTimeout(() => setStatusMsg(''), 3000);
+    },
+  });
+
+  const benamiMutation = useMutation({
+    mutationFn: () => runBenamiScan(activeHash),
+    onSuccess: (result) => {
+      setBenamiResult(result);
+      if (result.flagsRaised > 0) {
+        queryClient.invalidateQueries({ queryKey: ['flags', activeHash] });
+        queryClient.invalidateQueries({ queryKey: ['flags-all'] });
+      }
     },
   });
 
@@ -113,7 +125,7 @@ export default function CaseInvestigation() {
 
           {/* Tabs */}
           <div className="flex gap-1 border-b border-white/5">
-            {(['profile','properties','flags'] as Tab[]).map((t) => (
+            {(['profile','properties','flags','benami'] as Tab[]).map((t) => (
               <button
                 key={t}
                 onClick={() => setTab(t)}
@@ -123,7 +135,7 @@ export default function CaseInvestigation() {
                     : 'border-transparent text-slate-400 hover:text-white'
                 }`}
               >
-                {t}
+                {t === 'benami' ? 'Benami Scan' : t}
                 {t === 'flags' && flagsQ.data && (
                   <span className="ml-1.5 inline-flex items-center justify-center rounded-full bg-amber-500/15 text-amber-400 text-xs px-1.5 py-0.5">
                     {flagsQ.data.length}
@@ -259,6 +271,87 @@ export default function CaseInvestigation() {
                 </div>
                 {manualForm && <ManualFlagForm citizenHash={c.citizenHash} mutation={manualMutation} />}
               </Card>
+            </div>
+          )}
+          {/* Tab: Benami Scan */}
+          {tab === 'benami' && (
+            <div className="space-y-6">
+              <Card>
+                <div className="flex items-start justify-between gap-6">
+                  <div>
+                    <h3 className="text-sm font-semibold text-white mb-1">Benami Detection Scan</h3>
+                    <p className="text-xs text-slate-400">
+                      Evaluates 4 rules: proxy ownership, systematic undervaluation, disproportionate assets, unexplained 5-year surge.
+                      Triggered rules are recorded as immutable flags on the blockchain.
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => { setBenamiResult(null); benamiMutation.mutate(); }}
+                    disabled={benamiMutation.isPending}
+                    className="shrink-0 flex items-center gap-2 rounded-lg bg-red-600/80 hover:bg-red-600 disabled:opacity-50 px-4 py-2.5 text-sm font-semibold text-white"
+                  >
+                    {benamiMutation.isPending
+                      ? <Loader2 className="h-4 w-4 animate-spin" />
+                      : <ShieldAlert className="h-4 w-4" />}
+                    Run Scan
+                  </button>
+                </div>
+              </Card>
+
+              {benamiMutation.isError && (
+                <ErrorBanner message="Benami scan failed. Ensure the API is running and the citizen exists." />
+              )}
+
+              {benamiResult && (
+                <>
+                  {/* Summary bar */}
+                  <div className={`rounded-xl border px-5 py-4 flex items-center gap-4 ${
+                    benamiResult.flagsRaised > 0
+                      ? 'border-red-500/30 bg-red-500/10'
+                      : 'border-green-500/30 bg-green-500/10'
+                  }`}>
+                    {benamiResult.flagsRaised > 0
+                      ? <ShieldAlert className="h-5 w-5 text-red-400 shrink-0" />
+                      : <CheckCircle2 className="h-5 w-5 text-green-400 shrink-0" />}
+                    <div>
+                      <p className={`font-semibold ${benamiResult.flagsRaised > 0 ? 'text-red-300' : 'text-green-300'}`}>
+                        {benamiResult.flagsRaised > 0
+                          ? `${benamiResult.flagsRaised} benami flag${benamiResult.flagsRaised > 1 ? 's' : ''} raised and recorded on-chain`
+                          : 'No benami patterns detected'}
+                      </p>
+                      <p className="text-xs text-slate-400 mt-0.5">{benamiResult.rulesEvaluated} rules evaluated</p>
+                    </div>
+                  </div>
+
+                  {/* Rule details */}
+                  <div className="space-y-3">
+                    {benamiResult.ruleDetails.map((rule) => (
+                      <Card key={rule.ruleCode}>
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className={`inline-flex items-center rounded px-2 py-0.5 text-xs font-semibold ${
+                                rule.triggered ? 'bg-red-500/20 text-red-300' : 'bg-green-500/15 text-green-400'
+                              }`}>
+                                {rule.triggered ? 'TRIGGERED' : 'CLEAR'}
+                              </span>
+                              {rule.triggered && <SeverityBadge severity={rule.severity} />}
+                            </div>
+                            <p className="text-sm font-medium text-white">{rule.ruleCode.replace(/_/g, ' ')}</p>
+                            <p className="text-xs text-slate-400 mt-0.5">{rule.description}</p>
+                          </div>
+                          {rule.triggered && rule.gapAmount > 0 && (
+                            <div className="text-right shrink-0">
+                              <p className="text-[10px] text-slate-500 uppercase tracking-widest">Gap</p>
+                              <p className="font-bold text-orange-400">{formatCrore(rule.gapAmount)}</p>
+                            </div>
+                          )}
+                        </div>
+                      </Card>
+                    ))}
+                  </div>
+                </>
+              )}
             </div>
           )}
         </>
