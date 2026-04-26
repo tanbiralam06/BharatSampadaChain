@@ -193,6 +193,69 @@ components:
         reason:
           type: string
 
+    CourtOrder:
+      type: object
+      required: [orderId, propertyId, orderRef, orderType, issuedBy, reason, timestamp]
+      properties:
+        orderId:
+          type: string
+        propertyId:
+          type: string
+        orderRef:
+          type: string
+          description: Court case or order reference number
+        orderType:
+          type: string
+          enum: [FREEZE, UNFREEZE]
+        issuedBy:
+          type: string
+          description: Subject hash of the officer who issued the order
+        reason:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+
+    BenamiRuleDetail:
+      type: object
+      required: [ruleCode, description, severity, triggered, assetValue, incomeValue, gapAmount]
+      properties:
+        ruleCode:
+          type: string
+          enum: [PROXY_OWNERSHIP_PATTERN, SYSTEMATIC_UNDERVALUATION, DISPROPORTIONATE_ASSETS, UNEXPLAINED_5YR_SURGE]
+        description:
+          type: string
+        severity:
+          type: string
+          enum: [YELLOW, ORANGE, RED]
+        triggered:
+          type: boolean
+        assetValue:
+          type: integer
+        incomeValue:
+          type: integer
+        gapAmount:
+          type: integer
+
+    BenamiScanResult:
+      type: object
+      required: [citizenHash, rulesEvaluated, flagsRaised, flags, ruleDetails]
+      properties:
+        citizenHash:
+          type: string
+        rulesEvaluated:
+          type: integer
+        flagsRaised:
+          type: integer
+        flags:
+          type: array
+          items:
+            $ref: '#/components/schemas/AnomalyFlag'
+        ruleDetails:
+          type: array
+          items:
+            $ref: '#/components/schemas/BenamiRuleDetail'
+
     AnomalyFlag:
       type: object
       required: [flagId, citizenHash, ruleTriggered, severity, description,
@@ -206,8 +269,10 @@ components:
           maxLength: 64
         ruleTriggered:
           type: string
-          enum: [ASSET_TO_INCOME_RATIO, RAPID_ASSET_GROWTH, INCOME_TAX_GAP,
-                 BENAMI_SUSPICION, SHELL_COMPANY_LINK, FOREIGN_ASSET_UNDECLARED, LIFESTYLE_MISMATCH]
+          enum: [INCOME_ASSET_MISMATCH, UNEXPLAINED_WEALTH, OFFICIAL_WEALTH_SURGE,
+                 PROXY_OWNERSHIP_PATTERN, SYSTEMATIC_UNDERVALUATION, DISPROPORTIONATE_ASSETS, UNEXPLAINED_5YR_SURGE,
+                 BENAMI_SUSPICION, SHELL_COMPANY_LINK, FOREIGN_ASSET_UNDECLARED, LIFESTYLE_MISMATCH,
+                 BANK_DISCREPANCY]
         severity:
           type: string
           enum: [YELLOW, ORANGE, RED]
@@ -456,6 +521,85 @@ paths:
                     type: boolean
                   data:
                     $ref: '#/components/schemas/CitizenNode'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /citizens/{hash}/check-benami:
+    post:
+      summary: Run benami detection scan on a citizen
+      tags: [citizens]
+      description: |
+        Evaluates 4 cross-citizen rules in-process using PostgreSQL mirror data.
+        Triggered rules write immutable AnomalyFlags via anomaly chaincode SubmitManualFlag.
+        Requires IT_DEPT, ED, CBI, or ADMIN role.
+      parameters:
+        - name: hash
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Benami scan result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/BenamiScanResult'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          description: Citizen not found
+
+  /citizens/{hash}/bank-flag:
+    post:
+      summary: Submit a bank-reported financial discrepancy (BANK only)
+      tags: [citizens]
+      description: |
+        Creates a BANK_DISCREPANCY anomaly flag (ORANGE severity) via the anomaly chaincode.
+        Requires BANK role.
+      parameters:
+        - name: hash
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [discrepancyAmount, description, accountRef]
+              properties:
+                discrepancyAmount:
+                  type: integer
+                  minimum: 1
+                  description: Discrepancy amount in Rupees (not paisa)
+                description:
+                  type: string
+                  minLength: 10
+                accountRef:
+                  type: string
+                  description: Bank account or loan reference number
+      responses:
+        '201':
+          description: Bank discrepancy flag created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/AnomalyFlag'
+        '400':
+          $ref: '#/components/responses/ValidationError'
         '403':
           $ref: '#/components/responses/Forbidden'
 
@@ -712,6 +856,125 @@ paths:
         '403':
           $ref: '#/components/responses/Forbidden'
 
+  /properties/{id}/freeze:
+    post:
+      summary: Issue a court stay order (COURT only)
+      tags: [properties]
+      description: |
+        Sets encumbrance to COURT_STAY, blocking all transfers.
+        Writes an immutable CourtOrder record to the ledger.
+        Requires COURT role.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [orderRef, reason]
+              properties:
+                orderRef:
+                  type: string
+                  description: Court case or order reference number
+                reason:
+                  type: string
+                  minLength: 5
+      responses:
+        '200':
+          description: Updated property record with COURT_STAY encumbrance
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/PropertyRecord'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /properties/{id}/unfreeze:
+    post:
+      summary: Lift a court stay order (COURT only)
+      tags: [properties]
+      description: |
+        Sets encumbrance to CLEAR, re-enabling transfers.
+        Returns error if property is not currently frozen.
+        Requires COURT role.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [orderRef, reason]
+              properties:
+                orderRef:
+                  type: string
+                reason:
+                  type: string
+                  minLength: 5
+      responses:
+        '200':
+          description: Updated property record with CLEAR encumbrance
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/PropertyRecord'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /properties/{id}/court-orders:
+    get:
+      summary: Get court order history for a property
+      tags: [properties]
+      description: |
+        Returns all freeze and unfreeze court orders for a property in chronological order.
+        Accessible to COURT, IT_DEPT, ED, CBI, and ADMIN roles.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Court order history
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CourtOrder'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
   /flags:
     get:
       summary: List anomaly flags (officer view)
@@ -842,13 +1105,17 @@ paths:
         '403':
           $ref: '#/components/responses/Forbidden'
 
-  /zkp/{citizenHash}:
+  /zkp/{citizenHash}/prove:
     post:
-      summary: Submit a ZKP proof for a citizen
+      summary: Generate and record a Groth16 ZKP proof (asset threshold)
       tags: [zkp]
       description: |
-        Phase 1: proof payload is stored and marked verified without real Groth16 verification.
-        Real verification is planned for Phase 3.
+        Reads the citizen's totalDeclaredAssets from the off-chain PostgreSQL mirror,
+        generates a Groth16 proof that assets >= threshold using the asset_threshold circom circuit,
+        verifies it locally via snarkjs, then records the attestation on-chain via the zkp chaincode.
+        The raw asset value is never returned — only the cryptographic proof and commitment.
+        Returns 422 if assets < threshold (proof cannot be generated).
+        Returns 503 if ZKP keys have not been generated (run: docker compose run --rm zkp-setup).
       parameters:
         - name: citizenHash
           in: path
@@ -861,20 +1128,15 @@ paths:
           application/json:
             schema:
               type: object
-              required: [queryType, proof, publicInputs]
+              required: [threshold]
               properties:
-                queryType:
-                  type: string
-                  enum: [INCOME_ABOVE_THRESHOLD, ASSET_RANGE, RESIDENCE, TAX_COMPLIANCE]
-                proof:
-                  type: string
-                  minLength: 1
-                publicInputs:
-                  type: string
-                  minLength: 1
+                threshold:
+                  type: integer
+                  description: Minimum asset threshold in paisa (e.g. 5000000000 = ₹50 lakh)
+                  minimum: 1
       responses:
         '201':
-          description: Proof stored
+          description: Proof generated, verified, and recorded on-chain
           content:
             application/json:
               schema:
@@ -883,9 +1145,31 @@ paths:
                   success:
                     type: boolean
                   data:
-                    $ref: '#/components/schemas/ZKPProof'
+                    type: object
+                    properties:
+                      proofId:
+                        type: string
+                      verified:
+                        type: boolean
+                      publicSignals:
+                        type: array
+                        items:
+                          type: string
+                        description: "[threshold, commitment] — safe to publish"
+                      commitment:
+                        type: string
+                        description: Poseidon(totalAssets, salt) — binds proof to real ledger data
+                      expiresAt:
+                        type: string
+                        format: date-time
         '400':
           $ref: '#/components/responses/ValidationError'
+        '404':
+          description: Citizen not found
+        '422':
+          description: Assets do not meet the requested threshold
+        '503':
+          description: ZKP keys not generated yet
 
   /zkp/{citizenHash}/claims:
     get:
