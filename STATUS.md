@@ -1,7 +1,7 @@
 # BSC — Implementation Status
 
 > Read this before starting any session. Updated after every significant merge to `main`.
-> Last updated: 2026-04-26 · Branch: `main` · Phase: 3 in progress — benami detection complete
+> Last updated: 2026-04-26 · Branch: `main` · Phase: 3 in progress — Court + Bank integrations complete
 
 ---
 
@@ -19,7 +19,7 @@
 | API Gateway | ✅ Running on :4000 | 18 routes live, JWT auth, rate limiting, Winston logging |
 | Ledger → PostgreSQL sync | ✅ Done | Service-layer dual-write on every chaincode write |
 | Officer access notifications | ✅ Done | `notifyOfficerAccess()` writes to `system_audit` on every non-citizen read |
-| API tests | ✅ Done | 94 tests across 11 files (Jest + Supertest), all passing |
+| API tests | ✅ Done | 120 tests across 13 files (Jest + Supertest), all passing |
 | OpenAPI spec | ✅ Done | `docs/api/openapi.yaml` — all endpoints, full schemas, role annotations |
 | Rate limiting | ✅ Done | 200 req/15 min global; 20 req/15 min on `/auth` |
 | Structured logging | ✅ Done | Winston — colored dev output, JSON in production |
@@ -89,6 +89,10 @@ All chaincodes use `txTime(ctx)` — deterministic timestamps across all endorsi
 | `POST /zkp/:citizenHash` | JWT | Any role |
 | `GET /zkp/:citizenHash/claims` | JWT | Any role |
 | `POST /citizens/:hash/check-benami` | JWT | IT_DEPT, ED, CBI, ADMIN |
+| `POST /properties/:id/freeze` | JWT | COURT only |
+| `POST /properties/:id/unfreeze` | JWT | COURT only |
+| `GET /properties/:id/court-orders` | JWT | COURT, IT_DEPT, ED, CBI, ADMIN |
+| `POST /citizens/:hash/bank-flag` | JWT | BANK only |
 | `GET /admin/health` | JWT | ADMIN only |
 | `GET /admin/stats` | JWT | ADMIN only |
 
@@ -153,6 +157,26 @@ All chaincodes use `txTime(ctx)` — deterministic timestamps across all endorsi
 - **Chaincode `zkp` v1.1** — stores proof HASH (SHA-256), not raw proof; anti-replay via `ZKPHASH_` sentinel; rejects unverified proofs
 - **Standalone CLI** (`zkp/scripts/prove.js`, `verify.js`) — usable without the API
 - **Circuit tests** (`zkp/tests/asset_threshold.test.js`) — 5 tests: valid proof, exact equality, below-threshold fails, tampered signals fail, tampered proof fails
+
+#### Court + Bank Role Integrations (complete)
+
+**Court role:**
+- `POST /properties/:id/freeze` (COURT only) — issues a court stay order; sets `encumbrance = COURT_STAY` on Fabric, blocks all future transfers (enforced in existing `TransferProperty` chaincode logic)
+- `POST /properties/:id/unfreeze` (COURT only) — lifts active stay order, sets `encumbrance = CLEAR`
+- `GET /properties/:id/court-orders` (COURT, IT_DEPT, ED, CBI, ADMIN) — returns full audit trail of freeze/unfreeze orders
+- **Property chaincode v1.2**: new `FreezeProperty` + `UnfreezeProperty` + `GetCourtOrders` functions; stores `CourtOrder` records keyed as `CORDER_<orderId>`; indexed via `PROP_ORDER` composite key for efficient per-property retrieval
+- Officer-console: **Court Orders** page — property search, freeze/unfreeze form with court case reference + reason, real-time encumbrance status badge, full order history
+- Nav item **only visible to COURT role** (role-filtered NAV array in Layout.tsx)
+
+**Bank role:**
+- `POST /citizens/:hash/bank-flag` (BANK only) — reports a financial discrepancy; creates `BANK_DISCREPANCY` flag (ORANGE) via anomaly chaincode `SubmitManualFlag`; body requires `discrepancyAmount`, `description` (min 10 chars), `accountRef`
+- Officer-console: **Bank Reports** page — citizen lookup, discrepancy report form, bank-flag history filtered from citizen flags, wealth profile for reference
+- Nav item **only visible to BANK role**
+
+**Shared:**
+- `CourtOrder` interface added to `api/src/models/index.ts` and `frontend/shared/src/types.ts`
+- Endpoint helpers: `freezeProperty`, `unfreezeProperty`, `getPropertyCourtOrders`, `submitBankFlag`
+- 26 new API tests (court: 11, bank: 15) — RBAC, validation, happy path for all 4 endpoints
 
 #### Benami Detection (complete)
 
@@ -275,7 +299,7 @@ Default dev password for all seed users: `password` — **change before any demo
 | Admin TOTP (2FA) | ✅ Done | Two-step login, QR enroll, Security page — see Phase 3 section above |
 | Cross-ministry data sharing rules | ✅ Done | Permission matrix API + admin UI — see Phase 3 section above |
 | Benami detection (cross-citizen ML rules) | ✅ Done | 4 rules: proxy ownership, systematic undervaluation, disproportionate assets, 5-yr surge — see Phase 3 section above |
-| Court + Bank role integrations | Court order enforcement, bank-reported discrepancy flags |
+| Court + Bank role integrations | ✅ Done | Freeze/unfreeze property (COURT), bank discrepancy flag (BANK), officer-console pages — see Phase 3 section above |
 
 ---
 
