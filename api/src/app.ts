@@ -40,9 +40,11 @@ app.use('/flags', flagsRouter);
 app.use('/zkp', zkpRouter);
 app.use('/admin', adminRouter);
 
-app.use((err: Error, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
-  logger.error('Unhandled error', { message: err.message, stack: err.stack });
-  res.status(500).json({ success: false, error: err.message ?? 'Internal server error' });
+app.use((err: Error & { status?: number }, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+  const status = err.status ?? 500;
+  if (status >= 500) logger.error('Unhandled error', { message: err.message, stack: err.stack });
+  else               logger.warn('Request error', { status, message: err.message });
+  res.status(status).json({ success: false, error: err.message ?? 'Internal server error' });
 });
 
 export default app;

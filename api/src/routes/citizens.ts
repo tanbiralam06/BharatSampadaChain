@@ -2,6 +2,7 @@ import { Router, Response } from 'express';
 import { z } from 'zod';
 import { authenticate, requireRole, AuthRequest } from '../middleware/auth';
 import * as citizenService from '../services/citizen.service';
+import * as benamiService from '../services/benami.service';
 import { asyncHandler } from '../utils/asyncHandler';
 import { query } from '../db/client';
 
@@ -121,6 +122,14 @@ router.post('/', authenticate, requireRole('ADMIN', 'IT_DEPT'), asyncHandler(asy
 // POST /citizens/:hash/check-anomaly
 router.post('/:hash/check-anomaly', authenticate, requireRole('IT_DEPT', 'ADMIN'), asyncHandler(async (req: AuthRequest, res: Response) => {
   const result = await citizenService.runAnomalyCheck(req.params.hash);
+  res.json({ success: true, data: result });
+}));
+
+// POST /citizens/:hash/check-benami
+// Runs 4 benami/cross-citizen detection rules using PostgreSQL mirror data.
+// Triggered rules write immutable AnomalyFlags via the anomaly chaincode.
+router.post('/:hash/check-benami', authenticate, requireRole('IT_DEPT', 'ED', 'CBI', 'ADMIN'), asyncHandler(async (req: AuthRequest, res: Response) => {
+  const result = await benamiService.runBenamiScan(req.params.hash, req.user!.sub);
   res.json({ success: true, data: result });
 }));
 
