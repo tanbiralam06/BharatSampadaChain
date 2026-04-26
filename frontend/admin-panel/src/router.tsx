@@ -6,6 +6,7 @@ import SystemHealth          from './pages/SystemHealth';
 import AgencyManagement      from './pages/AgencyManagement';
 import OfficerManagement     from './pages/OfficerManagement';
 import AuditOverview         from './pages/AuditOverview';
+import Security              from './pages/Security';
 
 export function AppRoutes() {
   return (
@@ -16,6 +17,7 @@ export function AppRoutes() {
         <Route path="agencies"   element={<AgencyManagement />} />
         <Route path="officers"   element={<OfficerManagement />} />
         <Route path="audit"      element={<AuditOverview />} />
+        <Route path="security"   element={<Security />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
