@@ -56,4 +56,45 @@ router.put('/:id/transfer', authenticate, requireRole('ADMIN', 'IT_DEPT'), async
   res.json({ success: true, data: transfer });
 }));
 
+const CourtOrderSchema = z.object({
+  orderRef: z.string().min(1).max(100),
+  reason:   z.string().min(5).max(500),
+});
+
+// POST /properties/:id/freeze — COURT only; issues a stay order blocking transfers
+router.post('/:id/freeze', authenticate, requireRole('COURT'), asyncHandler(async (req: AuthRequest, res: Response) => {
+  const parsed = CourtOrderSchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ success: false, error: parsed.error.issues[0].message });
+    return;
+  }
+  const property = await propertyService.freezeProperty({
+    propertyId: req.params.id,
+    issuedBy:   req.user!.sub,
+    ...parsed.data,
+  });
+  res.json({ success: true, data: property });
+}));
+
+// POST /properties/:id/unfreeze — COURT only; lifts an active stay order
+router.post('/:id/unfreeze', authenticate, requireRole('COURT'), asyncHandler(async (req: AuthRequest, res: Response) => {
+  const parsed = CourtOrderSchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ success: false, error: parsed.error.issues[0].message });
+    return;
+  }
+  const property = await propertyService.unfreezeProperty({
+    propertyId: req.params.id,
+    issuedBy:   req.user!.sub,
+    ...parsed.data,
+  });
+  res.json({ success: true, data: property });
+}));
+
+// GET /properties/:id/court-orders — COURT, ADMIN, IT_DEPT, ED, CBI
+router.get('/:id/court-orders', authenticate, requireRole('COURT', 'ADMIN', 'IT_DEPT', 'ED', 'CBI'), asyncHandler(async (req: AuthRequest, res: Response) => {
+  const orders = await propertyService.getCourtOrders(req.params.id);
+  res.json({ success: true, data: orders });
+}));
+
 export default router;

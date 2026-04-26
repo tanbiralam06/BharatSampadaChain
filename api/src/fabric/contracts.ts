@@ -126,6 +126,44 @@ export async function transferProperty(params: {
   return decode(result) as TransferRecord;
 }
 
+export interface CourtOrder {
+  orderId:    string;
+  propertyId: string;
+  orderRef:   string;
+  orderType:  'FREEZE' | 'UNFREEZE';
+  issuedBy:   string;
+  reason:     string;
+  timestamp:  string;
+}
+
+export async function freezeProperty(params: {
+  propertyId: string; issuedBy: string; orderRef: string; reason: string;
+}): Promise<PropertyRecord> {
+  const cc = await getContract(config.fabric.chaincodes.property);
+  const result = await cc.submitTransaction(
+    'FreezeProperty',
+    params.propertyId, params.issuedBy, params.orderRef, params.reason
+  );
+  return decode(result) as PropertyRecord;
+}
+
+export async function unfreezeProperty(params: {
+  propertyId: string; issuedBy: string; orderRef: string; reason: string;
+}): Promise<PropertyRecord> {
+  const cc = await getContract(config.fabric.chaincodes.property);
+  const result = await cc.submitTransaction(
+    'UnfreezeProperty',
+    params.propertyId, params.issuedBy, params.orderRef, params.reason
+  );
+  return decode(result) as PropertyRecord;
+}
+
+export async function getCourtOrders(propertyId: string): Promise<CourtOrder[]> {
+  const cc = await getContract(config.fabric.chaincodes.property);
+  const result = await cc.evaluateTransaction('GetCourtOrders', propertyId);
+  return (decode(result) as CourtOrder[]) ?? [];
+}
+
 // ── Access chaincode ──────────────────────────────────────────────
 
 export async function logAccess(params: {

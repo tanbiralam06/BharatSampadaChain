@@ -3,6 +3,7 @@ import { db } from '../db/client';
 import { syncProperty } from '../db/sync';
 import { isFabricUnavailable } from '../utils/fabricErrors';
 import type { PropertyRecord, TransferRecord } from '../models';
+import type { CourtOrder } from '../fabric/contracts';
 
 export async function registerProperty(params: {
   propertyId: string; ownerHash: string; registrationNo: string;
@@ -59,3 +60,25 @@ export async function transferProperty(params: {
 
   return transfer;
 }
+
+export async function freezeProperty(params: {
+  propertyId: string; issuedBy: string; orderRef: string; reason: string;
+}): Promise<PropertyRecord> {
+  const property = await fabric.freezeProperty(params);
+  void syncProperty(property);
+  return property;
+}
+
+export async function unfreezeProperty(params: {
+  propertyId: string; issuedBy: string; orderRef: string; reason: string;
+}): Promise<PropertyRecord> {
+  const property = await fabric.unfreezeProperty(params);
+  void syncProperty(property);
+  return property;
+}
+
+export async function getCourtOrders(propertyId: string): Promise<CourtOrder[]> {
+  return fabric.getCourtOrders(propertyId);
+}
+
+export type { CourtOrder };

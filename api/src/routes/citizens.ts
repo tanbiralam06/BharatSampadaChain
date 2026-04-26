@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { authenticate, requireRole, AuthRequest } from '../middleware/auth';
 import * as citizenService from '../services/citizen.service';
 import * as benamiService from '../services/benami.service';
+import * as flagService from '../services/flag.service';
 import { asyncHandler } from '../utils/asyncHandler';
 import { query } from '../db/client';
 
@@ -164,6 +165,32 @@ router.get('/:hash/properties', authenticate, asyncHandler(async (req: AuthReque
   }
   const properties = await citizenService.getCitizenProperties(hash, req.user!);
   res.json({ success: true, data: properties });
+}));
+
+const BankFlagSchema = z.object({
+  discrepancyAmount: z.number().int().positive(),
+  description:       z.string().min(10).max(500),
+  accountRef:        z.string().min(1).max(100),
+});
+
+// POST /citizens/:hash/bank-flag — BANK only; reports a financial discrepancy
+router.post('/:hash/bank-flag', authenticate, requireRole('BANK'), asyncHandler(async (req: AuthRequest, res: Response) => {
+  const parsed = BankFlagSchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ success: false, error: parsed.error.issues[0].message });
+    return;
+  }
+  const { discrepancyAmount, description, accountRef } = parsed.data;
+  const flag = await flagService.submitManualFlag({
+    citizenHash:   req.params.hash,
+    ruleTriggered: 'BANK_DISCREPANCY',
+    severity:      'ORANGE',
+    description:   `[${accountRef}] ${description}`,
+    assetValue:    discrepancyAmount,
+    incomeValue:   0,
+    gapAmount:     discrepancyAmount,
+  });
+  res.status(201).json({ success: true, data: flag });
 }));
 
 export default router;

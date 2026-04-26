@@ -89,6 +89,16 @@ export interface JWTPayload {
   exp?: number;
 }
 
+export interface CourtOrder {
+  orderId:    string;
+  propertyId: string;
+  orderRef:   string;
+  orderType:  'FREEZE' | 'UNFREEZE';
+  issuedBy:   string;
+  reason:     string;
+  timestamp:  string;
+}
+
 export interface TransferRecord {
   transferId: string;
   propertyId: string;
