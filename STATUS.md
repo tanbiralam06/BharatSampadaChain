@@ -1,7 +1,7 @@
 # BSC — Implementation Status
 
 > Read this before starting any session. Updated after every significant merge to `main`.
-> Last updated: 2026-04-26 · Branch: `main` · Phase: 3 in progress — officer onboarding complete
+> Last updated: 2026-04-26 · Branch: `main` · Phase: 3 in progress — TOTP + Fabric fallback complete
 
 ---
 
@@ -19,7 +19,7 @@
 | API Gateway | ✅ Running on :4000 | 18 routes live, JWT auth, rate limiting, Winston logging |
 | Ledger → PostgreSQL sync | ✅ Done | Service-layer dual-write on every chaincode write |
 | Officer access notifications | ✅ Done | `notifyOfficerAccess()` writes to `system_audit` on every non-citizen read |
-| API tests | ✅ Done | 54 tests across 7 files (Jest + Supertest), all passing |
+| API tests | ✅ Done | 82 tests across 10 files (Jest + Supertest), all passing |
 | OpenAPI spec | ✅ Done | `docs/api/openapi.yaml` — all endpoints, full schemas, role annotations |
 | Rate limiting | ✅ Done | 200 req/15 min global; 20 req/15 min on `/auth` |
 | Structured logging | ✅ Done | Winston — colored dev output, JSON in production |
@@ -99,8 +99,8 @@ All chaincodes use `txTime(ctx)` — deterministic timestamps across all endorsi
 - Redis cache invalidated on `updateCitizenAssets`
 
 #### Tests (`api/tests/` — Jest + Supertest)
-- 40 tests, 6 files, all passing — `npm test` from `api/`
-- Covers: health, auth (login + middleware), citizens (RBAC + CRUD + anomaly), properties (register + get + transfer), flags (list + status update + DB sync + manual), admin (health degraded/healthy + stats)
+- 82 tests, 10 files, all passing — `npm test` from `api/`
+- Covers: health, auth (login + middleware), citizens (RBAC + CRUD + anomaly), properties (register + get + transfer), flags (list + status update + DB sync + manual), admin (health degraded/healthy + stats), officers (RBAC + 409 duplicate + 403 cross-agency), TOTP (all 5 routes + edge cases), permissions (ADMIN-only RBAC + update validation)
 - All Fabric and DB dependencies mocked at the module level — no live services needed
 
 ---
@@ -115,6 +115,32 @@ All chaincodes use `txTime(ctx)` — deterministic timestamps across all endorsi
 - Admin panel: **OfficerManagement** page — full table + create modal with all 5 agency roles
 - Officer console: **MyTeam** page — same UI scoped to own agency; role field locked to caller's role
 - 14 new API tests covering RBAC, duplicate email (409), cross-agency block (403), not-found (404)
+
+#### Admin TOTP 2FA (complete)
+- Two-step login: password → `{ step: 'totp_required', challenge_token }` → TOTP code → full JWT
+- Challenge token is a short-lived JWT (`purpose: 'totp_challenge'`, 5 min TTL) — stateless, no Redis/DB state
+- `POST /auth/totp/setup` — generates TOTP secret, returns `qrCode` (PNG data URL) + `uri` (otpauth://)
+- `POST /auth/totp/verify-setup` — validates first code, sets `totp_enabled = true`
+- `POST /auth/totp/verify` — exchanges challenge token + live TOTP code for full ADMIN JWT
+- `POST /auth/totp/disable` — requires live code; sets `totp_enabled = false`
+- `GET /auth/totp/status` — returns `{ enabled: bool }`
+- Migration `004_totp.sql`: `totp_secret VARCHAR(64)` + `totp_enabled BOOLEAN DEFAULT false` on `bsc_users`
+- Admin panel: two-step **Login** page + **Security** page (enroll/disable with QR code display)
+- 15 new API tests (mocked `otplib` + `qrcode`) covering all 5 routes and edge cases
+
+#### Cross-Ministry Permission Matrix (complete)
+- `GET /admin/permissions` — returns all 8 role permission rules (Fabric primary, PostgreSQL fallback)
+- `PUT /admin/permissions/:role` — updates allowed data types + `requiresRef` flag for one role; writes to Fabric and mirrors to PostgreSQL
+- New chaincode functions on `access` v1.1: `GetAllPermissionRules` (range scan over `PERM_*` keys) + `UpdatePermissionRule`
+- Migration `005_permissions.sql`: `permission_rules` table pre-seeded with the same 8 rules as `InitLedger`
+- Admin panel: **Permissions** page — checkbox grid (roles × data types) with per-row save; unsaved rows highlighted amber
+- 13 new API tests covering RBAC (ADMIN-only), unknown role 400, validation errors, happy path update
+
+#### Fabric Graceful Degradation (complete)
+- `api/src/utils/fabricErrors.ts` — `isFabricUnavailable()` detects `UNAVAILABLE`, `ECONNREFUSED`, `No connection established`
+- All read operations in `flag.service.ts`, `citizen.service.ts`, `property.service.ts` fall back to PostgreSQL mirror when Fabric peer is offline
+- Write operations (create citizen, register property, anomaly check) still require Fabric — correct by design
+- Redis backoff: exponential retry strategy (2 s → 4 s → … → 30 s cap), gives up after 5 attempts, suppresses duplicate warning logs
 
 ---
 
@@ -206,8 +232,8 @@ Default dev password for all seed users: `password` — **change before any demo
 | Officer onboarding flow | ✅ Done | API + admin-panel OfficerManagement + officer-console MyTeam |
 | Raft consensus orderer | Replace solo orderer for production fault tolerance |
 | NIC / Government SSO integration | Single sign-on for officer roles |
-| Admin TOTP (2FA) | Time-based OTP for the ADMIN role |
-| Cross-ministry data sharing rules | Fine-grained `access` chaincode permission updates |
+| Admin TOTP (2FA) | ✅ Done | Two-step login, QR enroll, Security page — see Phase 3 section above |
+| Cross-ministry data sharing rules | ✅ Done | Permission matrix API + admin UI — see Phase 3 section above |
 | Benami detection (cross-citizen ML rules) | Shell company and proxy ownership analysis |
 | Court + Bank role integrations | Court order enforcement, bank-reported discrepancy flags |
 

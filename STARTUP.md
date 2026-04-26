@@ -120,7 +120,8 @@ Check the table below and apply any file you have not yet run.
 | `001_initial_schema.sql` | Core tables | First-time setup (auto-applied by `make seed`) |
 | `002_seed_data.sql` | Seed citizens, officers, flags | First-time setup (auto-applied by `make seed`) |
 | `003_add_login_id.sql` | Login ID column on bsc_users | Upgrading from early builds |
-| `004_totp.sql` | TOTP columns for Admin 2FA | Phase 3 upgrade — run this now if not done yet |
+| `004_totp.sql` | TOTP columns for Admin 2FA | Phase 3 upgrade |
+| `005_permissions.sql` | Permission matrix mirror table | Phase 3 upgrade — run this now if not done yet |
 
 To apply any migration:
 
