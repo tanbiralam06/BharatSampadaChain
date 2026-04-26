@@ -1,11 +1,12 @@
 import { NavLink, Outlet } from 'react-router-dom';
-import { HeartPulse, Building, ClipboardList, LogOut, Settings2 } from 'lucide-react';
+import { HeartPulse, Building, ClipboardList, LogOut, Settings2, UserCog } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 const NAV = [
-  { to: '/',         icon: HeartPulse,   label: 'System Health'      },
-  { to: '/agencies', icon: Building,     label: 'Agency Management'  },
-  { to: '/audit',    icon: ClipboardList, label: 'Audit Overview'    },
+  { to: '/',         icon: HeartPulse,    label: 'System Health'      },
+  { to: '/agencies', icon: Building,      label: 'Agency Management'  },
+  { to: '/officers', icon: UserCog,       label: 'Officer Management' },
+  { to: '/audit',    icon: ClipboardList, label: 'Audit Overview'     },
 ];
 
 export function Layout() {

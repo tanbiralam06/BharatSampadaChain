@@ -1,7 +1,7 @@
 # BSC — Implementation Status
 
 > Read this before starting any session. Updated after every significant merge to `main`.
-> Last updated: 2026-04-26 · Branch: `main` · Phase: 2 complete → Phase 3 ready (all P1 blockers cleared)
+> Last updated: 2026-04-26 · Branch: `main` · Phase: 3 in progress — officer onboarding complete
 
 ---
 
@@ -19,7 +19,7 @@
 | API Gateway | ✅ Running on :4000 | 18 routes live, JWT auth, rate limiting, Winston logging |
 | Ledger → PostgreSQL sync | ✅ Done | Service-layer dual-write on every chaincode write |
 | Officer access notifications | ✅ Done | `notifyOfficerAccess()` writes to `system_audit` on every non-citizen read |
-| API tests | ✅ Done | 40 tests across 6 files (Jest + Supertest), all passing |
+| API tests | ✅ Done | 54 tests across 7 files (Jest + Supertest), all passing |
 | OpenAPI spec | ✅ Done | `docs/api/openapi.yaml` — all endpoints, full schemas, role annotations |
 | Rate limiting | ✅ Done | 200 req/15 min global; 20 req/15 min on `/auth` |
 | Structured logging | ✅ Done | Winston — colored dev output, JSON in production |
@@ -29,8 +29,8 @@
 | `POST /auth/guest` | ✅ Done | Issues PUBLIC-role JWT for unauthenticated dashboard |
 | Authentication model | ✅ Done | `login_id` column — Aadhaar / email / username; hash resolved server-side |
 | Frontend — `citizen-dashboard` | ✅ Built | Port 5174 · 5 pages · JWT auth · React Query · all endpoints wired |
-| Frontend — `officer-console` | ✅ Built | Port 5175 · ActiveFlags, CaseInvestigation, FamilyAnalysis |
-| Frontend — `admin-panel` | ✅ Built | Port 5176 · SystemHealth (auto-refresh), AgencyManagement, AuditOverview |
+| Frontend — `officer-console` | ✅ Built | Port 5175 · ActiveFlags, CaseInvestigation, FamilyAnalysis, MyTeam |
+| Frontend — `admin-panel` | ✅ Built | Port 5176 · SystemHealth, AgencyManagement, OfficerManagement, AuditOverview |
 | Frontend — `public-dashboard` | ✅ Built | Port 5173 · Guest JWT · BrowseOfficials, OfficialProfile, Compare |
 | Frontend — `shared/` | ✅ Built | Types, apiClient, endpoints, formatters, Badge/Card/Spinner/Error/Empty/Hash |
 | Dev credentials reference | ✅ Done | `DEV_CREDENTIALS.md` — all seed logins + curl examples |
@@ -102,6 +102,19 @@ All chaincodes use `txTime(ctx)` — deterministic timestamps across all endorsi
 - 40 tests, 6 files, all passing — `npm test` from `api/`
 - Covers: health, auth (login + middleware), citizens (RBAC + CRUD + anomaly), properties (register + get + transfer), flags (list + status update + DB sync + manual), admin (health degraded/healthy + stats)
 - All Fabric and DB dependencies mocked at the module level — no live services needed
+
+---
+
+### Phase 3 — Advanced Features (in progress)
+
+#### Officer Onboarding (complete)
+- `POST /admin/officers` — create officer account; ADMIN creates any role, agency officer creates own role only
+- `GET /admin/officers` — list officers; ADMIN sees all agencies, agency officer sees own agency only
+- `PUT /admin/officers/:hash/status` — activate / deactivate; same scoping rules as above
+- `subject_hash` derived as SHA-256 of email — consistent with how citizen hashes are derived from PAN
+- Admin panel: **OfficerManagement** page — full table + create modal with all 5 agency roles
+- Officer console: **MyTeam** page — same UI scoped to own agency; role field locked to caller's role
+- 14 new API tests covering RBAC, duplicate email (409), cross-agency block (403), not-found (404)
 
 ---
 
@@ -190,7 +203,7 @@ Default dev password for all seed users: `password` — **change before any demo
 |---|---|
 | Real ZKP (Groth16 via circom) | Replace simulated `zkp` chaincode with actual proof verification |
 | Aadhaar OTP login (UIDAI sandbox) | Replace static password with one-time passcode for citizens |
-| Officer onboarding flow | Admin UI to create officer accounts (sets `login_id` + `subject_hash`) |
+| Officer onboarding flow | ✅ Done | API + admin-panel OfficerManagement + officer-console MyTeam |
 | Raft consensus orderer | Replace solo orderer for production fault tolerance |
 | NIC / Government SSO integration | Single sign-on for officer roles |
 | Admin TOTP (2FA) | Time-based OTP for the ADMIN role |

@@ -1,12 +1,13 @@
 import { NavLink, Outlet } from 'react-router-dom';
-import { Flag, Search, Users, LogOut, Siren } from 'lucide-react';
+import { Flag, Search, Users, LogOut, Siren, UserCog } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { formatHash, RoleBadge } from '@bsc/shared';
 
 const NAV = [
-  { to: '/',          icon: Flag,   label: 'Active Flags'  },
-  { to: '/investigate', icon: Search, label: 'Investigate'   },
-  { to: '/family',    icon: Users,  label: 'Family Analysis' },
+  { to: '/',           icon: Flag,    label: 'Active Flags'    },
+  { to: '/investigate', icon: Search,  label: 'Investigate'     },
+  { to: '/family',     icon: Users,   label: 'Family Analysis' },
+  { to: '/team',       icon: UserCog, label: 'My Team'         },
 ];
 
 export function Layout() {

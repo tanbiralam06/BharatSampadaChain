@@ -6,6 +6,7 @@ import type {
   ApiResponse, CitizenNode, CitizenSummary, PropertyRecord,
   AnomalyFlag, AccessLog, FinancialAsset, LoginResponse,
   HealthData, StatsData, AccessorRole, Severity, FlagStatus, CitizenType,
+  OfficerUser, CreateOfficerInput,
 } from './types';
 
 // ── Auth ──────────────────────────────────────────────────────────────────────
@@ -88,4 +89,16 @@ export const getHealth = () =>
 
 export const getStats = () =>
   apiClient.get<ApiResponse<StatsData>>('/admin/stats')
+    .then((r) => r.data.data!);
+
+export const listOfficers = () =>
+  apiClient.get<ApiResponse<OfficerUser[]>>('/admin/officers')
+    .then((r) => r.data.data!);
+
+export const createOfficer = (payload: CreateOfficerInput) =>
+  apiClient.post<ApiResponse<OfficerUser>>('/admin/officers', payload)
+    .then((r) => r.data.data!);
+
+export const setOfficerStatus = (hash: string, is_active: boolean) =>
+  apiClient.put<ApiResponse<OfficerUser>>(`/admin/officers/${hash}/status`, { is_active })
     .then((r) => r.data.data!);

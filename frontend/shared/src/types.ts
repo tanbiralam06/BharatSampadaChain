@@ -129,6 +129,27 @@ export interface LoginResponse {
   role: AccessorRole;
 }
 
+// ── Officer User ──────────────────────────────────────────────────────────────
+
+export type OfficerRole = 'IT_DEPT' | 'ED' | 'CBI' | 'COURT' | 'BANK';
+
+export interface OfficerUser {
+  subject_hash: string;
+  login_id:     string;
+  name:         string;
+  role:         OfficerRole;
+  is_active:    boolean;
+  created_at:   string;
+  last_login:   string | null;
+}
+
+export interface CreateOfficerInput {
+  name:     string;
+  login_id: string;
+  role:     OfficerRole;
+  password: string;
+}
+
 // ── Admin ─────────────────────────────────────────────────────────────────────
 
 export interface HealthData {
