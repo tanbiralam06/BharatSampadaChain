@@ -6,6 +6,7 @@ import { authenticate, requireRole, AuthRequest } from '../middleware/auth';
 import { db, queryOne } from '../db/client';
 import { redis } from '../cache/redis';
 import { asyncHandler } from '../utils/asyncHandler';
+import { getAllPermissions, updatePermission } from '../services/permission.service';
 
 const OFFICER_ROLES = ['IT_DEPT', 'ED', 'CBI', 'COURT', 'BANK'] as const;
 
@@ -157,6 +158,39 @@ router.put('/officers/:hash/status', authenticate, requireRole('ADMIN', 'IT_DEPT
   }
 
   res.json({ success: true, data: result.rows[0] });
+}));
+
+const ALL_ROLES = ['CITIZEN', 'IT_DEPT', 'ED', 'CBI', 'COURT', 'BANK', 'ADMIN', 'PUBLIC'] as const;
+
+const UpdatePermissionSchema = z.object({
+  dataTypes:   z.array(z.string().min(1)).min(1),
+  requiresRef: z.boolean(),
+});
+
+// GET /admin/permissions — returns the full permission matrix for all roles
+router.get('/permissions', authenticate, requireRole('ADMIN'), asyncHandler(async (_req: AuthRequest, res: Response) => {
+  const rules = await getAllPermissions();
+  res.json({ success: true, data: rules });
+}));
+
+// PUT /admin/permissions/:role — updates allowed data types and requiresRef for one role
+router.put('/permissions/:role', authenticate, requireRole('ADMIN'), asyncHandler(async (req: AuthRequest, res: Response) => {
+  const { role } = req.params;
+
+  if (!(ALL_ROLES as readonly string[]).includes(role)) {
+    res.status(400).json({ success: false, error: `Unknown role: ${role}` });
+    return;
+  }
+
+  const parsed = UpdatePermissionSchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ success: false, error: parsed.error.issues[0].message });
+    return;
+  }
+
+  const { dataTypes, requiresRef } = parsed.data;
+  const rule = await updatePermission(role, dataTypes, requiresRef);
+  res.json({ success: true, data: rule });
 }));
 
 export default router;

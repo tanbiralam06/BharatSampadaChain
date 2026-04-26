@@ -157,6 +157,35 @@ export async function getAccessLogsByCitizen(citizenHash: string): Promise<Acces
   return (decode(result) as AccessLog[]) ?? [];
 }
 
+export interface PermissionRule {
+  accessorRole: string;
+  allowedDataTypes: string[];
+  requiresAuthorizationRef: boolean;
+}
+
+export async function getAllPermissionRules(): Promise<PermissionRule[]> {
+  const cc = await getContract(config.fabric.chaincodes.access);
+  const result = await cc.evaluateTransaction('GetAllPermissionRules');
+  return (decode(result) as PermissionRule[]) ?? [];
+}
+
+export async function getPermissionRule(role: string): Promise<PermissionRule> {
+  const cc = await getContract(config.fabric.chaincodes.access);
+  const result = await cc.evaluateTransaction('GetPermissionRule', role);
+  return decode(result) as PermissionRule;
+}
+
+export async function updatePermissionRule(
+  role: string, dataTypes: string[], requiresRef: boolean
+): Promise<PermissionRule> {
+  const cc = await getContract(config.fabric.chaincodes.access);
+  const result = await cc.submitTransaction(
+    'UpdatePermissionRule',
+    role, JSON.stringify(dataTypes), String(requiresRef)
+  );
+  return decode(result) as PermissionRule;
+}
+
 // ── ZKP chaincode ─────────────────────────────────────────────────
 
 export async function submitZKPProof(params: {
