@@ -1,7 +1,7 @@
 # BSC — Implementation Status
 
 > Read this before starting any session. Updated after every significant merge to `main`.
-> Last updated: 2026-04-26 · Branch: `main` · Phase: 3 in progress — TOTP + Fabric fallback complete
+> Last updated: 2026-04-27 · Branch: `main` · Phase: 3 in progress — real ZKP (Groth16) complete
 
 ---
 
@@ -13,7 +13,7 @@
 | Chaincode — `anomaly` | ✅ Deployed v1.1 | 3 auto-rules: YELLOW / ORANGE / RED |
 | Chaincode — `property` | ✅ Deployed v1.1 | Registration, transfer, undervaluation flag |
 | Chaincode — `access` | ✅ Deployed v1.0 | Permission matrix + immutable access log |
-| Chaincode — `zkp` | ✅ Deployed v1.0 | Simulated verification (real circom: Phase 3) |
+| Chaincode — `zkp` | ✅ Deployed v1.1 | Real Groth16 verification via snarkjs + anti-replay |
 | PostgreSQL schema | ✅ Live | 7 tables, indexes, 10 seed citizens |
 | Redis | ✅ Running | Session cache (60s TTL on citizen reads) |
 | API Gateway | ✅ Running on :4000 | 18 routes live, JWT auth, rate limiting, Winston logging |
@@ -128,6 +128,31 @@ All chaincodes use `txTime(ctx)` — deterministic timestamps across all endorsi
 - Admin panel: two-step **Login** page + **Security** page (enroll/disable with QR code display)
 - 15 new API tests (mocked `otplib` + `qrcode`) covering all 5 routes and edge cases
 
+#### Real ZKP — Groth16 via circom + snarkjs (complete)
+
+**Architecture:** `zkp/` is a standalone math module with zero blockchain/API dependency. The API bridges it to the ledger. The chaincode only records attestations — no crypto math on-chain.
+
+- **Circuit** (`zkp/circuits/asset_threshold.circom`) — 304 constraints on BN128 curve
+  - Proves: `totalAssets >= threshold` without revealing `totalAssets`
+  - Private inputs: `totalAssets` (paisa), `salt` (random nonce)
+  - Public inputs: `threshold` (paisa), `commitment` = Poseidon(`totalAssets`, `salt`)
+  - Commitment binds the proof to real ledger data — prevents fake inputs
+- **Trusted setup** (`zkp/Dockerfile` + `zkp/setup.sh`) — fully local, no external ceremony
+  - `docker compose run --rm zkp-setup` (run once from `zkp/`) generates all keys
+  - Powers of Tau: local 2^12 ceremony (4096 constraints capacity, circuit uses 304)
+  - Outputs: `proving_key.zkey` (185KB), `verification_key.json` (3.1KB), `asset_threshold.wasm` (1.7MB)
+  - Keys live in `zkp/keys/` — gitignored, regenerated per developer
+- **Prover/verifier** (`api/src/services/zkp.service.ts`) — snarkjs + circomlibjs in Node.js
+  - Reads citizen's real `totalDeclaredAssets` from PostgreSQL mirror (never exposed)
+  - Generates Groth16 proof, verifies locally, then records attestation on-chain
+  - Returns `proofId`, `publicSignals`, `commitment`, `expiresAt` — raw asset value never in response
+- **New endpoint** `POST /zkp/:citizenHash/prove` — takes `{ threshold }` in paisa
+  - Returns 422 if assets < threshold (circuit constraint fails, proof cannot be generated)
+  - Returns 503 if ZKP keys not yet generated (run setup first)
+- **Chaincode `zkp` v1.1** — stores proof HASH (SHA-256), not raw proof; anti-replay via `ZKPHASH_` sentinel; rejects unverified proofs
+- **Standalone CLI** (`zkp/scripts/prove.js`, `verify.js`) — usable without the API
+- **Circuit tests** (`zkp/tests/asset_threshold.test.js`) — 5 tests: valid proof, exact equality, below-threshold fails, tampered signals fail, tampered proof fails
+
 #### Cross-Ministry Permission Matrix (complete)
 - `GET /admin/permissions` — returns all 8 role permission rules (Fabric primary, PostgreSQL fallback)
 - `PUT /admin/permissions/:role` — updates allowed data types + `requiresRef` flag for one role; writes to Fabric and mirrors to PostgreSQL
@@ -227,7 +252,7 @@ Default dev password for all seed users: `password` — **change before any demo
 
 | Feature | Notes |
 |---|---|
-| Real ZKP (Groth16 via circom) | Replace simulated `zkp` chaincode with actual proof verification |
+| Real ZKP (Groth16 via circom) | ✅ Done | asset_threshold circuit, snarkjs prover, anti-replay chaincode — see Phase 3 section above |
 | Aadhaar OTP login (UIDAI sandbox) | Replace static password with one-time passcode for citizens |
 | Officer onboarding flow | ✅ Done | API + admin-panel OfficerManagement + officer-console MyTeam |
 | Raft consensus orderer | Replace solo orderer for production fault tolerance |
