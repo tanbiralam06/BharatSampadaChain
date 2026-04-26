@@ -1,0 +1,8 @@
+services:
+  zkp-setup:
+    build: .
+    volumes:
+      - ./circuits:/circuits:ro
+      - ./keys:/keys
+    environment:
+      - NODE_PATH=/build/node_modules
