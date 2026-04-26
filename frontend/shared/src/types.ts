@@ -160,6 +160,19 @@ export interface CreateOfficerInput {
   password: string;
 }
 
+// ── Permission Matrix ─────────────────────────────────────────────────────────
+
+export interface PermissionRule {
+  accessorRole: string;
+  allowedDataTypes: string[];
+  requiresAuthorizationRef: boolean;
+}
+
+export interface UpdatePermissionInput {
+  dataTypes:   string[];
+  requiresRef: boolean;
+}
+
 // ── Admin ─────────────────────────────────────────────────────────────────────
 
 export interface HealthData {

@@ -7,6 +7,7 @@ import type {
   AnomalyFlag, AccessLog, FinancialAsset, LoginResponse,
   HealthData, StatsData, AccessorRole, Severity, FlagStatus, CitizenType,
   OfficerUser, CreateOfficerInput, TotpSetupData, TotpChallengeResponse,
+  PermissionRule, UpdatePermissionInput,
 } from './types';
 
 // ── Auth ──────────────────────────────────────────────────────────────────────
@@ -126,4 +127,12 @@ export const createOfficer = (payload: CreateOfficerInput) =>
 
 export const setOfficerStatus = (hash: string, is_active: boolean) =>
   apiClient.put<ApiResponse<OfficerUser>>(`/admin/officers/${hash}/status`, { is_active })
+    .then((r) => r.data.data!);
+
+export const listPermissions = () =>
+  apiClient.get<ApiResponse<PermissionRule[]>>('/admin/permissions')
+    .then((r) => r.data.data!);
+
+export const updatePermission = (role: string, payload: UpdatePermissionInput) =>
+  apiClient.put<ApiResponse<PermissionRule>>(`/admin/permissions/${role}`, payload)
     .then((r) => r.data.data!);
