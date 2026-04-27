@@ -11,7 +11,7 @@
 |---|---|---|
 | Fabric testnet (3 peers + orderer) | ✅ Running | `bsc-channel` live, TLS enabled |
 | Chaincode — `anomaly` | ✅ Deployed v1.1 | 3 auto-rules: YELLOW / ORANGE / RED |
-| Chaincode — `property` | ✅ Deployed v1.1 | Registration, transfer, undervaluation flag |
+| Chaincode — `property` | ✅ Deployed v1.1 (v1.2 ready, deploy with CC_VERSION=1.2 CC_SEQUENCE=3) | Registration, transfer, undervaluation flag, court freeze/unfreeze |
 | Chaincode — `access` | ✅ Deployed v1.0 | Permission matrix + immutable access log |
 | Chaincode — `zkp` | ✅ Deployed v1.1 | Real Groth16 verification via snarkjs + anti-replay |
 | PostgreSQL schema | ✅ Live | 7 tables, indexes, 10 seed citizens |
@@ -20,7 +20,7 @@
 | Ledger → PostgreSQL sync | ✅ Done | Service-layer dual-write on every chaincode write |
 | Officer access notifications | ✅ Done | `notifyOfficerAccess()` writes to `system_audit` on every non-citizen read |
 | API tests | ✅ Done | 120 tests across 13 files (Jest + Supertest), all passing |
-| OpenAPI spec | ✅ Done | `docs/api/openapi.yaml` — all endpoints, full schemas, role annotations |
+| OpenAPI spec | ✅ Done | `docs/api/openapi.yaml` — all 22 endpoints, full schemas, role annotations |
 | Rate limiting | ✅ Done | 200 req/15 min global; 20 req/15 min on `/auth` |
 | Structured logging | ✅ Done | Winston — colored dev output, JSON in production |
 | CORS | ✅ Done | Allows origins on ports 5173–5176 |
