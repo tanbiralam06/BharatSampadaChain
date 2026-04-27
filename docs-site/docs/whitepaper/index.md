@@ -13,7 +13,7 @@ pagination_prev: null
 **Date:** April 2024  
 **Status:** Open Source Prototype — Public Review  
 **License:** MIT  
-**Repository:** github.com/BharatSampadaChain  
+**Repository:** github.com/tanbiralam06/BharatSampadaChain  
 
 ---
 
@@ -656,7 +656,7 @@ Every year that India's wealth data remains siloed is a year that opacity wins a
 | Date | April 2024 |
 | Authors | BSC Open Source Contributors |
 | License | MIT — Free to share, adapt, and build upon |
-| Contact | github.com/BharatSampadaChain |
+| Contact | github.com/tanbiralam06/BharatSampadaChain |
 
 ---
 

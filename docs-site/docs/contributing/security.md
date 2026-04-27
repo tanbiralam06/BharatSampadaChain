@@ -66,7 +66,7 @@ Encrypt your email using PGP if the details are highly sensitive. The public key
 GitHub supports private security advisories. You can report at:
 
 ```
-https://github.com/BharatSampadaChain/BharatSampadaChain/security/advisories/new
+https://github.com/tanbiralam06/BharatSampadaChain/security/advisories/new
 ```
 
 This keeps the report private and starts a tracked disclosure process.

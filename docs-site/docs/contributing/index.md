@@ -37,7 +37,7 @@ sidebar_label: Contributing
 
 Please read these documents before making your first contribution:
 
-- **[README](https://github.com/BharatSampadaChain/bsc/blob/main/README.md)** — what BSC is and how to run it
+- **[README](https://github.com/tanbiralam06/BharatSampadaChain/blob/main/README.md)** — what BSC is and how to run it
 - **[WHITEPAPER](/docs/whitepaper/index)** — the policy and technical rationale behind every design decision
 - **[ROADMAP](/docs/contributing/roadmap)** — what is currently being built and what is planned
 
@@ -157,7 +157,7 @@ git clone https://github.com/YOUR_USERNAME/BharatSampadaChain.git
 cd BharatSampadaChain
 
 # 2. Add the upstream remote
-git remote add upstream https://github.com/BharatSampadaChain/BharatSampadaChain.git
+git remote add upstream https://github.com/tanbiralam06/BharatSampadaChain.git
 
 # 3. Run the prototype (no Docker needed for this)
 cd bsc-prototype

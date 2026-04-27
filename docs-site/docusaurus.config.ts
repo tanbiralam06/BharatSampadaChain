@@ -7,11 +7,11 @@ const config: Config = {
   tagline: "India's Open Source Blockchain for Property and Wealth Transparency",
   favicon: 'img/favicon.ico',
 
-  url: 'https://bharatsampadachain.github.io',
-  baseUrl: '/bsc/',
+  url: 'https://tanbiralam06.github.io',
+  baseUrl: '/BharatSampadaChain/',
 
-  organizationName: 'BharatSampadaChain',
-  projectName: 'bsc',
+  organizationName: 'tanbiralam06',
+  projectName: 'BharatSampadaChain',
   trailingSlash: false,
 
   onBrokenLinks: 'warn',
@@ -32,7 +32,7 @@ const config: Config = {
       {
         docs: {
           sidebarPath: './sidebars.ts',
-          editUrl: 'https://github.com/BharatSampadaChain/bsc/tree/main/docs-site/',
+          editUrl: 'https://github.com/tanbiralam06/BharatSampadaChain/tree/main/docs-site/',
           docItemComponent: '@theme/ApiItem',
         },
         blog: false,
@@ -72,7 +72,7 @@ const config: Config = {
               categoryLinkSource: 'tag',
             },
             downloadUrl:
-              'https://raw.githubusercontent.com/BharatSampadaChain/bsc/main/docs/api/openapi.yaml',
+              'https://raw.githubusercontent.com/tanbiralam06/BharatSampadaChain/main/docs/api/openapi.yaml',
             showSchemas: true,
           },
         },
@@ -120,7 +120,7 @@ const config: Config = {
           className: 'navbar-demo-button',
         },
         {
-          href: 'https://github.com/BharatSampadaChain/bsc',
+          href: 'https://github.com/tanbiralam06/BharatSampadaChain',
           position: 'right',
           className: 'header-github-link',
           'aria-label': 'GitHub repository',
@@ -139,7 +139,7 @@ const config: Config = {
             { label: 'Implementation Status', to: '/docs/status' },
             {
               label: 'MIT License',
-              href: 'https://github.com/BharatSampadaChain/bsc/blob/main/LICENSE',
+              href: 'https://github.com/tanbiralam06/BharatSampadaChain/blob/main/LICENSE',
             },
           ],
         },
@@ -149,7 +149,7 @@ const config: Config = {
             { label: 'Quick Start', to: '/docs/getting-started/prototype' },
             { label: 'API Reference', to: '/docs/api-reference/introduction' },
             { label: 'Adaptation Guide', to: '/docs/adaptation/index' },
-            { label: 'GitHub', href: 'https://github.com/BharatSampadaChain/bsc' },
+            { label: 'GitHub', href: 'https://github.com/tanbiralam06/BharatSampadaChain' },
           ],
         },
         {
@@ -159,7 +159,7 @@ const config: Config = {
             { label: 'Security Policy', to: '/docs/contributing/security' },
             {
               label: 'GitHub Discussions',
-              href: 'https://github.com/BharatSampadaChain/bsc/discussions',
+              href: 'https://github.com/tanbiralam06/BharatSampadaChain/discussions',
             },
           ],
         },

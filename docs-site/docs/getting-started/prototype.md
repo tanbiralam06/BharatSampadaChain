@@ -23,7 +23,7 @@ It uses realistic dummy data to demonstrate every feature of BSC: public wealth 
 ## Steps
 
 ```bash
-git clone https://github.com/BharatSampadaChain/bsc.git
+git clone https://github.com/tanbiralam06/BharatSampadaChain.git
 cd bsc/bsc-prototype
 npm install
 npm run dev

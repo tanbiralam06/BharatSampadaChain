@@ -13,7 +13,7 @@ The prototype is a standalone React app with realistic dummy data. Use it to und
 ## Start It
 
 ```bash
-git clone https://github.com/BharatSampadaChain/bsc.git
+git clone https://github.com/tanbiralam06/BharatSampadaChain.git
 cd bsc/bsc-prototype
 npm install && npm run dev
 ```

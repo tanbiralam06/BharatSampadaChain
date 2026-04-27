@@ -22,7 +22,7 @@ For active development — hot-reload API, live-reload frontends, optional Fabri
 ## Step 1 — Clone and Configure
 
 ```bash
-git clone https://github.com/BharatSampadaChain/bsc.git
+git clone https://github.com/tanbiralam06/BharatSampadaChain.git
 cd bsc
 cp .env.example .env
 ```

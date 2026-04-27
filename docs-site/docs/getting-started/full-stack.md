@@ -20,7 +20,7 @@ This option runs the complete BSC system: Hyperledger Fabric blockchain, API gat
 ## First-Time Setup
 
 ```bash
-git clone https://github.com/BharatSampadaChain/bsc.git
+git clone https://github.com/tanbiralam06/BharatSampadaChain.git
 cd bsc
 
 # 1. Copy environment configuration
@@ -90,7 +90,7 @@ Expected containers: `bsc-orderer`, `bsc-peer0-itdept`, `bsc-peer0-registrar`, `
 
 ## Default Credentials
 
-See [DEV_CREDENTIALS.md](https://github.com/BharatSampadaChain/bsc/blob/main/DEV_CREDENTIALS.md) for all seed accounts. All passwords are `password`.
+See [DEV_CREDENTIALS.md](https://github.com/tanbiralam06/BharatSampadaChain/blob/main/DEV_CREDENTIALS.md) for all seed accounts. All passwords are `password`.
 
 | App | URL | Login |
 |---|---|---|
