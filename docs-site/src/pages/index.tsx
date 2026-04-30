@@ -22,14 +22,14 @@ function HomepageHero(): ReactNode {
           <Link
             className="button button--outline button--lg"
             style={{ color: '#fff', borderColor: '#fff' }}
-            href="https://bharat-sampada-chain.vercel.app"
+            href="https://bharatsampadachain.vercel.app"
           >
             Live Demo
           </Link>
           <Link
             className="button button--outline button--lg"
             style={{ color: '#ccc', borderColor: '#555' }}
-            to="/docs/whitepaper/index"
+            to="/docs/whitepaper"
           >
             Read Whitepaper
           </Link>
