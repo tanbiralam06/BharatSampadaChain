@@ -104,7 +104,7 @@ export default function HomepageFeatures(): ReactNode {
           Read the Adaptation Guide to deploy BSC for your own jurisdiction.
         </p>
         <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-          <Link className="button button--primary button--lg" to="/docs/adaptation/index">
+          <Link className="button button--primary button--lg" to="/docs/adaptation">
             Adaptation Guide
           </Link>
           <Link className="button button--outline button--secondary button--lg" to="/docs/getting-started/prototype">
