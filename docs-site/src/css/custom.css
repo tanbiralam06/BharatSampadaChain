@@ -912,3 +912,89 @@
     transition: none !important;
   }
 }
+
+/* ==============================================
+   FOOTER — MODERN REDESIGN
+   ============================================== */
+
+/* Rich dark background with a warm undertone */
+.footer--dark {
+  background: linear-gradient(180deg, #0d0905 0%, #111111 40%, #0a0a0a 100%);
+  position: relative;
+  padding-top: 4rem;
+}
+
+/* Saffron gradient accent line at the top of the footer */
+.footer--dark::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(224, 94, 0, 0.4) 20%,
+    rgba(255, 140, 42, 0.75) 50%,
+    rgba(224, 94, 0, 0.4) 80%,
+    transparent 100%
+  );
+}
+
+/* Subtle radial glow at top-center — mirrors the hero */
+.footer--dark::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 600px;
+  height: 180px;
+  background: radial-gradient(ellipse at top, rgba(224, 94, 0, 0.07) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* Column titles — saffron with letter-spacing */
+.footer__title {
+  color: var(--ifm-color-primary-light) !important;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 1.1rem;
+}
+
+/* Links — smooth colour transition + slide-right on hover */
+.footer__link-item {
+  color: rgba(255, 255, 255, 0.52) !important;
+  font-size: 0.88rem;
+  line-height: 1.9;
+  transition: color 0.15s ease, padding-left 0.15s ease;
+  display: inline-block;
+}
+
+.footer__link-item:hover {
+  color: #fff !important;
+  padding-left: 4px;
+  text-decoration: none !important;
+}
+
+/* Separator between link columns — faint vertical rule */
+.footer__links {
+  padding-bottom: 2.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  margin-bottom: 0;
+}
+
+/* Copyright bar */
+.footer__bottom {
+  padding: 1.5rem 0;
+  background: rgba(0, 0, 0, 0.25);
+}
+
+.footer__copyright {
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.3) !important;
+  letter-spacing: 0.03em;
+}
