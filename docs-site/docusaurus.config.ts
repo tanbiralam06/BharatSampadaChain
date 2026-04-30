@@ -114,7 +114,7 @@ const config: Config = {
           position: 'left',
         },
         {
-          href: 'https://bharat-sampada-chain.vercel.app',
+          href: 'https://bharatsampadachain.vercel.app',
           label: 'Live Demo',
           position: 'right',
           className: 'navbar-demo-button',
