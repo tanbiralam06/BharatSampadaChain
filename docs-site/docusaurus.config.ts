@@ -83,7 +83,7 @@ const config: Config = {
   themes: ['docusaurus-theme-openapi-docs', '@docusaurus/theme-mermaid'],
 
   themeConfig: {
-    image: 'img/bsc-social-card.png',
+    image: 'img/logo.png',
     colorMode: {
       defaultMode: 'dark',
       disableSwitch: false,
@@ -93,8 +93,8 @@ const config: Config = {
       title: 'Bharat Sampada Chain',
       logo: {
         alt: 'BSC Logo',
-        src: 'img/bsc-logo.svg',
-        srcDark: 'img/bsc-logo-dark.svg',
+        src: 'img/logo.png',
+        srcDark: 'img/logo.png',
       },
       items: [
         {
