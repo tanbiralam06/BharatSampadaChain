@@ -98,5 +98,5 @@ BSC is not a surveillance system. Citizens can see exactly who accessed their da
 | Deploy the full stack with Docker | [Getting Started → Full Stack](./getting-started/full-stack) |
 | Understand the architecture | [Architecture → System Overview](./architecture/system-overview) |
 | Call the API | [API Reference](./api-reference/introduction) |
-| Deploy for my own country/state | [Adapt BSC](./adaptation/index) |
-| Read the technical whitepaper | [Whitepaper](./whitepaper/index) |
+| Deploy for my own country/state | [Adapt BSC](./adaptation) |
+| Read the technical whitepaper | [Whitepaper](./whitepaper) |
