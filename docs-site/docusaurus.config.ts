@@ -135,6 +135,7 @@ const config: Config = {
           items: [
             { label: 'What is BSC?', to: '/docs/intro' },
             { label: 'Whitepaper', to: '/docs/whitepaper' },
+            { label: 'Architecture Overview', to: '/docs/architecture/system-overview' },
             { label: 'Roadmap', to: '/docs/contributing/roadmap' },
             { label: 'Implementation Status', to: '/docs/status' },
             {
@@ -144,10 +145,24 @@ const config: Config = {
           ],
         },
         {
+          title: 'Learn',
+          items: [
+            { label: 'Concepts Overview', to: '/docs/concepts/overview' },
+            { label: 'Identity Model', to: '/docs/concepts/identity-model' },
+            { label: 'Anomaly Detection', to: '/docs/concepts/anomaly-detection' },
+            { label: 'Roles & Permissions', to: '/docs/concepts/roles-permissions' },
+            { label: 'Zero-Knowledge Proofs', to: '/docs/concepts/zkp' },
+          ],
+        },
+        {
           title: 'Developers',
           items: [
             { label: 'Quick Start', to: '/docs/getting-started/prototype' },
+            { label: 'Dev Setup', to: '/docs/getting-started/dev-setup' },
+            { label: 'Full Stack Setup', to: '/docs/getting-started/full-stack' },
             { label: 'API Reference', to: '/docs/api-reference/introduction' },
+            { label: 'Environment Variables', to: '/docs/guides/environment-vars' },
+            { label: 'Deploy Chaincode', to: '/docs/guides/deploy-chaincode' },
             { label: 'Adaptation Guide', to: '/docs/adaptation' },
             { label: 'GitHub', href: 'https://github.com/tanbiralam06/BharatSampadaChain' },
           ],
