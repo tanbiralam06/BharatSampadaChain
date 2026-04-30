@@ -109,7 +109,7 @@ const config: Config = {
           position: 'left',
         },
         {
-          to: '/docs/whitepaper/index',
+          to: '/docs/whitepaper',
           label: 'Whitepaper',
           position: 'left',
         },
@@ -134,7 +134,7 @@ const config: Config = {
           title: 'BSC',
           items: [
             { label: 'What is BSC?', to: '/docs/intro' },
-            { label: 'Whitepaper', to: '/docs/whitepaper/index' },
+            { label: 'Whitepaper', to: '/docs/whitepaper' },
             { label: 'Roadmap', to: '/docs/contributing/roadmap' },
             { label: 'Implementation Status', to: '/docs/status' },
             {
@@ -148,14 +148,14 @@ const config: Config = {
           items: [
             { label: 'Quick Start', to: '/docs/getting-started/prototype' },
             { label: 'API Reference', to: '/docs/api-reference/introduction' },
-            { label: 'Adaptation Guide', to: '/docs/adaptation/index' },
+            { label: 'Adaptation Guide', to: '/docs/adaptation' },
             { label: 'GitHub', href: 'https://github.com/tanbiralam06/BharatSampadaChain' },
           ],
         },
         {
           title: 'Community',
           items: [
-            { label: 'Contributing', to: '/docs/contributing/index' },
+            { label: 'Contributing', to: '/docs/contributing' },
             { label: 'Security Policy', to: '/docs/contributing/security' },
             {
               label: 'GitHub Discussions',
