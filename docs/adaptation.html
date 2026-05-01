@@ -1,0 +1,575 @@
+<!doctype html>
+<html lang="en" dir="ltr" class="docs-wrapper plugin-docs plugin-id-default docs-version-current docs-doc-page docs-doc-id-adaptation/index" data-has-hydrated="false">
+<head>
+<meta charset="UTF-8">
+<meta name="generator" content="Docusaurus v3.10.0">
+<title data-rh="true">Adaptation Guide | Bharat Sampada Chain</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:image" content="https://tanbiralam06.github.io/BharatSampadaChain/img/logo.png"><meta data-rh="true" name="twitter:image" content="https://tanbiralam06.github.io/BharatSampadaChain/img/logo.png"><meta data-rh="true" property="og:url" content="https://tanbiralam06.github.io/BharatSampadaChain/docs/adaptation"><meta data-rh="true" property="og:locale" content="en"><meta data-rh="true" name="docusaurus_locale" content="en"><meta data-rh="true" name="docsearch:language" content="en"><meta data-rh="true" name="docusaurus_version" content="current"><meta data-rh="true" name="docusaurus_tag" content="docs-default-current"><meta data-rh="true" name="docsearch:version" content="current"><meta data-rh="true" name="docsearch:docusaurus_tag" content="docs-default-current"><meta data-rh="true" property="og:title" content="Adaptation Guide | Bharat Sampada Chain"><meta data-rh="true" name="description" content="How to Deploy Bharat Sampada Chain for Your Jurisdiction"><meta data-rh="true" property="og:description" content="How to Deploy Bharat Sampada Chain for Your Jurisdiction"><link data-rh="true" rel="icon" href="/BharatSampadaChain/img/favicon.ico"><link data-rh="true" rel="canonical" href="https://tanbiralam06.github.io/BharatSampadaChain/docs/adaptation"><link data-rh="true" rel="alternate" href="https://tanbiralam06.github.io/BharatSampadaChain/docs/adaptation" hreflang="en"><link data-rh="true" rel="alternate" href="https://tanbiralam06.github.io/BharatSampadaChain/docs/adaptation" hreflang="x-default"><script data-rh="true" type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Adaptation Guide","item":"https://tanbiralam06.github.io/BharatSampadaChain/docs/adaptation/"}]}</script><link rel="stylesheet" href="/BharatSampadaChain/assets/css/styles.99e61587.css">
+<script src="/BharatSampadaChain/assets/js/runtime~main.cb7b4d9c.js" defer="defer"></script>
+<script src="/BharatSampadaChain/assets/js/main.29c28f18.js" defer="defer"></script>
+</head>
+<body>
+<svg style="display: none;"><defs>
+<symbol id="theme-svg-external-link" viewBox="0 0 24 24"><path fill="currentColor" d="M21 13v10h-21v-19h12v2h-10v15h17v-8h2zm3-12h-10.988l4.035 4-6.977 7.07 2.828 2.828 6.977-7.07 4.125 4.172v-11z"/></symbol>
+</defs></svg>
+<script>!function(){var t=function(){try{return new URLSearchParams(window.location.search).get("docusaurus-theme")}catch(t){}}()||function(){try{return window.localStorage.getItem("theme")}catch(t){}}();document.documentElement.setAttribute("data-theme",t||(window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light")),document.documentElement.setAttribute("data-theme-choice",t||"system")}(),function(){try{const c=new URLSearchParams(window.location.search).entries();for(var[t,e]of c)if(t.startsWith("docusaurus-data-")){var a=t.replace("docusaurus-data-","data-");document.documentElement.setAttribute(a,e)}}catch(t){}}()</script><div id="__docusaurus"><div role="region" aria-label="Skip to main content"><a class="skipToContent_fXgn" href="#__docusaurus_skipToContent_fallback">Skip to main content</a></div><nav aria-label="Main" class="theme-layout-navbar navbar navbar--fixed-top"><div class="navbar__inner"><div class="theme-layout-navbar-left navbar__items"><button aria-label="Toggle navigation bar" aria-expanded="false" class="navbar__toggle clean-btn" type="button"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><path stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2" d="M4 7h22M4 15h22M4 23h22"></path></svg></button><a class="navbar__brand" href="/BharatSampadaChain/"><div class="navbar__logo"><img src="/BharatSampadaChain/img/logo.png" alt="BSC Logo" class="themedComponent_mlkZ themedComponent--light_NVdE"><img src="/BharatSampadaChain/img/logo.png" alt="BSC Logo" class="themedComponent_mlkZ themedComponent--dark_xIcU"></div><b class="navbar__title text--truncate">Bharat Sampada Chain</b></a><a aria-current="page" class="navbar__item navbar__link navbar__link--active" href="/BharatSampadaChain/docs/intro">Docs</a><a class="navbar__item navbar__link" href="/BharatSampadaChain/docs/api-reference/introduction">API Reference</a><a class="navbar__item navbar__link" href="/BharatSampadaChain/docs/whitepaper">Whitepaper</a></div><div class="theme-layout-navbar-right navbar__items navbar__items--right"><a href="https://bharatsampadachain.vercel.app" target="_blank" rel="noopener noreferrer" class="navbar__item navbar__link navbar-demo-button">Live Demo<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a><a href="https://github.com/tanbiralam06/BharatSampadaChain" target="_blank" rel="noopener noreferrer" class="navbar__item navbar__link header-github-link" aria-label="GitHub repository"></a><div class="toggle_vylO colorModeToggle_DEke"><button class="clean-btn toggleButton_gllP toggleButtonDisabled_aARS" type="button" disabled="" title="system mode" aria-label="Switch between dark and light mode (currently system mode)"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" class="toggleIcon_g3eP lightToggleIcon_pyhR"><path fill="currentColor" d="M12,9c1.65,0,3,1.35,3,3s-1.35,3-3,3s-3-1.35-3-3S10.35,9,12,9 M12,7c-2.76,0-5,2.24-5,5s2.24,5,5,5s5-2.24,5-5 S14.76,7,12,7L12,7z M2,13l2,0c0.55,0,1-0.45,1-1s-0.45-1-1-1l-2,0c-0.55,0-1,0.45-1,1S1.45,13,2,13z M20,13l2,0c0.55,0,1-0.45,1-1 s-0.45-1-1-1l-2,0c-0.55,0-1,0.45-1,1S19.45,13,20,13z M11,2v2c0,0.55,0.45,1,1,1s1-0.45,1-1V2c0-0.55-0.45-1-1-1S11,1.45,11,2z M11,20v2c0,0.55,0.45,1,1,1s1-0.45,1-1v-2c0-0.55-0.45-1-1-1C11.45,19,11,19.45,11,20z M5.99,4.58c-0.39-0.39-1.03-0.39-1.41,0 c-0.39,0.39-0.39,1.03,0,1.41l1.06,1.06c0.39,0.39,1.03,0.39,1.41,0s0.39-1.03,0-1.41L5.99,4.58z M18.36,16.95 c-0.39-0.39-1.03-0.39-1.41,0c-0.39,0.39-0.39,1.03,0,1.41l1.06,1.06c0.39,0.39,1.03,0.39,1.41,0c0.39-0.39,0.39-1.03,0-1.41 L18.36,16.95z M19.42,5.99c0.39-0.39,0.39-1.03,0-1.41c-0.39-0.39-1.03-0.39-1.41,0l-1.06,1.06c-0.39,0.39-0.39,1.03,0,1.41 s1.03,0.39,1.41,0L19.42,5.99z M7.05,18.36c0.39-0.39,0.39-1.03,0-1.41c-0.39-0.39-1.03-0.39-1.41,0l-1.06,1.06 c-0.39,0.39-0.39,1.03,0,1.41s1.03,0.39,1.41,0L7.05,18.36z"></path></svg><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" class="toggleIcon_g3eP darkToggleIcon_wfgR"><path fill="currentColor" d="M9.37,5.51C9.19,6.15,9.1,6.82,9.1,7.5c0,4.08,3.32,7.4,7.4,7.4c0.68,0,1.35-0.09,1.99-0.27C17.45,17.19,14.93,19,12,19 c-3.86,0-7-3.14-7-7C5,9.07,6.81,6.55,9.37,5.51z M12,3c-4.97,0-9,4.03-9,9s4.03,9,9,9s9-4.03,9-9c0-0.46-0.04-0.92-0.1-1.36 c-0.98,1.37-2.58,2.26-4.4,2.26c-2.98,0-5.4-2.42-5.4-5.4c0-1.81,0.89-3.42,2.26-4.4C12.92,3.04,12.46,3,12,3L12,3z"></path></svg><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" class="toggleIcon_g3eP systemToggleIcon_QzmC"><path fill="currentColor" d="m12 21c4.971 0 9-4.029 9-9s-4.029-9-9-9-9 4.029-9 9 4.029 9 9 9zm4.95-13.95c1.313 1.313 2.05 3.093 2.05 4.95s-0.738 3.637-2.05 4.95c-1.313 1.313-3.093 2.05-4.95 2.05v-14c1.857 0 3.637 0.737 4.95 2.05z"></path></svg></button></div><div class="navbarSearchContainer_Bca1"></div></div></div><div role="presentation" class="navbar-sidebar__backdrop"></div></nav><div id="__docusaurus_skipToContent_fallback" class="theme-layout-main main-wrapper mainWrapper_z2l0"><div class="docsWrapper_hBAB"><button aria-label="Scroll back to top" class="clean-btn theme-back-to-top-button backToTopButton_sjWU" type="button"></button><div class="docRoot_UBD9"><aside class="theme-doc-sidebar-container docSidebarContainer_YfHR"><div class="sidebarViewport_aRkj"><div class="sidebar_njMd"><nav aria-label="Docs sidebar" class="menu thin-scrollbar menu_SIkG"><ul class="theme-doc-sidebar-menu menu__list"><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/BharatSampadaChain/docs/intro"><span title="What is BSC?" class="linkLabel_WmDU">What is BSC?</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/BharatSampadaChain/docs/status"><span title="Implementation Status" class="linkLabel_WmDU">Implementation Status</span></a></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item"><div class="menu__list-item-collapsible"><a class="categoryLink_byQd menu__link menu__link--sublist" href="/BharatSampadaChain/docs/category/getting-started"><span title="Getting Started" class="categoryLinkLabel_W154">Getting Started</span></a><button aria-label="Collapse sidebar category &#x27;Getting Started&#x27;" aria-expanded="true" type="button" class="clean-btn menu__caret"></button></div><ul class="menu__list"><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/BharatSampadaChain/docs/getting-started/prototype"><span title="Run the Prototype" class="linkLabel_WmDU">Run the Prototype</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/BharatSampadaChain/docs/getting-started/full-stack"><span title="Full Stack with Docker" class="linkLabel_WmDU">Full Stack with Docker</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/BharatSampadaChain/docs/getting-started/dev-setup"><span title="Development Setup" class="linkLabel_WmDU">Development Setup</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/BharatSampadaChain/docs/getting-started/configuration"><span title="Configuration Reference" class="linkLabel_WmDU">Configuration Reference</span></a></li></ul></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item"><div class="menu__list-item-collapsible"><a class="categoryLink_byQd menu__link menu__link--sublist menu__link--sublist-caret" role="button" aria-expanded="true" href="/BharatSampadaChain/docs/concepts/overview"><span title="Core Concepts" class="categoryLinkLabel_W154">Core Concepts</span></a></div><ul class="menu__list"><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/BharatSampadaChain/docs/concepts/overview"><span title="Overview &amp; The Problem" class="linkLabel_WmDU">Overview &amp; The Problem</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/BharatSampadaChain/docs/concepts/identity-model"><span title="Identity Model" class="linkLabel_WmDU">Identity Model</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/BharatSampadaChain/docs/concepts/anomaly-detection"><span title="Anomaly Detection" class="linkLabel_WmDU">Anomaly Detection</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/BharatSampadaChain/docs/concepts/zkp"><span title="Zero Knowledge Proofs" class="linkLabel_WmDU">Zero Knowledge Proofs</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/BharatSampadaChain/docs/concepts/roles-permissions"><span title="Roles &amp; Permissions" class="linkLabel_WmDU">Roles &amp; Permissions</span></a></li></ul></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item menu__list-item--collapsed"><div class="menu__list-item-collapsible"><a class="categoryLink_byQd menu__link menu__link--sublist menu__link--sublist-caret" role="button" aria-expanded="false" href="/BharatSampadaChain/docs/architecture/system-overview"><span title="Architecture" class="categoryLinkLabel_W154">Architecture</span></a></div></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item menu__list-item--collapsed"><div class="menu__list-item-collapsible"><a class="categoryLink_byQd menu__link menu__link--sublist menu__link--sublist-caret" role="button" aria-expanded="false" href="/BharatSampadaChain/docs/guides/run-prototype"><span title="Guides" class="categoryLinkLabel_W154">Guides</span></a></div></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item menu__list-item--collapsed"><div class="menu__list-item-collapsible"><a class="categoryLink_byQd menu__link menu__link--sublist" href="/BharatSampadaChain/docs/api-reference/introduction"><span title="API Reference" class="categoryLinkLabel_W154">API Reference</span></a><button aria-label="Expand sidebar category &#x27;API Reference&#x27;" aria-expanded="false" type="button" class="clean-btn menu__caret"></button></div></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item"><div class="menu__list-item-collapsible"><a class="categoryLink_byQd menu__link menu__link--sublist menu__link--sublist-caret menu__link--active" role="button" aria-expanded="true" href="/BharatSampadaChain/docs/adaptation"><span title="Adapt BSC" class="categoryLinkLabel_W154">Adapt BSC</span></a></div><ul class="menu__list"><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link menu__link--active" aria-current="page" tabindex="0" href="/BharatSampadaChain/docs/adaptation"><span title="Adaptation Guide" class="linkLabel_WmDU">Adaptation Guide</span></a></li></ul></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item menu__list-item--collapsed"><div class="menu__list-item-collapsible"><a class="categoryLink_byQd menu__link menu__link--sublist menu__link--sublist-caret" role="button" aria-expanded="false" href="/BharatSampadaChain/docs/whitepaper"><span title="Whitepaper" class="categoryLinkLabel_W154">Whitepaper</span></a></div></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item menu__list-item--collapsed"><div class="menu__list-item-collapsible"><a class="categoryLink_byQd menu__link menu__link--sublist menu__link--sublist-caret" role="button" aria-expanded="false" href="/BharatSampadaChain/docs/contributing"><span title="Community" class="categoryLinkLabel_W154">Community</span></a></div></li></ul></nav></div></div></aside><main class="docMainContainer_TBSr"><div class="container padding-top--md padding-bottom--lg"><div class="row"><div class="col docItemCol_xLCN"><div class="docItemContainer_jfFK"><article><nav class="theme-doc-breadcrumbs breadcrumbsContainer_Z_bl" aria-label="Breadcrumbs"><ul class="breadcrumbs"><li class="breadcrumbs__item"><a aria-label="Home page" class="breadcrumbs__link" href="/BharatSampadaChain/"><svg viewBox="0 0 24 24" class="breadcrumbHomeIcon_YNFT"><path d="M10 19v-5h4v5c0 .55.45 1 1 1h3c.55 0 1-.45 1-1v-7h1.7c.46 0 .68-.57.33-.87L12.67 3.6c-.38-.34-.96-.34-1.34 0l-8.36 7.53c-.34.3-.13.87.33.87H5v7c0 .55.45 1 1 1h3c.55 0 1-.45 1-1z" fill="currentColor"></path></svg></a></li><li class="breadcrumbs__item"><span class="breadcrumbs__link">Adapt BSC</span></li><li class="breadcrumbs__item breadcrumbs__item--active"><span class="breadcrumbs__link">Adaptation Guide</span></li></ul></nav><div class="tocCollapsible_ETCw theme-doc-toc-mobile tocMobile_ITEo"><button type="button" class="clean-btn tocCollapsibleButton_TO0P">On this page</button></div><div class="theme-doc-markdown markdown"><div class="row"><div class="col col--12 markdown"><header><h1>BSC Adaptation Guide</h1></header>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="how-to-deploy-bharat-sampada-chain-for-your-jurisdiction">How to Deploy Bharat Sampada Chain for Your Jurisdiction<a href="#how-to-deploy-bharat-sampada-chain-for-your-jurisdiction" class="hash-link" aria-label="Direct link to How to Deploy Bharat Sampada Chain for Your Jurisdiction" title="Direct link to How to Deploy Bharat Sampada Chain for Your Jurisdiction" translate="no">​</a></h2>
+<p><strong>Version:</strong> 1.0<br>
+<strong>Date:</strong> April 2024<br>
+<strong>Applies To:</strong> State Governments (India), Foreign Governments, Civil Society Organisations, Independent Researchers<br>
+<strong>Prerequisite:</strong> Read <a class="" href="/BharatSampadaChain/docs/whitepaper/index">WHITEPAPER.md</a> before this document.</p>
+<hr>
+<blockquote>
+<p>This guide is for anyone who wants to deploy BSC for their own state, country, or organisation.<br>
+<!-- -->It tells you exactly what to change, what to keep, and what decisions you need to make before going live.</p>
+</blockquote>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="table-of-contents">Table of Contents<a href="#table-of-contents" class="hash-link" aria-label="Direct link to Table of Contents" title="Direct link to Table of Contents" translate="no">​</a></h2>
+<ol>
+<li class=""><a href="#1-before-you-begin--four-questions" class="">Before You Begin — Four Questions</a></li>
+<li class=""><a href="#2-deployment-modes--pick-one" class="">Deployment Modes — Pick One</a></li>
+<li class=""><a href="#3-what-you-must-change" class="">What You Must Change</a></li>
+<li class=""><a href="#4-what-you-should-change" class="">What You Should Change</a></li>
+<li class=""><a href="#5-what-you-must-not-change" class="">What You Must Not Change</a></li>
+<li class=""><a href="#6-adapting-for-indian-state-governments" class="">Adapting for Indian State Governments</a></li>
+<li class=""><a href="#7-adapting-for-foreign-governments" class="">Adapting for Foreign Governments</a></li>
+<li class=""><a href="#8-adapting-for-civil-society-organisations" class="">Adapting for Civil Society Organisations</a></li>
+<li class=""><a href="#9-national-identity-system-mapping" class="">National Identity System Mapping</a></li>
+<li class=""><a href="#10-land-registry-format-mapping" class="">Land Registry Format Mapping</a></li>
+<li class=""><a href="#11-smart-contract-threshold-calibration" class="">Smart Contract Threshold Calibration</a></li>
+<li class=""><a href="#12-legal-review-checklist" class="">Legal Review Checklist</a></li>
+<li class=""><a href="#13-data-privacy-compliance-by-jurisdiction" class="">Data Privacy Compliance by Jurisdiction</a></li>
+<li class=""><a href="#14-infrastructure-requirements" class="">Infrastructure Requirements</a></li>
+<li class=""><a href="#15-going-live--checklist" class="">Going Live — Checklist</a></li>
+<li class=""><a href="#16-getting-help" class="">Getting Help</a></li>
+</ol>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="1-before-you-begin--four-questions">1. Before You Begin — Four Questions<a href="#1-before-you-begin--four-questions" class="hash-link" aria-label="Direct link to 1. Before You Begin — Four Questions" title="Direct link to 1. Before You Begin — Four Questions" translate="no">​</a></h2>
+<p>Answer these four questions before writing a single line of code. Your answers determine everything else in this guide.</p>
+<hr>
+<p><strong>Question 1: What data do you have access to?</strong></p>
+<p>BSC connects data. If you do not have access to at least one of the following, BSC cannot generate meaningful anomaly flags:</p>
+<table><thead><tr><th>Data Source</th><th>What BSC Does With It</th><th>Can BSC Work Without It?</th></tr></thead><tbody><tr><td>Property registration records</td><td>Builds the PropertyRecord for each citizen node</td><td>No — this is the core data</td></tr><tr><td>Income declaration records (ITR equivalent)</td><td>Runs the WEALTH_ANOMALY_DETECTOR rules</td><td>Severely limited without it</td></tr><tr><td>Financial asset data from banks</td><td>Builds the FinancialAsset records</td><td>Optional — system works but with less coverage</td></tr><tr><td>National identity system</td><td>Creates the CitizenNode identity link</td><td>No — required for the identity layer</td></tr><tr><td>Business ownership records</td><td>Runs Shell Company detection</td><td>Optional</td></tr></tbody></table>
+<p>If you only have property registration data and a national identity system, you can still run BSC in a limited mode that tracks property ownership and chain of title — without the income comparison rules. This is still valuable.</p>
+<hr>
+<p><strong>Question 2: What is your legal authority to connect this data?</strong></p>
+<p>BSC connecting datasets across agencies is a significant legal act. Before deployment:</p>
+<ul>
+<li class="">Do you have statutory authority to access each data source you plan to connect?</li>
+<li class="">Does your jurisdiction have a data protection law, and does BSC&#x27;s architecture comply with it?</li>
+<li class="">Are blockchain records admissible as evidence in your courts?</li>
+<li class="">Do citizens have a legal right to see who accessed their data — and if not, should you provide it anyway as a policy commitment?</li>
+</ul>
+<p>None of these questions have universal answers. Section 12 of this guide provides a legal review checklist. Get independent legal advice before going live with real citizen data.</p>
+<hr>
+<p><strong>Question 3: Who runs the BSC Authority in your deployment?</strong></p>
+<p>Every BSC instance needs a governing body — the entity responsible for issuing agency credentials, approving smart contract changes, and managing audit oversight. In the national India deployment, this is envisioned as a statutory body similar to UIDAI.</p>
+<p>In a state government deployment, this is likely the IT Department or an equivalent.</p>
+<p>In a civil society deployment, this is your organisation&#x27;s board, with a public commitment to the governance model in WHITEPAPER.md Section 12.</p>
+<p>You must name this entity before deploying. An ungoverned BSC instance is a liability, not an asset.</p>
+<hr>
+<p><strong>Question 4: Are you deploying for real citizens or for demonstration?</strong></p>
+<p>If demonstration: use the prototype at <code>bsc-prototype/</code> in the repository. No adaptation needed. Just run it.</p>
+<p>If real citizens: read this entire guide. Every section applies.</p>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="2-deployment-modes--pick-one">2. Deployment Modes — Pick One<a href="#2-deployment-modes--pick-one" class="hash-link" aria-label="Direct link to 2. Deployment Modes — Pick One" title="Direct link to 2. Deployment Modes — Pick One" translate="no">​</a></h2>
+<p>BSC can be deployed in four modes depending on your resources, authority, and goals.</p>
+<hr>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="mode-a--full-stack-deployment">Mode A — Full Stack Deployment<a href="#mode-a--full-stack-deployment" class="hash-link" aria-label="Direct link to Mode A — Full Stack Deployment" title="Direct link to Mode A — Full Stack Deployment" translate="no">​</a></h3>
+<p><strong>Who:</strong> State or national government with statutory authority and IT infrastructure<br>
+<strong>What you run:</strong> All four layers — blockchain, API gateway, all four frontends, ZKP module<br>
+<strong>Data:</strong> Real citizen data from connected agencies<br>
+<strong>Infrastructure:</strong> Minimum 3 blockchain peer nodes, API server, PostgreSQL, Redis, IPFS node<br>
+<strong>Effort:</strong> 3–6 months with a small team<br>
+<strong>Outcome:</strong> Production-grade transparency system</p>
+<hr>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="mode-b--public-dashboard-only">Mode B — Public Dashboard Only<a href="#mode-b--public-dashboard-only" class="hash-link" aria-label="Direct link to Mode B — Public Dashboard Only" title="Direct link to Mode B — Public Dashboard Only" translate="no">​</a></h3>
+<p><strong>Who:</strong> Civil society organisation, research institution, or journalism outlet<br>
+<strong>What you run:</strong> Public Dashboard frontend + read-only API + PostgreSQL<br>
+<strong>Data:</strong> Publicly available data only (election affidavits, public company records, RTI-sourced data)<br>
+<strong>Infrastructure:</strong> One server, one database — can run on a ₹2,000/month VPS<br>
+<strong>Effort:</strong> 2–4 weeks<br>
+<strong>Outcome:</strong> A publicly accessible politician wealth tracker with no citizen data privacy concerns</p>
+<hr>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="mode-c--property-registry-module-only">Mode C — Property Registry Module Only<a href="#mode-c--property-registry-module-only" class="hash-link" aria-label="Direct link to Mode C — Property Registry Module Only" title="Direct link to Mode C — Property Registry Module Only" translate="no">​</a></h3>
+<p><strong>Who:</strong> State government wanting to start with land records before full deployment<br>
+<strong>What you run:</strong> Blockchain layer + PROPERTY_TRANSFER_VALIDATOR contract + property API endpoints + property section of citizen dashboard<br>
+<strong>Data:</strong> State land registry records only<br>
+<strong>Infrastructure:</strong> 2 peer nodes minimum, API server, PostgreSQL<br>
+<strong>Effort:</strong> 6–10 weeks<br>
+<strong>Outcome:</strong> Tamper-proof property registry with fraud prevention and public ownership verification</p>
+<hr>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="mode-d--research-and-pilot">Mode D — Research and Pilot<a href="#mode-d--research-and-pilot" class="hash-link" aria-label="Direct link to Mode D — Research and Pilot" title="Direct link to Mode D — Research and Pilot" translate="no">​</a></h3>
+<p><strong>Who:</strong> Academic institution, think tank, or policy organisation running a controlled pilot<br>
+<strong>What you run:</strong> Full stack with synthetic data or anonymised historical data<br>
+<strong>Data:</strong> Dummy data or anonymised real data with IRB/ethics approval<br>
+<strong>Infrastructure:</strong> Can run entirely on one developer laptop via Docker<br>
+<strong>Effort:</strong> 1–2 weeks<br>
+<strong>Outcome:</strong> Working demonstration for research, grant applications, or policy advocacy</p>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="3-what-you-must-change">3. What You Must Change<a href="#3-what-you-must-change" class="hash-link" aria-label="Direct link to 3. What You Must Change" title="Direct link to 3. What You Must Change" translate="no">​</a></h2>
+<p>These are not optional. If you deploy BSC without making these changes, the system will not work correctly or will create legal and technical problems.</p>
+<hr>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="31-identity-hashing-configuration">3.1 Identity Hashing Configuration<a href="#31-identity-hashing-configuration" class="hash-link" aria-label="Direct link to 3.1 Identity Hashing Configuration" title="Direct link to 3.1 Identity Hashing Configuration" translate="no">​</a></h3>
+<p>BSC stores <code>aadhaar_hash</code> and <code>pan_hash</code> — SHA-256 hashes of India&#x27;s national identity numbers. For any other jurisdiction, replace these with the equivalent national identifier.</p>
+<p><strong>File to change:</strong> <code>api/src/config/identity.config.ts</code></p>
+<p><strong>What to replace:</strong></p>
+<table><thead><tr><th>BSC Default</th><th>Your Replacement</th></tr></thead><tbody><tr><td><code>aadhaar_hash</code></td><td>Hash of your national ID number (SSN, NIN, NRIC, etc.)</td></tr><tr><td><code>pan_hash</code></td><td>Hash of your tax registration number</td></tr><tr><td><code>wallet_address</code> derivation</td><td>Same formula, different input fields</td></tr></tbody></table>
+<p><strong>The rule:</strong> Never store the raw identifier. Always store only the hash. SHA-256 is the minimum. The hash must be salted with a deployment-specific secret so that the same ID number produces a different hash in your instance than in any other deployment — preventing cross-instance correlation attacks.</p>
+<p><strong>How to set the salt:</strong> In your <code>.env</code> file, set <code>IDENTITY_HASH_SALT=your-deployment-specific-secret</code>. Generate this with a cryptographically secure random number generator. Never share it. Never commit it to the repository.</p>
+<hr>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="32-currency-and-locale">3.2 Currency and Locale<a href="#32-currency-and-locale" class="hash-link" aria-label="Direct link to 3.2 Currency and Locale" title="Direct link to 3.2 Currency and Locale" translate="no">​</a></h3>
+<p>All monetary values in BSC display and calculate in Indian Rupees (₹). Every threshold in the smart contracts is expressed in INR.</p>
+<p><strong>Files to change:</strong></p>
+<ul>
+<li class=""><code>api/src/config/locale.config.ts</code> — currency symbol, formatting, decimal separator</li>
+<li class=""><code>blockchain/chaincode/anomaly/thresholds.go</code> — all monetary thresholds</li>
+<li class=""><code>frontend/*/src/utils/format.ts</code> — display formatting functions</li>
+</ul>
+<p><strong>What to change:</strong></p>
+<div class="language-text codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#F8F8F2;--prism-background-color:#282A36"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-text codeBlock_bY9V thin-scrollbar" style="color:#F8F8F2;background-color:#282A36"><code class="codeBlockLines_e6Vv"><div class="token-line" style="color:#F8F8F2"><span class="token plain">CURRENCY_SYMBOL     = ₹  →  your symbol ($, €, £, ₦, etc.)</span><br></div><div class="token-line" style="color:#F8F8F2"><span class="token plain">CURRENCY_CODE       = INR  →  your ISO 4217 code</span><br></div><div class="token-line" style="color:#F8F8F2"><span class="token plain">DECIMAL_SEPARATOR   = .  →  your locale&#x27;s separator</span><br></div><div class="token-line" style="color:#F8F8F2"><span class="token plain">THOUSANDS_SEPARATOR = ,  →  your locale&#x27;s separator</span><br></div><div class="token-line" style="color:#F8F8F2"><span class="token plain">AMOUNT_UNIT         = 1  →  1 (most currencies) or 100 if displaying in paise/cents</span><br></div></code></pre></div></div>
+<p><strong>Threshold translation:</strong> All smart contract thresholds in Section 7 of the whitepaper are in INR. Translate them to your currency using purchasing power parity (PPP), not nominal exchange rates. A ₹1 crore threshold in India is not equivalent to $1.2 million in the United States — the appropriate threshold depends on your country&#x27;s income distribution and cost of living.</p>
+<hr>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="33-property-data-format">3.3 Property Data Format<a href="#33-property-data-format" class="hash-link" aria-label="Direct link to 3.3 Property Data Format" title="Direct link to 3.3 Property Data Format" translate="no">​</a></h3>
+<p>India&#x27;s property records use survey numbers, khasra numbers, and khata numbers as identifiers. Every country and every Indian state uses different formats.</p>
+<p><strong>File to change:</strong> <code>api/src/models/property.model.ts</code> and <code>blockchain/chaincode/property/property.go</code></p>
+<p><strong>Fields that need jurisdiction-specific values:</strong></p>
+<table><thead><tr><th>BSC Field</th><th>India Default</th><th>Your Adaptation</th></tr></thead><tbody><tr><td><code>survey_number</code></td><td>Survey/Khasra/Khata No.</td><td>Your local cadastral reference format</td></tr><tr><td><code>registration_number</code></td><td>IGRS/State/Year/Number</td><td>Your deed or title number format</td></tr><tr><td><code>circle_rate_value</code></td><td>State government circle rate</td><td>Your government&#x27;s official valuation method</td></tr><tr><td><code>encumbrance_status</code></td><td>CLEAR, MORTGAGED, DISPUTED, COURT_STAY</td><td>Add or remove statuses for your legal system</td></tr><tr><td><code>transfer_type</code></td><td>PURCHASE, INHERITANCE, GIFT, COURT_ORDER</td><td>Add types specific to your jurisdiction (e.g., COMPULSORY_ACQUISITION)</td></tr><tr><td><code>stamp_duty_paid</code></td><td>Indian stamp duty</td><td>Your equivalent transfer tax</td></tr></tbody></table>
+<hr>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="34-agency-list-and-permissions">3.4 Agency List and Permissions<a href="#34-agency-list-and-permissions" class="hash-link" aria-label="Direct link to 3.4 Agency List and Permissions" title="Direct link to 3.4 Agency List and Permissions" translate="no">​</a></h3>
+<p>The ACCESS_PERMISSION_ENFORCER contract has a hardcoded list of agencies and their permission levels. This list is India-specific.</p>
+<p><strong>File to change:</strong> <code>blockchain/chaincode/access/agencies.go</code></p>
+<p>Replace:</p>
+<div class="language-text codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#F8F8F2;--prism-background-color:#282A36"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-text codeBlock_bY9V thin-scrollbar" style="color:#F8F8F2;background-color:#282A36"><code class="codeBlockLines_e6Vv"><div class="token-line" style="color:#F8F8F2"><span class="token plain">IT_DEPT    → Your tax authority</span><br></div><div class="token-line" style="color:#F8F8F2"><span class="token plain">ED         → Your financial crimes unit</span><br></div><div class="token-line" style="color:#F8F8F2"><span class="token plain">CBI        → Your national investigation agency</span><br></div><div class="token-line" style="color:#F8F8F2"><span class="token plain">COURT      → Your judiciary</span><br></div><div class="token-line" style="color:#F8F8F2"><span class="token plain">BANK       → Your regulated financial institutions</span><br></div><div class="token-line" style="color:#F8F8F2"><span class="token plain">CITIZEN_SELF → Keep this — it is universal</span><br></div><div class="token-line" style="color:#F8F8F2"><span class="token plain">ADMIN      → Keep this — it is universal</span><br></div><div class="token-line" style="color:#F8F8F2"><span class="token plain">LOKPAL     → Your anti-corruption ombudsman (if applicable)</span><br></div></code></pre></div></div>
+<p>Add any agencies specific to your jurisdiction. Remove any that do not exist. Every agency you add must have a defined permission scope — use the table in WHITEPAPER.md Section 7 as your template.</p>
+<hr>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="35-smart-contract-thresholds">3.5 Smart Contract Thresholds<a href="#35-smart-contract-thresholds" class="hash-link" aria-label="Direct link to 3.5 Smart Contract Thresholds" title="Direct link to 3.5 Smart Contract Thresholds" translate="no">​</a></h3>
+<p>The anomaly detection rules in WEALTH_ANOMALY_DETECTOR use specific thresholds calibrated for India. These must be recalibrated for your jurisdiction.</p>
+<p>See Section 11 of this guide for the full threshold calibration methodology.</p>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="4-what-you-should-change">4. What You Should Change<a href="#4-what-you-should-change" class="hash-link" aria-label="Direct link to 4. What You Should Change" title="Direct link to 4. What You Should Change" translate="no">​</a></h2>
+<p>These are not technically required but strongly recommended for a production deployment.</p>
+<hr>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="41-language-and-localisation">4.1 Language and Localisation<a href="#41-language-and-localisation" class="hash-link" aria-label="Direct link to 4.1 Language and Localisation" title="Direct link to 4.1 Language and Localisation" translate="no">​</a></h3>
+<p>The entire frontend is in English. For any deployment where English is not the primary language of your target users:</p>
+<ul>
+<li class="">Citizen Dashboard must be in the citizen&#x27;s first language</li>
+<li class="">Error messages and flag explanations must be in the local language</li>
+<li class="">Plain-language explanations of anomaly flags are critical — a citizen who cannot understand why they were flagged cannot exercise their right to respond</li>
+</ul>
+<p><strong>How BSC handles i18n:</strong> All user-facing strings are in <code>frontend/*/src/i18n/en.json</code>. Create a parallel file for each language you need. The React i18n setup is already in place — you only need to add translation files.</p>
+<p><strong>Priority order for translation:</strong></p>
+<ol>
+<li class="">Citizen Dashboard — highest priority, touches the most vulnerable users</li>
+<li class="">Public Dashboard — second priority, broadest audience</li>
+<li class="">Officer Console — English is acceptable if your officers are English-proficient</li>
+<li class="">Admin Panel — English is acceptable</li>
+</ol>
+<hr>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="42-flag-explanation-text">4.2 Flag Explanation Text<a href="#42-flag-explanation-text" class="hash-link" aria-label="Direct link to 4.2 Flag Explanation Text" title="Direct link to 4.2 Flag Explanation Text" translate="no">​</a></h3>
+<p>The plain-language explanations shown to citizens when a flag is raised are in:
+<code>api/src/content/flag-explanations/en.md</code></p>
+<p>These explanations reference Indian legal concepts (IT Department, ED, ITR, Benami Act). Replace all Indian-specific legal references with the equivalent in your jurisdiction.</p>
+<p>The explanation must answer three questions for the citizen:</p>
+<ul>
+<li class="">Why was I flagged? (plain language, no jargon)</li>
+<li class="">What does this mean for me right now? (nothing until an officer takes action)</li>
+<li class="">What can I do? (submit explanation, upload documents)</li>
+</ul>
+<hr>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="43-map-configuration">4.3 Map Configuration<a href="#43-map-configuration" class="hash-link" aria-label="Direct link to 4.3 Map Configuration" title="Direct link to 4.3 Map Configuration" translate="no">​</a></h3>
+<p>The property map in the Citizen Dashboard uses OpenStreetMap via Leaflet.js. OpenStreetMap works everywhere in the world and is free. No changes needed for basic functionality.</p>
+<p><strong>What you may want to change:</strong></p>
+<ul>
+<li class="">Default map centre coordinates (currently defaults to India&#x27;s geographic centre)</li>
+<li class="">Default zoom level</li>
+<li class="">Whether to show state/district boundary overlays (requires a GeoJSON file for your jurisdiction)</li>
+</ul>
+<p><strong>File to change:</strong> <code>frontend/citizen/src/config/map.config.ts</code></p>
+<hr>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="44-kyc-level-definitions">4.4 KYC Level Definitions<a href="#44-kyc-level-definitions" class="hash-link" aria-label="Direct link to 4.4 KYC Level Definitions" title="Direct link to 4.4 KYC Level Definitions" translate="no">​</a></h3>
+<p>BSC has three KYC levels:</p>
+<ul>
+<li class="">Level 1: Identity only (Aadhaar-equivalent verified)</li>
+<li class="">Level 2: Financial linked (bank accounts connected)</li>
+<li class="">Level 3: Full asset linked (property, financial, business all connected)</li>
+</ul>
+<p>These definitions may need to adapt to your jurisdiction&#x27;s KYC norms, particularly if you have a national KYC registry (like India&#x27;s CKYC) that defines KYC levels differently.</p>
+<p><strong>File to change:</strong> <code>api/src/config/kyc.config.ts</code></p>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="5-what-you-must-not-change">5. What You Must Not Change<a href="#5-what-you-must-not-change" class="hash-link" aria-label="Direct link to 5. What You Must Not Change" title="Direct link to 5. What You Must Not Change" translate="no">​</a></h2>
+<p>These are the parts of BSC that exist for fundamental security and integrity reasons. Changing them undermines the system&#x27;s core guarantees.</p>
+<hr>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="51-the-access-log-architecture">5.1 The Access Log Architecture<a href="#51-the-access-log-architecture" class="hash-link" aria-label="Direct link to 5.1 The Access Log Architecture" title="Direct link to 5.1 The Access Log Architecture" translate="no">​</a></h3>
+<p>Every single data access must be logged to the blockchain. Do not:</p>
+<ul>
+<li class="">Add a way to bypass logging for &quot;internal&quot; or &quot;system&quot; accesses</li>
+<li class="">Create a bulk access mode that logs one entry for many accesses</li>
+<li class="">Allow retroactive deletion or modification of access logs</li>
+</ul>
+<p>The entire citizen trust model rests on the guarantee that the access log is complete and tamper-proof. Any exception to this guarantee — however well-intentioned — destroys the guarantee entirely.</p>
+<hr>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="52-raw-identifier-storage">5.2 Raw Identifier Storage<a href="#52-raw-identifier-storage" class="hash-link" aria-label="Direct link to 5.2 Raw Identifier Storage" title="Direct link to 5.2 Raw Identifier Storage" translate="no">​</a></h3>
+<p>Never store raw Aadhaar numbers, PAN numbers, social security numbers, national identity numbers, or any other direct personal identifier. Always hash. Always salt. If a database breach occurs, hashed and salted identifiers cannot be reversed. Raw identifiers can.</p>
+<hr>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="53-exact-financial-balance-storage">5.3 Exact Financial Balance Storage<a href="#53-exact-financial-balance-storage" class="hash-link" aria-label="Direct link to 5.3 Exact Financial Balance Storage" title="Direct link to 5.3 Exact Financial Balance Storage" translate="no">​</a></h3>
+<p>BSC deliberately stores only balance ranges, never exact amounts. This is not a technical limitation — it is a privacy design decision. An agency that needs to know someone&#x27;s exact balance for a legitimate purpose must go through the ZKP verification path or obtain a court order.</p>
+<p>Do not modify the financial asset data model to store exact balances, even if a connected agency provides them. Discard the exact amount and store only the range.</p>
+<hr>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="54-the-citizen-notification-system">5.4 The Citizen Notification System<a href="#54-the-citizen-notification-system" class="hash-link" aria-label="Direct link to 5.4 The Citizen Notification System" title="Direct link to 5.4 The Citizen Notification System" translate="no">​</a></h3>
+<p>When a government agency accesses a citizen&#x27;s data, the citizen is notified within one hour. Do not disable or delay this notification. Do not allow agencies to suppress notifications for their own accesses.</p>
+<p>If an agency objects to notifications because they are concerned about tipping off a suspect: the answer is that suspects can see their own access log, not the content of the investigation. Notification that someone looked at your data is not the same as notification of what they concluded.</p>
+<hr>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="55-the-zkp-privacy-guarantee">5.5 The ZKP Privacy Guarantee<a href="#55-the-zkp-privacy-guarantee" class="hash-link" aria-label="Direct link to 5.5 The ZKP Privacy Guarantee" title="Direct link to 5.5 The ZKP Privacy Guarantee" translate="no">​</a></h3>
+<p>The ZKP module must never log or store the private inputs (the actual citizen data) used to generate a proof. Only the proof itself and its hash are stored on-chain. If you add logging to the ZKP module for debugging, ensure those logs are deleted and never reach persistent storage.</p>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="6-adapting-for-indian-state-governments">6. Adapting for Indian State Governments<a href="#6-adapting-for-indian-state-governments" class="hash-link" aria-label="Direct link to 6. Adapting for Indian State Governments" title="Direct link to 6. Adapting for Indian State Governments" translate="no">​</a></h2>
+<p>This section is specifically for state government deployments within India. You are operating within the same legal framework as the national BSC design, which simplifies adaptation significantly.</p>
+<hr>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="61-what-you-already-have">6.1 What You Already Have<a href="#61-what-you-already-have" class="hash-link" aria-label="Direct link to 6.1 What You Already Have" title="Direct link to 6.1 What You Already Have" translate="no">​</a></h3>
+<p>If you are a state government, you likely already have:</p>
+<ul>
+<li class=""><strong>State land registry data</strong> — the core property records</li>
+<li class=""><strong>UIDAI API access</strong> (or the ability to obtain it) — for Aadhaar-based identity verification</li>
+<li class=""><strong>State IT infrastructure</strong> — NIC data centres or state data centres</li>
+<li class=""><strong>Legal authority</strong> — state land registration acts give you clear authority over property records</li>
+</ul>
+<p>This means you can run Mode C (Property Registry Module) immediately with minimal legal complexity, and expand to full Mode A as you obtain additional data access agreements.</p>
+<hr>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="62-state-specific-property-formats">6.2 State-Specific Property Formats<a href="#62-state-specific-property-formats" class="hash-link" aria-label="Direct link to 6.2 State-Specific Property Formats" title="Direct link to 6.2 State-Specific Property Formats" translate="no">​</a></h3>
+<p>Each Indian state uses different terminology and formats for property records. Map your state&#x27;s format to BSC&#x27;s data model:</p>
+<table><thead><tr><th>State</th><th>Local Term</th><th>BSC Field</th></tr></thead><tbody><tr><td>Maharashtra</td><td>City Survey Number / Gut Number</td><td><code>survey_number</code></td></tr><tr><td>Karnataka</td><td>Sy. No. / Hissa No.</td><td><code>survey_number</code></td></tr><tr><td>Tamil Nadu</td><td>Survey No. / Sub-division No.</td><td><code>survey_number</code></td></tr><tr><td>Uttar Pradesh</td><td>Khasra No. / Khata No.</td><td><code>survey_number</code></td></tr><tr><td>Rajasthan</td><td>Khasra No. / Khatoni No.</td><td><code>survey_number</code></td></tr><tr><td>West Bengal</td><td>Dag No. / Khatian No.</td><td><code>survey_number</code></td></tr><tr><td>Gujarat</td><td>Survey No. / Block No.</td><td><code>survey_number</code></td></tr><tr><td>Bihar</td><td>Khata No. / Khesra No.</td><td><code>survey_number</code></td></tr></tbody></table>
+<p>For your specific state, check your land records department&#x27;s data dictionary for the exact field names and formats.</p>
+<hr>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="63-circle-rate-integration">6.3 Circle Rate Integration<a href="#63-circle-rate-integration" class="hash-link" aria-label="Direct link to 6.3 Circle Rate Integration" title="Direct link to 6.3 Circle Rate Integration" translate="no">​</a></h3>
+<p>Circle rates are set by district and sub-registrar zone, and they change periodically. BSC needs to:</p>
+<ul>
+<li class="">Store the circle rate at the time of registration (not the current rate — historical accuracy matters)</li>
+<li class="">Flag transactions where declared value is less than 80% of the circle rate</li>
+</ul>
+<p><strong>Integration approach:</strong></p>
+<ol>
+<li class="">Your IT department maintains a circle rate table in PostgreSQL</li>
+<li class="">The PROPERTY_TRANSFER_VALIDATOR contract queries this table via the API before validation</li>
+<li class="">The table is updated when the state government revises circle rates</li>
+<li class="">Historical rate records are never deleted — only new rows added</li>
+</ol>
+<hr>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="64-rera-integration">6.4 RERA Integration<a href="#64-rera-integration" class="hash-link" aria-label="Direct link to 6.4 RERA Integration" title="Direct link to 6.4 RERA Integration" translate="no">​</a></h3>
+<p>If your state has RERA (Real Estate Regulatory Authority) data, it is highly valuable for BSC. RERA project registrations can validate that a property being sold was legally approved, and RERA agent data can flag cases where unregistered agents are facilitating transactions.</p>
+<p>RERA data is typically available via state RERA APIs. Add it as an additional data source in the property validation pipeline.</p>
+<hr>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="65-state-level-governance">6.5 State-Level Governance<a href="#65-state-level-governance" class="hash-link" aria-label="Direct link to 6.5 State-Level Governance" title="Direct link to 6.5 State-Level Governance" translate="no">​</a></h3>
+<p>For a state-level BSC deployment, the governance body could be:</p>
+<ul>
+<li class="">The Revenue Department (for land records focus)</li>
+<li class="">The State IT Department (for full-stack deployment)</li>
+<li class="">A dedicated State Transparency Authority (preferred for long-term independence)</li>
+</ul>
+<p>A dedicated authority is preferable because it places BSC outside the normal departmental hierarchy — preventing the awkward situation where the department that is a data source is also the department that governs the system that scrutinises it.</p>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="7-adapting-for-foreign-governments">7. Adapting for Foreign Governments<a href="#7-adapting-for-foreign-governments" class="hash-link" aria-label="Direct link to 7. Adapting for Foreign Governments" title="Direct link to 7. Adapting for Foreign Governments" translate="no">​</a></h2>
+<p>This section is for governments outside India adapting BSC for their own country.</p>
+<hr>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="71-the-three-things-that-change-most">7.1 The Three Things That Change Most<a href="#71-the-three-things-that-change-most" class="hash-link" aria-label="Direct link to 7.1 The Three Things That Change Most" title="Direct link to 7.1 The Three Things That Change Most" translate="no">​</a></h3>
+<p><strong>National Identity System</strong> — Every country has one. Section 9 maps the most common systems to BSC&#x27;s identity model.</p>
+<p><strong>Property Registration System</strong> — Every country has one. The concepts are universal (owner, property, value, transfer) even if the formats differ completely.</p>
+<p><strong>Legal and Regulatory Framework</strong> — Covered in Sections 12 and 13.</p>
+<hr>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="72-jurisdictions-where-bsc-is-most-directly-applicable">7.2 Jurisdictions Where BSC is Most Directly Applicable<a href="#72-jurisdictions-where-bsc-is-most-directly-applicable" class="hash-link" aria-label="Direct link to 7.2 Jurisdictions Where BSC is Most Directly Applicable" title="Direct link to 7.2 Jurisdictions Where BSC is Most Directly Applicable" translate="no">​</a></h3>
+<p><strong>High fit — immediate adaptation possible:</strong></p>
+<ul>
+<li class="">Bangladesh (similar legal system, similar property registration, NID instead of Aadhaar)</li>
+<li class="">Sri Lanka (similar legal system, NIC instead of Aadhaar, Land Registry records available)</li>
+<li class="">Nepal (similar challenges, Citizenship Certificate as identity, land records partially digitised)</li>
+<li class="">Myanmar (significant land governance challenges, NRC as identity)</li>
+</ul>
+<p><strong>Medium fit — moderate adaptation required:</strong></p>
+<ul>
+<li class="">Kenya (Huduma Namba as identity, eCitizen land registry, similar corruption challenges)</li>
+<li class="">Ghana (Ghana Card as identity, Land Administration Project data available)</li>
+<li class="">Nigeria (NIN as identity, significantly more complex land tenure system)</li>
+<li class="">Philippines (PhilSys ID as identity, LRA land registry)</li>
+</ul>
+<p><strong>High fit with significant legal adaptation:</strong></p>
+<ul>
+<li class="">Brazil (CPF as identity, SREI property registry, robust legal system)</li>
+<li class="">Indonesia (NIK as identity, BPN land registry)</li>
+<li class="">Mexico (CURP as identity, RPP property registry)</li>
+</ul>
+<hr>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="73-what-to-prioritise-in-the-first-90-days">7.3 What to Prioritise in the First 90 Days<a href="#73-what-to-prioritise-in-the-first-90-days" class="hash-link" aria-label="Direct link to 7.3 What to Prioritise in the First 90 Days" title="Direct link to 7.3 What to Prioritise in the First 90 Days" translate="no">​</a></h3>
+<ol>
+<li class="">Map your national ID to the CitizenNode identity model (Section 9)</li>
+<li class="">Map your property registration format to BSC&#x27;s PropertyRecord (Section 10)</li>
+<li class="">Identify which smart contract rules apply in your legal context</li>
+<li class="">Get legal sign-off on the data protection compliance questions (Section 12)</li>
+<li class="">Run Mode D (research pilot) with synthetic data before touching real citizen data</li>
+<li class="">Identify your governance body</li>
+<li class="">Brief your data protection authority — do not surprise them</li>
+</ol>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="8-adapting-for-civil-society-organisations">8. Adapting for Civil Society Organisations<a href="#8-adapting-for-civil-society-organisations" class="hash-link" aria-label="Direct link to 8. Adapting for Civil Society Organisations" title="Direct link to 8. Adapting for Civil Society Organisations" translate="no">​</a></h2>
+<p>If you are an NGO, research institution, or journalism organisation, you are most likely deploying Mode B (Public Dashboard Only). This section is for you.</p>
+<hr>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="81-what-data-you-can-use-without-legal-issues">8.1 What Data You Can Use Without Legal Issues<a href="#81-what-data-you-can-use-without-legal-issues" class="hash-link" aria-label="Direct link to 8.1 What Data You Can Use Without Legal Issues" title="Direct link to 8.1 What Data You Can Use Without Legal Issues" translate="no">​</a></h3>
+<p>Publicly available data that requires no special authority:</p>
+<ul>
+<li class="">Election Commission affidavits (India) — public domain</li>
+<li class="">MCA21 company records — public API available</li>
+<li class="">Parliament and state legislature member declarations — public domain</li>
+<li class="">RTI-sourced property records — legal to publish</li>
+<li class="">RERA project registrations — public API in most states</li>
+</ul>
+<p>This data alone, structured and linked through BSC&#x27;s data model, is significantly more powerful than the current state of scattered PDFs and isolated databases.</p>
+<hr>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="82-what-you-cannot-do">8.2 What You Cannot Do<a href="#82-what-you-cannot-do" class="hash-link" aria-label="Direct link to 8.2 What You Cannot Do" title="Direct link to 8.2 What You Cannot Do" translate="no">​</a></h3>
+<ul>
+<li class="">Connect to Aadhaar or bank data — requires statutory authority you do not have</li>
+<li class="">Process private citizen data without explicit consent — DPDPA applies to you too</li>
+<li class="">Claim your instance is &quot;official&quot; — be clear this is an independent civil society deployment</li>
+</ul>
+<hr>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="83-the-public-figures-only-rule">8.3 The &quot;Public Figures Only&quot; Rule<a href="#83-the-public-figures-only-rule" class="hash-link" aria-label="Direct link to 8.3 The &quot;Public Figures Only&quot; Rule" title="Direct link to 8.3 The &quot;Public Figures Only&quot; Rule" translate="no">​</a></h3>
+<p>As a civil society deployment, restrict your public dashboard to public figures — politicians, public officials, judges, senior bureaucrats. Do not attempt to build a general citizen wealth database. Not only is this legally risky, it undermines the argument that BSC protects citizen privacy.</p>
+<p>The political argument for BSC is: public figures who exercise public power must be transparent; private citizens who do not must be protected. Maintain this distinction clearly in your deployment.</p>
+<hr>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="84-infrastructure-for-civil-society-deployment">8.4 Infrastructure for Civil Society Deployment<a href="#84-infrastructure-for-civil-society-deployment" class="hash-link" aria-label="Direct link to 8.4 Infrastructure for Civil Society Deployment" title="Direct link to 8.4 Infrastructure for Civil Society Deployment" translate="no">​</a></h3>
+<p>Mode B can run on:</p>
+<ul>
+<li class=""><strong>Render.com</strong> free tier: frontend + API (with sleep after inactivity — acceptable for low-traffic deployments)</li>
+<li class=""><strong>Railway.app</strong> free tier: PostgreSQL database</li>
+<li class=""><strong>Vercel</strong> free tier: React frontend (highly recommended — globally fast CDN)</li>
+<li class=""><strong>web3.storage</strong> free tier: IPFS document storage (5 GB free)</li>
+<li class=""><strong>GitHub Actions</strong> free tier: CI/CD pipeline</li>
+</ul>
+<p><strong>Total monthly infrastructure cost: ₹0</strong></p>
+<p>As your traffic grows and you need always-on infrastructure, the smallest paid tier on Render or Railway costs approximately ₹800–1,500 per month. This is well within the budget of any functioning civil society organisation.</p>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="9-national-identity-system-mapping">9. National Identity System Mapping<a href="#9-national-identity-system-mapping" class="hash-link" aria-label="Direct link to 9. National Identity System Mapping" title="Direct link to 9. National Identity System Mapping" translate="no">​</a></h2>
+<p>BSC uses two identity anchors: a biometric-verified national ID (Aadhaar equivalent) and a tax registration number (PAN equivalent). Map your country&#x27;s systems to these fields.</p>
+<table><thead><tr><th>Country</th><th>National ID</th><th>Tax ID</th><th>Notes</th></tr></thead><tbody><tr><td>India</td><td>Aadhaar (12 digits)</td><td>PAN (10 chars)</td><td>Original BSC design</td></tr><tr><td>Bangladesh</td><td>NID (17 digits)</td><td>TIN (12 digits)</td><td>Direct mapping</td></tr><tr><td>Sri Lanka</td><td>NIC (9+1 or 12 digits)</td><td>TIN (9 digits)</td><td>Direct mapping</td></tr><tr><td>Kenya</td><td>Huduma Namba</td><td>KRA PIN</td><td>Direct mapping</td></tr><tr><td>Nigeria</td><td>NIN (11 digits)</td><td>TIN (10 digits)</td><td>Direct mapping</td></tr><tr><td>Ghana</td><td>Ghana Card</td><td>TIN</td><td>Direct mapping</td></tr><tr><td>Philippines</td><td>PhilSys Number</td><td>TIN</td><td>Direct mapping</td></tr><tr><td>Brazil</td><td>CPF (11 digits)</td><td>CNPJ for business</td><td>CPF serves both purposes</td></tr><tr><td>Indonesia</td><td>NIK (16 digits)</td><td>NPWP</td><td>Direct mapping</td></tr><tr><td>United Kingdom</td><td>No universal ID</td><td>UTR / NI Number</td><td>Use NI Number + UTR</td></tr><tr><td>United States</td><td>SSN (9 digits)</td><td>EIN for business</td><td>Use SSN as both anchors</td></tr><tr><td>Germany</td><td>Personalausweis ID</td><td>Steueridentifikationsnummer</td><td>Both 11 digits</td></tr></tbody></table>
+<p><strong>For countries without a universal national ID:</strong> Use the combination of (tax registration number + date of birth + full legal name hash) as the identity anchor. This is less reliable than a biometric-verified ID but functional. Flag in your deployment documentation that identity confidence is lower until a national ID system is established.</p>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="10-land-registry-format-mapping">10. Land Registry Format Mapping<a href="#10-land-registry-format-mapping" class="hash-link" aria-label="Direct link to 10. Land Registry Format Mapping" title="Direct link to 10. Land Registry Format Mapping" translate="no">​</a></h2>
+<p>Map your jurisdiction&#x27;s property registration format to BSC&#x27;s PropertyRecord data model.</p>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="101-fields-that-map-directly-everywhere">10.1 Fields That Map Directly Everywhere<a href="#101-fields-that-map-directly-everywhere" class="hash-link" aria-label="Direct link to 10.1 Fields That Map Directly Everywhere" title="Direct link to 10.1 Fields That Map Directly Everywhere" translate="no">​</a></h3>
+<p>These concepts exist in every land registry system in the world:</p>
+<table><thead><tr><th>BSC Field</th><th>Universal Equivalent</th></tr></thead><tbody><tr><td><code>owner_node_id</code></td><td>Registered owner&#x27;s identity</td></tr><tr><td><code>property_type</code></td><td>Land use classification</td></tr><tr><td><code>area_sqft</code></td><td>Area measurement (convert from local unit if needed)</td></tr><tr><td><code>declared_value</code></td><td>Transaction price as declared at registration</td></tr><tr><td><code>registration_date</code></td><td>Date of deed/title transfer</td></tr><tr><td><code>registration_number</code></td><td>Deed number / title number / folio number</td></tr><tr><td><code>transfer_type</code></td><td>Method of acquisition</td></tr><tr><td><code>encumbrance_status</code></td><td>Mortgage / lien / dispute status</td></tr></tbody></table>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="102-fields-that-need-local-calibration">10.2 Fields That Need Local Calibration<a href="#102-fields-that-need-local-calibration" class="hash-link" aria-label="Direct link to 10.2 Fields That Need Local Calibration" title="Direct link to 10.2 Fields That Need Local Calibration" translate="no">​</a></h3>
+<table><thead><tr><th>BSC Field</th><th>India Value</th><th>How to Adapt</th></tr></thead><tbody><tr><td><code>circle_rate_value</code></td><td>Government floor price per sq.ft by zone</td><td>Use your government&#x27;s official valuation method (assessed value, cadastral value, rateable value)</td></tr><tr><td><code>market_estimate</code></td><td>Estimated from comparable transactions</td><td>Same methodology — use recent comparable sales in the area</td></tr><tr><td><code>stamp_duty_paid</code></td><td>Indian stamp duty</td><td>Your jurisdiction&#x27;s transfer tax, registration fee, or equivalent</td></tr><tr><td><code>document_hash</code></td><td>IPFS hash of sub-registrar document</td><td>IPFS hash of your title deed or equivalent document</td></tr></tbody></table>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="103-area-unit-conversion">10.3 Area Unit Conversion<a href="#103-area-unit-conversion" class="hash-link" aria-label="Direct link to 10.3 Area Unit Conversion" title="Direct link to 10.3 Area Unit Conversion" translate="no">​</a></h3>
+<p>BSC stores area in square feet. Convert from your local unit:</p>
+<table><thead><tr><th>Local Unit</th><th>Multiply By</th><th>To Get Sq.Ft</th></tr></thead><tbody><tr><td>Square metres</td><td>10.764</td><td>Sq.ft</td></tr><tr><td>Acres</td><td>43,560</td><td>Sq.ft</td></tr><tr><td>Hectares</td><td>107,639</td><td>Sq.ft</td></tr><tr><td>Bigha (varies by state)</td><td>26,910 (UP) / 14,400 (Bengal)</td><td>Sq.ft</td></tr><tr><td>Guntha</td><td>1,089</td><td>Sq.ft</td></tr><tr><td>Cent</td><td>435.6</td><td>Sq.ft</td></tr></tbody></table>
+<p>Store the converted value in <code>area_sqft</code>. Also store the original value and unit in <code>area_local_value</code> and <code>area_local_unit</code> for reference.</p>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="11-smart-contract-threshold-calibration">11. Smart Contract Threshold Calibration<a href="#11-smart-contract-threshold-calibration" class="hash-link" aria-label="Direct link to 11. Smart Contract Threshold Calibration" title="Direct link to 11. Smart Contract Threshold Calibration" translate="no">​</a></h2>
+<p>The anomaly detection thresholds in WEALTH_ANOMALY_DETECTOR are calibrated for India. If you deploy BSC in a different economic context, you must recalibrate these thresholds or you will get either too many false positives (flagging ordinary wealth) or too many false negatives (missing real anomalies).</p>
+<hr>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="111-the-calibration-methodology">11.1 The Calibration Methodology<a href="#111-the-calibration-methodology" class="hash-link" aria-label="Direct link to 11.1 The Calibration Methodology" title="Direct link to 11.1 The Calibration Methodology" translate="no">​</a></h3>
+<p>For each threshold, the methodology is the same:</p>
+<ol>
+<li class=""><strong>Get the median household income</strong> in your jurisdiction (official statistics)</li>
+<li class=""><strong>Get the median property value</strong> in your jurisdiction (official statistics or comparable sales data)</li>
+<li class=""><strong>Calculate the ratio</strong> that separates normal wealth accumulation from suspicious wealth accumulation in your economic context</li>
+<li class=""><strong>Back-test against known cases</strong> — apply the threshold to historical cases where corruption was proven and cases where it was not. Adjust until you minimise both false positives and false negatives.</li>
+<li class=""><strong>Document your methodology</strong> — every threshold must have a documented justification. Arbitrary thresholds are legally indefensible.</li>
+</ol>
+<hr>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="112-rule-by-rule-calibration">11.2 Rule-by-Rule Calibration<a href="#112-rule-by-rule-calibration" class="hash-link" aria-label="Direct link to 11.2 Rule-by-Rule Calibration" title="Direct link to 11.2 Rule-by-Rule Calibration" translate="no">​</a></h3>
+<p><strong>Rule 1 — Basic Income Asset Mismatch</strong></p>
+<div class="language-text codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#F8F8F2;--prism-background-color:#282A36"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-text codeBlock_bY9V thin-scrollbar" style="color:#F8F8F2;background-color:#282A36"><code class="codeBlockLines_e6Vv"><div class="token-line" style="color:#F8F8F2"><span class="token plain">BSC Default: assets_acquired_this_year &gt; declared_income_this_year × 2</span><br></div><div class="token-line" style="color:#F8F8F2"><span class="token plain" style="display:inline-block"></span><br></div><div class="token-line" style="color:#F8F8F2"><span class="token plain">Calibration question: In your economy, what multiple of annual income</span><br></div><div class="token-line" style="color:#F8F8F2"><span class="token plain">does a person typically save and invest in one year?</span><br></div><div class="token-line" style="color:#F8F8F2"><span class="token plain">In India: 1.5–2× is unusual. 3× is suspicious.</span><br></div><div class="token-line" style="color:#F8F8F2"><span class="token plain">In a high-savings economy (Singapore, Japan): 2× is normal. 4× is suspicious.</span><br></div><div class="token-line" style="color:#F8F8F2"><span class="token plain">In a low-income economy (sub-Saharan Africa): 1× is unusual. 2× is suspicious.</span><br></div><div class="token-line" style="color:#F8F8F2"><span class="token plain" style="display:inline-block"></span><br></div><div class="token-line" style="color:#F8F8F2"><span class="token plain">Adjust the multiplier (currently 2) based on your savings rate data.</span><br></div></code></pre></div></div>
+<p><strong>Rule 2 — Serious Unexplained Wealth</strong></p>
+<div class="language-text codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#F8F8F2;--prism-background-color:#282A36"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-text codeBlock_bY9V thin-scrollbar" style="color:#F8F8F2;background-color:#282A36"><code class="codeBlockLines_e6Vv"><div class="token-line" style="color:#F8F8F2"><span class="token plain">BSC Default: total_net_worth &gt; cumulative_5yr_income × 4</span><br></div><div class="token-line" style="color:#F8F8F2"><span class="token plain" style="display:inline-block"></span><br></div><div class="token-line" style="color:#F8F8F2"><span class="token plain">Calibration question: What is a reasonable ceiling for wealth</span><br></div><div class="token-line" style="color:#F8F8F2"><span class="token plain">accumulation over 5 years through legitimate means?</span><br></div><div class="token-line" style="color:#F8F8F2"><span class="token plain">This includes savings, investment returns, inheritance.</span><br></div><div class="token-line" style="color:#F8F8F2"><span class="token plain">In India: 4× is conservative — legitimate HNI individuals can exceed this.</span><br></div><div class="token-line" style="color:#F8F8F2"><span class="token plain">Adjust based on your country&#x27;s top decile savings and investment data.</span><br></div></code></pre></div></div>
+<p><strong>Rule 3 — Public Official Wealth Surge</strong></p>
+<div class="language-text codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#F8F8F2;--prism-background-color:#282A36"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-text codeBlock_bY9V thin-scrollbar" style="color:#F8F8F2;background-color:#282A36"><code class="codeBlockLines_e6Vv"><div class="token-line" style="color:#F8F8F2"><span class="token plain">BSC Default: net_worth_growth_3yr &gt; 300%</span><br></div><div class="token-line" style="color:#F8F8F2"><span class="token plain" style="display:inline-block"></span><br></div><div class="token-line" style="color:#F8F8F2"><span class="token plain">This rule is specifically for public officials and politicians.</span><br></div><div class="token-line" style="color:#F8F8F2"><span class="token plain">The question is: what growth rate is achievable on a civil servant&#x27;s</span><br></div><div class="token-line" style="color:#F8F8F2"><span class="token plain">salary through legitimate savings and investment?</span><br></div><div class="token-line" style="color:#F8F8F2"><span class="token plain" style="display:inline-block"></span><br></div><div class="token-line" style="color:#F8F8F2"><span class="token plain">In India: A senior IAS officer earning ₹2.5L/month can legitimately</span><br></div><div class="token-line" style="color:#F8F8F2"><span class="token plain">grow wealth at 10–15% annually through mutual funds.</span><br></div><div class="token-line" style="color:#F8F8F2"><span class="token plain">300% in 3 years (~44% CAGR) is beyond legitimate investment returns.</span><br></div><div class="token-line" style="color:#F8F8F2"><span class="token plain" style="display:inline-block"></span><br></div><div class="token-line" style="color:#F8F8F2"><span class="token plain">Calculate your country&#x27;s civil servant salary bands and the maximum</span><br></div><div class="token-line" style="color:#F8F8F2"><span class="token plain">legitimate investment return to set this threshold.</span><br></div></code></pre></div></div>
+<p><strong>Rule 4 — Benami Suspicion</strong></p>
+<div class="language-text codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#F8F8F2;--prism-background-color:#282A36"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-text codeBlock_bY9V thin-scrollbar" style="color:#F8F8F2;background-color:#282A36"><code class="codeBlockLines_e6Vv"><div class="token-line" style="color:#F8F8F2"><span class="token plain">BSC Default: properties_in_family_names &gt; 3</span><br></div><div class="token-line" style="color:#F8F8F2"><span class="token plain">AND family_combined_income &lt; total_property_value × 0.2</span><br></div><div class="token-line" style="color:#F8F8F2"><span class="token plain" style="display:inline-block"></span><br></div><div class="token-line" style="color:#F8F8F2"><span class="token plain">This rule is highly India-specific — the concept of benami</span><br></div><div class="token-line" style="color:#F8F8F2"><span class="token plain">(property held in another&#x27;s name) has a specific legal definition</span><br></div><div class="token-line" style="color:#F8F8F2"><span class="token plain">in Indian law. Adapt based on your jurisdiction&#x27;s equivalent concept.</span><br></div><div class="token-line" style="color:#F8F8F2"><span class="token plain" style="display:inline-block"></span><br></div><div class="token-line" style="color:#F8F8F2"><span class="token plain">If your jurisdiction does not have a specific benami-equivalent law,</span><br></div><div class="token-line" style="color:#F8F8F2"><span class="token plain">this rule can still flag for &quot;family wealth concentration&quot; —</span><br></div><div class="token-line" style="color:#F8F8F2"><span class="token plain">change the label and the legal reference but keep the logic.</span><br></div></code></pre></div></div>
+<p><strong>Rule 5 — Shell Company Link</strong></p>
+<div class="language-text codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#F8F8F2;--prism-background-color:#282A36"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-text codeBlock_bY9V thin-scrollbar" style="color:#F8F8F2;background-color:#282A36"><code class="codeBlockLines_e6Vv"><div class="token-line" style="color:#F8F8F2"><span class="token plain">BSC Default: business_count &gt; 5</span><br></div><div class="token-line" style="color:#F8F8F2"><span class="token plain">AND any company DORMANT or STRUCK_OFF</span><br></div><div class="token-line" style="color:#F8F8F2"><span class="token plain">AND company_turnover_combined &lt; lifestyle_expenditure</span><br></div><div class="token-line" style="color:#F8F8F2"><span class="token plain" style="display:inline-block"></span><br></div><div class="token-line" style="color:#F8F8F2"><span class="token plain">Calibration question: In your jurisdiction, how many companies</span><br></div><div class="token-line" style="color:#F8F8F2"><span class="token plain">does a legitimate businessperson typically own?</span><br></div><div class="token-line" style="color:#F8F8F2"><span class="token plain">In India: Most legitimate SME owners have 1–3 companies.</span><br></div><div class="token-line" style="color:#F8F8F2"><span class="token plain">In a holding company structure: 5–10 is legitimate.</span><br></div><div class="token-line" style="color:#F8F8F2"><span class="token plain">Adjust the count threshold based on your business registration norms.</span><br></div></code></pre></div></div>
+<hr>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="113-threshold-review-process">11.3 Threshold Review Process<a href="#113-threshold-review-process" class="hash-link" aria-label="Direct link to 11.3 Threshold Review Process" title="Direct link to 11.3 Threshold Review Process" translate="no">​</a></h3>
+<p>Set a calendar reminder to review all thresholds annually. Economic conditions change. Inflation affects monetary thresholds. What was suspicious in 2024 may be normal in 2030 for purely inflationary reasons.</p>
+<p>Every threshold change must go through the smart contract change process described in WHITEPAPER.md Section 12. Thresholds are not configuration — they are policy. Treat them accordingly.</p>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="12-legal-review-checklist">12. Legal Review Checklist<a href="#12-legal-review-checklist" class="hash-link" aria-label="Direct link to 12. Legal Review Checklist" title="Direct link to 12. Legal Review Checklist" translate="no">​</a></h2>
+<p>Complete this checklist before going live with real citizen data. Get independent legal advice — this checklist is a starting point, not a substitute for legal counsel.</p>
+<hr>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="121-data-protection-and-privacy">12.1 Data Protection and Privacy<a href="#121-data-protection-and-privacy" class="hash-link" aria-label="Direct link to 12.1 Data Protection and Privacy" title="Direct link to 12.1 Data Protection and Privacy" translate="no">​</a></h3>
+<ul class="contains-task-list containsTaskList_mC6p">
+<li class="task-list-item"><input type="checkbox" disabled=""> <!-- -->Identified the applicable data protection law in your jurisdiction</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> <!-- -->Confirmed that connecting property and financial data under a single identity is permitted under that law</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> <!-- -->Confirmed that the balance range approach (no exact amounts) satisfies the data minimisation requirement</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> <!-- -->Confirmed that the citizen notification requirement is compatible with your law (some jurisdictions require notification before access, not after)</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> <!-- -->Confirmed that the access log architecture satisfies your data retention requirements</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> <!-- -->Briefed your data protection authority on the deployment and received no objection</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> <!-- -->Documented the legal basis for each category of data processing</li>
+</ul>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="122-evidence-and-admissibility">12.2 Evidence and Admissibility<a href="#122-evidence-and-admissibility" class="hash-link" aria-label="Direct link to 12.2 Evidence and Admissibility" title="Direct link to 12.2 Evidence and Admissibility" translate="no">​</a></h3>
+<ul class="contains-task-list containsTaskList_mC6p">
+<li class="task-list-item"><input type="checkbox" disabled=""> <!-- -->Researched whether blockchain records are admissible as evidence in your courts</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> <!-- -->If admissibility is uncertain, consulted with a technology law expert</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> <!-- -->Documented the chain of custody from original data source to BSC record to potential court use</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> <!-- -->Confirmed that the cryptographic signing mechanism meets your jurisdiction&#x27;s electronic signature requirements</li>
+</ul>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="123-agency-authority">12.3 Agency Authority<a href="#123-agency-authority" class="hash-link" aria-label="Direct link to 12.3 Agency Authority" title="Direct link to 12.3 Agency Authority" translate="no">​</a></h3>
+<ul class="contains-task-list containsTaskList_mC6p">
+<li class="task-list-item"><input type="checkbox" disabled=""> <!-- -->Confirmed that each connected agency has statutory authority to share data with BSC</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> <!-- -->Documented the legal instrument authorising each data sharing arrangement (MOU, legislation, executive order)</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> <!-- -->Confirmed that the permission levels in ACCESS_PERMISSION_ENFORCER align with each agency&#x27;s legal authority</li>
+</ul>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="124-citizen-rights">12.4 Citizen Rights<a href="#124-citizen-rights" class="hash-link" aria-label="Direct link to 12.4 Citizen Rights" title="Direct link to 12.4 Citizen Rights" translate="no">​</a></h3>
+<ul class="contains-task-list containsTaskList_mC6p">
+<li class="task-list-item"><input type="checkbox" disabled=""> <!-- -->Confirmed that citizens have a right to access their own BSC data</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> <!-- -->Established a process for citizens to dispute incorrect records</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> <!-- -->Established a process for citizens to report unauthorised access</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> <!-- -->Documented what happens to BSC data if BSC is shut down (data portability)</li>
+</ul>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="125-cross-border-data">12.5 Cross-Border Data<a href="#125-cross-border-data" class="hash-link" aria-label="Direct link to 12.5 Cross-Border Data" title="Direct link to 12.5 Cross-Border Data" translate="no">​</a></h3>
+<ul class="contains-task-list containsTaskList_mC6p">
+<li class="task-list-item"><input type="checkbox" disabled=""> <!-- -->If your deployment involves cross-border data flows, confirmed compliance with applicable data localisation requirements</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> <!-- -->Confirmed that the IPFS document storage approach complies with your data residency requirements</li>
+</ul>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="13-data-privacy-compliance-by-jurisdiction">13. Data Privacy Compliance by Jurisdiction<a href="#13-data-privacy-compliance-by-jurisdiction" class="hash-link" aria-label="Direct link to 13. Data Privacy Compliance by Jurisdiction" title="Direct link to 13. Data Privacy Compliance by Jurisdiction" translate="no">​</a></h2>
+<p>A brief summary of the key requirements in major jurisdictions where BSC adaptation is likely. This is not legal advice — consult qualified counsel in your jurisdiction.</p>
+<hr>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="india--digital-personal-data-protection-act-2023">India — Digital Personal Data Protection Act, 2023<a href="#india--digital-personal-data-protection-act-2023" class="hash-link" aria-label="Direct link to India — Digital Personal Data Protection Act, 2023" title="Direct link to India — Digital Personal Data Protection Act, 2023" translate="no">​</a></h3>
+<p><strong>Key requirements relevant to BSC:</strong></p>
+<ul>
+<li class="">Consent required for personal data processing (BSC relies on statutory authority, which DPDPA recognises as an alternative to consent for government functions)</li>
+<li class="">Data minimisation — BSC&#x27;s range-based financial storage complies</li>
+<li class="">Purpose limitation — access logging enforces this technically</li>
+<li class="">Grievance redressal — citizen dashboard provides this</li>
+<li class="">Data localisation — store all data in India-based infrastructure</li>
+</ul>
+<p><strong>BSC compliance status:</strong> Designed for DPDPA compliance. Independent legal review recommended before production deployment.</p>
+<hr>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="kenya--data-protection-act-2019">Kenya — Data Protection Act, 2019<a href="#kenya--data-protection-act-2019" class="hash-link" aria-label="Direct link to Kenya — Data Protection Act, 2019" title="Direct link to Kenya — Data Protection Act, 2019" translate="no">​</a></h3>
+<p><strong>Key requirements relevant to BSC:</strong></p>
+<ul>
+<li class="">Lawful basis for processing required — statutory authority or legitimate interest</li>
+<li class="">Data subject rights including access and correction</li>
+<li class="">Cross-border transfer restrictions — store data in Kenya</li>
+<li class="">Registration with the Office of the Data Protection Commissioner required</li>
+</ul>
+<hr>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="nigeria--nigeria-data-protection-regulation-ndpr-2019">Nigeria — Nigeria Data Protection Regulation (NDPR), 2019<a href="#nigeria--nigeria-data-protection-regulation-ndpr-2019" class="hash-link" aria-label="Direct link to Nigeria — Nigeria Data Protection Regulation (NDPR), 2019" title="Direct link to Nigeria — Nigeria Data Protection Regulation (NDPR), 2019" translate="no">​</a></h3>
+<p><strong>Key requirements relevant to BSC:</strong></p>
+<ul>
+<li class="">Lawful basis required — government authority or consent</li>
+<li class="">Data subject notification within 72 hours of breach</li>
+<li class="">Data Protection Impact Assessment (DPIA) required for large-scale processing</li>
+<li class="">Nigerian Data Protection Bureau oversight</li>
+</ul>
+<hr>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="european-union--gdpr">European Union — GDPR<a href="#european-union--gdpr" class="hash-link" aria-label="Direct link to European Union — GDPR" title="Direct link to European Union — GDPR" translate="no">​</a></h3>
+<p><strong>Key requirements relevant to BSC:</strong></p>
+<ul>
+<li class="">Lawful basis — for government deployments, public task (Article 6(1)(e))</li>
+<li class="">Data minimisation — BSC&#x27;s design is GDPR-aligned</li>
+<li class="">Right to erasure — conflicts with blockchain immutability. Resolution: personal data stored off-chain in PostgreSQL (deletable); only hashes and anonymised records on-chain</li>
+<li class="">Data Protection Impact Assessment mandatory for this type of large-scale processing</li>
+<li class="">Data Protection Officer appointment likely required</li>
+</ul>
+<p><strong>Special consideration for GDPR:</strong> The right to erasure (&quot;right to be forgotten&quot;) is incompatible with blockchain immutability as commonly understood. BSC&#x27;s hybrid architecture resolves this: delete the PostgreSQL record (the primary personal data store) and the blockchain record becomes an orphan hash with no linkable personal data. Document this approach in your DPIA.</p>
+<hr>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="united-states--varied-by-state">United States — Varied by State<a href="#united-states--varied-by-state" class="hash-link" aria-label="Direct link to United States — Varied by State" title="Direct link to United States — Varied by State" translate="no">​</a></h3>
+<p>The US has no federal equivalent to GDPR. Relevant frameworks:</p>
+<ul>
+<li class="">California CCPA/CPRA for California deployments</li>
+<li class="">State-specific data breach notification laws</li>
+<li class="">GLBA for financial data</li>
+<li class="">Section 5 of the FTC Act (unfair or deceptive practices)</li>
+</ul>
+<p>A federal government or multi-state deployment would need a constitutional and statutory authority analysis that is beyond the scope of this guide.</p>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="14-infrastructure-requirements">14. Infrastructure Requirements<a href="#14-infrastructure-requirements" class="hash-link" aria-label="Direct link to 14. Infrastructure Requirements" title="Direct link to 14. Infrastructure Requirements" translate="no">​</a></h2>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="141-minimum-production-setup-mode-a--full-stack">14.1 Minimum Production Setup (Mode A — Full Stack)<a href="#141-minimum-production-setup-mode-a--full-stack" class="hash-link" aria-label="Direct link to 14.1 Minimum Production Setup (Mode A — Full Stack)" title="Direct link to 14.1 Minimum Production Setup (Mode A — Full Stack)" translate="no">​</a></h3>
+<table><thead><tr><th>Component</th><th>Minimum Spec</th><th>Recommended</th></tr></thead><tbody><tr><td>Blockchain peer nodes</td><td>3 × 4 CPU, 8 GB RAM, 500 GB SSD</td><td>3 × 8 CPU, 16 GB RAM, 1 TB SSD</td></tr><tr><td>Orderer node</td><td>1 × 2 CPU, 4 GB RAM</td><td>2 × 4 CPU, 8 GB RAM (for redundancy)</td></tr><tr><td>API server</td><td>2 × 4 CPU, 8 GB RAM</td><td>4 × 4 CPU, 16 GB RAM (load balanced)</td></tr><tr><td>PostgreSQL</td><td>4 CPU, 16 GB RAM, 2 TB SSD</td><td>8 CPU, 32 GB RAM, 4 TB SSD (with replica)</td></tr><tr><td>Redis</td><td>2 CPU, 4 GB RAM</td><td>4 CPU, 8 GB RAM</td></tr><tr><td>IPFS node</td><td>2 CPU, 4 GB RAM, 2 TB storage</td><td>Use web3.storage or Pinata instead</td></tr><tr><td>Frontend (CDN)</td><td>Vercel or Cloudflare Pages</td><td>Same — CDN is always preferred</td></tr></tbody></table>
+<p><strong>Network requirements:</strong></p>
+<ul>
+<li class="">All inter-node communication over private network (not public internet)</li>
+<li class="">TLS 1.3 on all public-facing endpoints</li>
+<li class="">VPN or private link between data centres if multi-DC deployment</li>
+</ul>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="142-minimum-pilot-setup-mode-c-or-d">14.2 Minimum Pilot Setup (Mode C or D)<a href="#142-minimum-pilot-setup-mode-c-or-d" class="hash-link" aria-label="Direct link to 14.2 Minimum Pilot Setup (Mode C or D)" title="Direct link to 14.2 Minimum Pilot Setup (Mode C or D)" translate="no">​</a></h3>
+<p>Runs entirely on a single developer-grade machine or small VPS:</p>
+<ul>
+<li class="">4 CPU, 16 GB RAM, 100 GB SSD</li>
+<li class="">Docker and Docker Compose installed</li>
+<li class=""><code>docker compose up</code> starts everything</li>
+</ul>
+<p>This is suitable for pilots with up to approximately 10,000 records and 100 concurrent users.</p>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="143-mode-b--public-dashboard-only">14.3 Mode B — Public Dashboard Only<a href="#143-mode-b--public-dashboard-only" class="hash-link" aria-label="Direct link to 14.3 Mode B — Public Dashboard Only" title="Direct link to 14.3 Mode B — Public Dashboard Only" translate="no">​</a></h3>
+<p>Can run on:</p>
+<ul>
+<li class="">2 CPU, 2 GB RAM VPS (₹500–800/month on DigitalOcean, Linode, or Hetzner)</li>
+<li class="">Vercel free tier for the React frontend</li>
+<li class="">Railway or Supabase free tier for PostgreSQL</li>
+</ul>
+<p>Total cost: ₹500–800/month for a production-quality public dashboard.</p>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="15-going-live--checklist">15. Going Live — Checklist<a href="#15-going-live--checklist" class="hash-link" aria-label="Direct link to 15. Going Live — Checklist" title="Direct link to 15. Going Live — Checklist" translate="no">​</a></h2>
+<p>Complete every item before accepting real citizen data.</p>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="technical">Technical<a href="#technical" class="hash-link" aria-label="Direct link to Technical" title="Direct link to Technical" translate="no">​</a></h3>
+<ul class="contains-task-list containsTaskList_mC6p">
+<li class="task-list-item"><input type="checkbox" disabled=""> <!-- -->All four smart contracts deployed and tested on a Hyperledger Fabric testnet for minimum 30 days</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> <!-- -->API endpoints tested with Postman collection (available in <code>api/tests/postman/</code>)</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> <!-- -->ZKP circuits tested with known inputs and verified outputs</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> <!-- -->Load test completed at 2× expected peak traffic</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> <!-- -->Security penetration test completed by an independent firm</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> <!-- -->All hardcoded test credentials and API keys removed</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> <!-- -->Environment variables properly configured (no secrets in repository)</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> <!-- -->Database backup and recovery tested</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> <!-- -->Disaster recovery runbook written and tested</li>
+</ul>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="legal-and-governance">Legal and Governance<a href="#legal-and-governance" class="hash-link" aria-label="Direct link to Legal and Governance" title="Direct link to Legal and Governance" translate="no">​</a></h3>
+<ul class="contains-task-list containsTaskList_mC6p">
+<li class="task-list-item"><input type="checkbox" disabled=""> <!-- -->Legal review checklist (Section 12) completed</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> <!-- -->BSC Authority constituted with named members</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> <!-- -->Smart contract change process documented and communicated to all agencies</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> <!-- -->Citizen grievance process live and tested</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> <!-- -->Data protection authority briefed</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> <!-- -->All agency data sharing agreements signed</li>
+</ul>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="communication">Communication<a href="#communication" class="hash-link" aria-label="Direct link to Communication" title="Direct link to Communication" translate="no">​</a></h3>
+<ul class="contains-task-list containsTaskList_mC6p">
+<li class="task-list-item"><input type="checkbox" disabled=""> <!-- -->Citizen communication plan ready (what to tell citizens before launch)</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> <!-- -->Agency training completed for all connected agencies</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> <!-- -->Officer training completed for the investigation console</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> <!-- -->Media briefing prepared (journalists will ask questions — be ready)</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> <!-- -->Public announcement of the data sources and their freshness published</li>
+</ul>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="16-getting-help">16. Getting Help<a href="#16-getting-help" class="hash-link" aria-label="Direct link to 16. Getting Help" title="Direct link to 16. Getting Help" translate="no">​</a></h2>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="community-support">Community Support<a href="#community-support" class="hash-link" aria-label="Direct link to Community Support" title="Direct link to Community Support" translate="no">​</a></h3>
+<ul>
+<li class=""><strong>GitHub Discussions:</strong> For architecture questions, adaptation questions, and general discussion</li>
+<li class=""><strong>GitHub Issues:</strong> For bug reports and feature requests</li>
+<li class=""><strong>GitHub Discussions → Show and Tell:</strong> Post your adaptation — what jurisdiction, what changes, what challenges</li>
+</ul>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="contributing-your-adaptation-back">Contributing Your Adaptation Back<a href="#contributing-your-adaptation-back" class="hash-link" aria-label="Direct link to Contributing Your Adaptation Back" title="Direct link to Contributing Your Adaptation Back" translate="no">​</a></h3>
+<p>If you have adapted BSC for a new jurisdiction, please contribute your adaptation work back to the repository:</p>
+<ul>
+<li class="">Your locale configuration files</li>
+<li class="">Your property format mapping</li>
+<li class="">Your smart contract threshold calibration and methodology</li>
+<li class="">Your legal review findings (redacted as appropriate)</li>
+</ul>
+<p>Every adaptation makes BSC better for every other jurisdiction. A Nigerian civil servant&#x27;s adaptation work helps a Bangladeshi government researcher. This is the compounding value of open source.</p>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="what-not-to-contribute-back">What Not to Contribute Back<a href="#what-not-to-contribute-back" class="hash-link" aria-label="Direct link to What Not to Contribute Back" title="Direct link to What Not to Contribute Back" translate="no">​</a></h3>
+<ul>
+<li class="">Real citizen data of any kind</li>
+<li class="">Internal government documents</li>
+<li class="">Anything covered by confidentiality obligations</li>
+<li class="">Security vulnerability details (use the private security disclosure process in <code>SECURITY.md</code>)</li>
+</ul>
+<hr>
+<p><em>Bharat Sampada Chain — Built by Citizens, For Citizens.</em><br>
+<em>Fork it. Adapt it. Deploy it. Make your country more transparent.</em></p>
+<hr>
+<p><strong>Document maintained by the BSC open source community.</strong><br>
+<strong>Last updated: April 2024</strong><br>
+<strong>Suggest improvements via GitHub Pull Request.</strong></p></div></div></div><div class="row"><div class="col col--12"><footer class="theme-doc-footer docusaurus-mt-lg"><div class="row margin-top--sm theme-doc-footer-edit-meta-row"><div class="col noPrint_WFHX"><a href="https://github.com/tanbiralam06/BharatSampadaChain/tree/main/docs-site/docs/adaptation/index.md" target="_blank" rel="noopener noreferrer" class="theme-edit-this-page"><svg fill="currentColor" height="20" width="20" viewBox="0 0 40 40" class="iconEdit_Z9Sw" aria-hidden="true"><g><path d="m34.5 11.7l-3 3.1-6.3-6.3 3.1-3q0.5-0.5 1.2-0.5t1.1 0.5l3.9 3.9q0.5 0.4 0.5 1.1t-0.5 1.2z m-29.5 17.1l18.4-18.5 6.3 6.3-18.4 18.4h-6.3v-6.2z"></path></g></svg>Edit this page</a></div><div class="col lastUpdated_JAkA"></div></div></footer></div></div></article><div class="row"><div class="col col--12"><nav class="docusaurus-mt-lg pagination-nav" aria-label="Docs pages"></nav></div></div></div></div><div class="col col--3"><div class="tableOfContents_bqdL thin-scrollbar theme-doc-toc-desktop"><ul class="table-of-contents table-of-contents__left-border"><li><a href="#how-to-deploy-bharat-sampada-chain-for-your-jurisdiction" class="table-of-contents__link toc-highlight">How to Deploy Bharat Sampada Chain for Your Jurisdiction</a></li><li><a href="#table-of-contents" class="table-of-contents__link toc-highlight">Table of Contents</a></li><li><a href="#1-before-you-begin--four-questions" class="table-of-contents__link toc-highlight">1. Before You Begin — Four Questions</a></li><li><a href="#2-deployment-modes--pick-one" class="table-of-contents__link toc-highlight">2. Deployment Modes — Pick One</a><ul><li><a href="#mode-a--full-stack-deployment" class="table-of-contents__link toc-highlight">Mode A — Full Stack Deployment</a></li><li><a href="#mode-b--public-dashboard-only" class="table-of-contents__link toc-highlight">Mode B — Public Dashboard Only</a></li><li><a href="#mode-c--property-registry-module-only" class="table-of-contents__link toc-highlight">Mode C — Property Registry Module Only</a></li><li><a href="#mode-d--research-and-pilot" class="table-of-contents__link toc-highlight">Mode D — Research and Pilot</a></li></ul></li><li><a href="#3-what-you-must-change" class="table-of-contents__link toc-highlight">3. What You Must Change</a><ul><li><a href="#31-identity-hashing-configuration" class="table-of-contents__link toc-highlight">3.1 Identity Hashing Configuration</a></li><li><a href="#32-currency-and-locale" class="table-of-contents__link toc-highlight">3.2 Currency and Locale</a></li><li><a href="#33-property-data-format" class="table-of-contents__link toc-highlight">3.3 Property Data Format</a></li><li><a href="#34-agency-list-and-permissions" class="table-of-contents__link toc-highlight">3.4 Agency List and Permissions</a></li><li><a href="#35-smart-contract-thresholds" class="table-of-contents__link toc-highlight">3.5 Smart Contract Thresholds</a></li></ul></li><li><a href="#4-what-you-should-change" class="table-of-contents__link toc-highlight">4. What You Should Change</a><ul><li><a href="#41-language-and-localisation" class="table-of-contents__link toc-highlight">4.1 Language and Localisation</a></li><li><a href="#42-flag-explanation-text" class="table-of-contents__link toc-highlight">4.2 Flag Explanation Text</a></li><li><a href="#43-map-configuration" class="table-of-contents__link toc-highlight">4.3 Map Configuration</a></li><li><a href="#44-kyc-level-definitions" class="table-of-contents__link toc-highlight">4.4 KYC Level Definitions</a></li></ul></li><li><a href="#5-what-you-must-not-change" class="table-of-contents__link toc-highlight">5. What You Must Not Change</a><ul><li><a href="#51-the-access-log-architecture" class="table-of-contents__link toc-highlight">5.1 The Access Log Architecture</a></li><li><a href="#52-raw-identifier-storage" class="table-of-contents__link toc-highlight">5.2 Raw Identifier Storage</a></li><li><a href="#53-exact-financial-balance-storage" class="table-of-contents__link toc-highlight">5.3 Exact Financial Balance Storage</a></li><li><a href="#54-the-citizen-notification-system" class="table-of-contents__link toc-highlight">5.4 The Citizen Notification System</a></li><li><a href="#55-the-zkp-privacy-guarantee" class="table-of-contents__link toc-highlight">5.5 The ZKP Privacy Guarantee</a></li></ul></li><li><a href="#6-adapting-for-indian-state-governments" class="table-of-contents__link toc-highlight">6. Adapting for Indian State Governments</a><ul><li><a href="#61-what-you-already-have" class="table-of-contents__link toc-highlight">6.1 What You Already Have</a></li><li><a href="#62-state-specific-property-formats" class="table-of-contents__link toc-highlight">6.2 State-Specific Property Formats</a></li><li><a href="#63-circle-rate-integration" class="table-of-contents__link toc-highlight">6.3 Circle Rate Integration</a></li><li><a href="#64-rera-integration" class="table-of-contents__link toc-highlight">6.4 RERA Integration</a></li><li><a href="#65-state-level-governance" class="table-of-contents__link toc-highlight">6.5 State-Level Governance</a></li></ul></li><li><a href="#7-adapting-for-foreign-governments" class="table-of-contents__link toc-highlight">7. Adapting for Foreign Governments</a><ul><li><a href="#71-the-three-things-that-change-most" class="table-of-contents__link toc-highlight">7.1 The Three Things That Change Most</a></li><li><a href="#72-jurisdictions-where-bsc-is-most-directly-applicable" class="table-of-contents__link toc-highlight">7.2 Jurisdictions Where BSC is Most Directly Applicable</a></li><li><a href="#73-what-to-prioritise-in-the-first-90-days" class="table-of-contents__link toc-highlight">7.3 What to Prioritise in the First 90 Days</a></li></ul></li><li><a href="#8-adapting-for-civil-society-organisations" class="table-of-contents__link toc-highlight">8. Adapting for Civil Society Organisations</a><ul><li><a href="#81-what-data-you-can-use-without-legal-issues" class="table-of-contents__link toc-highlight">8.1 What Data You Can Use Without Legal Issues</a></li><li><a href="#82-what-you-cannot-do" class="table-of-contents__link toc-highlight">8.2 What You Cannot Do</a></li><li><a href="#83-the-public-figures-only-rule" class="table-of-contents__link toc-highlight">8.3 The &quot;Public Figures Only&quot; Rule</a></li><li><a href="#84-infrastructure-for-civil-society-deployment" class="table-of-contents__link toc-highlight">8.4 Infrastructure for Civil Society Deployment</a></li></ul></li><li><a href="#9-national-identity-system-mapping" class="table-of-contents__link toc-highlight">9. National Identity System Mapping</a></li><li><a href="#10-land-registry-format-mapping" class="table-of-contents__link toc-highlight">10. Land Registry Format Mapping</a><ul><li><a href="#101-fields-that-map-directly-everywhere" class="table-of-contents__link toc-highlight">10.1 Fields That Map Directly Everywhere</a></li><li><a href="#102-fields-that-need-local-calibration" class="table-of-contents__link toc-highlight">10.2 Fields That Need Local Calibration</a></li><li><a href="#103-area-unit-conversion" class="table-of-contents__link toc-highlight">10.3 Area Unit Conversion</a></li></ul></li><li><a href="#11-smart-contract-threshold-calibration" class="table-of-contents__link toc-highlight">11. Smart Contract Threshold Calibration</a><ul><li><a href="#111-the-calibration-methodology" class="table-of-contents__link toc-highlight">11.1 The Calibration Methodology</a></li><li><a href="#112-rule-by-rule-calibration" class="table-of-contents__link toc-highlight">11.2 Rule-by-Rule Calibration</a></li><li><a href="#113-threshold-review-process" class="table-of-contents__link toc-highlight">11.3 Threshold Review Process</a></li></ul></li><li><a href="#12-legal-review-checklist" class="table-of-contents__link toc-highlight">12. Legal Review Checklist</a><ul><li><a href="#121-data-protection-and-privacy" class="table-of-contents__link toc-highlight">12.1 Data Protection and Privacy</a></li><li><a href="#122-evidence-and-admissibility" class="table-of-contents__link toc-highlight">12.2 Evidence and Admissibility</a></li><li><a href="#123-agency-authority" class="table-of-contents__link toc-highlight">12.3 Agency Authority</a></li><li><a href="#124-citizen-rights" class="table-of-contents__link toc-highlight">12.4 Citizen Rights</a></li><li><a href="#125-cross-border-data" class="table-of-contents__link toc-highlight">12.5 Cross-Border Data</a></li></ul></li><li><a href="#13-data-privacy-compliance-by-jurisdiction" class="table-of-contents__link toc-highlight">13. Data Privacy Compliance by Jurisdiction</a><ul><li><a href="#india--digital-personal-data-protection-act-2023" class="table-of-contents__link toc-highlight">India — Digital Personal Data Protection Act, 2023</a></li><li><a href="#kenya--data-protection-act-2019" class="table-of-contents__link toc-highlight">Kenya — Data Protection Act, 2019</a></li><li><a href="#nigeria--nigeria-data-protection-regulation-ndpr-2019" class="table-of-contents__link toc-highlight">Nigeria — Nigeria Data Protection Regulation (NDPR), 2019</a></li><li><a href="#european-union--gdpr" class="table-of-contents__link toc-highlight">European Union — GDPR</a></li><li><a href="#united-states--varied-by-state" class="table-of-contents__link toc-highlight">United States — Varied by State</a></li></ul></li><li><a href="#14-infrastructure-requirements" class="table-of-contents__link toc-highlight">14. Infrastructure Requirements</a><ul><li><a href="#141-minimum-production-setup-mode-a--full-stack" class="table-of-contents__link toc-highlight">14.1 Minimum Production Setup (Mode A — Full Stack)</a></li><li><a href="#142-minimum-pilot-setup-mode-c-or-d" class="table-of-contents__link toc-highlight">14.2 Minimum Pilot Setup (Mode C or D)</a></li><li><a href="#143-mode-b--public-dashboard-only" class="table-of-contents__link toc-highlight">14.3 Mode B — Public Dashboard Only</a></li></ul></li><li><a href="#15-going-live--checklist" class="table-of-contents__link toc-highlight">15. Going Live — Checklist</a><ul><li><a href="#technical" class="table-of-contents__link toc-highlight">Technical</a></li><li><a href="#legal-and-governance" class="table-of-contents__link toc-highlight">Legal and Governance</a></li><li><a href="#communication" class="table-of-contents__link toc-highlight">Communication</a></li></ul></li><li><a href="#16-getting-help" class="table-of-contents__link toc-highlight">16. Getting Help</a><ul><li><a href="#community-support" class="table-of-contents__link toc-highlight">Community Support</a></li><li><a href="#contributing-your-adaptation-back" class="table-of-contents__link toc-highlight">Contributing Your Adaptation Back</a></li><li><a href="#what-not-to-contribute-back" class="table-of-contents__link toc-highlight">What Not to Contribute Back</a></li></ul></li></ul></div></div></div></div></main></div></div></div><footer class="theme-layout-footer footer footer--dark"><div class="container container-fluid"><div class="row footer__links"><div class="theme-layout-footer-column col footer__col"><div class="footer__title">BSC</div><ul class="footer__items clean-list"><li class="footer__item"><a class="footer__link-item" href="/BharatSampadaChain/docs/intro">What is BSC?</a></li><li class="footer__item"><a class="footer__link-item" href="/BharatSampadaChain/docs/whitepaper">Whitepaper</a></li><li class="footer__item"><a class="footer__link-item" href="/BharatSampadaChain/docs/architecture/system-overview">Architecture Overview</a></li><li class="footer__item"><a class="footer__link-item" href="/BharatSampadaChain/docs/contributing/roadmap">Roadmap</a></li><li class="footer__item"><a class="footer__link-item" href="/BharatSampadaChain/docs/status">Implementation Status</a></li><li class="footer__item"><a href="https://github.com/tanbiralam06/BharatSampadaChain/blob/main/LICENSE" target="_blank" rel="noopener noreferrer" class="footer__link-item">MIT License<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li></ul></div><div class="theme-layout-footer-column col footer__col"><div class="footer__title">Learn</div><ul class="footer__items clean-list"><li class="footer__item"><a class="footer__link-item" href="/BharatSampadaChain/docs/concepts/overview">Concepts Overview</a></li><li class="footer__item"><a class="footer__link-item" href="/BharatSampadaChain/docs/concepts/identity-model">Identity Model</a></li><li class="footer__item"><a class="footer__link-item" href="/BharatSampadaChain/docs/concepts/anomaly-detection">Anomaly Detection</a></li><li class="footer__item"><a class="footer__link-item" href="/BharatSampadaChain/docs/concepts/roles-permissions">Roles &amp; Permissions</a></li><li class="footer__item"><a class="footer__link-item" href="/BharatSampadaChain/docs/concepts/zkp">Zero-Knowledge Proofs</a></li></ul></div><div class="theme-layout-footer-column col footer__col"><div class="footer__title">Developers</div><ul class="footer__items clean-list"><li class="footer__item"><a class="footer__link-item" href="/BharatSampadaChain/docs/getting-started/prototype">Quick Start</a></li><li class="footer__item"><a class="footer__link-item" href="/BharatSampadaChain/docs/getting-started/dev-setup">Dev Setup</a></li><li class="footer__item"><a class="footer__link-item" href="/BharatSampadaChain/docs/getting-started/full-stack">Full Stack Setup</a></li><li class="footer__item"><a class="footer__link-item" href="/BharatSampadaChain/docs/api-reference/introduction">API Reference</a></li><li class="footer__item"><a class="footer__link-item" href="/BharatSampadaChain/docs/guides/environment-vars">Environment Variables</a></li><li class="footer__item"><a class="footer__link-item" href="/BharatSampadaChain/docs/guides/deploy-chaincode">Deploy Chaincode</a></li><li class="footer__item"><a class="footer__link-item" href="/BharatSampadaChain/docs/adaptation">Adaptation Guide</a></li><li class="footer__item"><a href="https://github.com/tanbiralam06/BharatSampadaChain" target="_blank" rel="noopener noreferrer" class="footer__link-item">GitHub<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li></ul></div><div class="theme-layout-footer-column col footer__col"><div class="footer__title">Community</div><ul class="footer__items clean-list"><li class="footer__item"><a class="footer__link-item" href="/BharatSampadaChain/docs/contributing">Contributing</a></li><li class="footer__item"><a class="footer__link-item" href="/BharatSampadaChain/docs/contributing/security">Security Policy</a></li><li class="footer__item"><a href="https://github.com/tanbiralam06/BharatSampadaChain/discussions" target="_blank" rel="noopener noreferrer" class="footer__link-item">GitHub Discussions<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li></ul></div></div><div class="footer__bottom text--center"><div class="footer__copyright">Built by Indians, for India · MIT License · Bharat Sampada Chain 2026</div></div></div></footer></div>
+</body>
+</html>
