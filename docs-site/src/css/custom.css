@@ -998,3 +998,327 @@
   color: rgba(255, 255, 255, 0.3) !important;
   letter-spacing: 0.03em;
 }
+
+/* ==============================================
+   DOCS PAGE STYLES
+   ============================================== */
+
+/* ------------------------------------------
+   SIDEBAR
+   ------------------------------------------ */
+
+/* Category label — matches tech-group__label style */
+.menu__link {
+  border-radius: 6px;
+  font-size: 0.9rem;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.menu__link:hover:not(.menu__link--active) {
+  background: rgba(224, 94, 0, 0.1);
+  color: var(--ifm-color-primary) !important;
+}
+
+.menu__link--active {
+  color: var(--ifm-color-primary) !important;
+  font-weight: 600;
+  background: rgba(224, 94, 0, 0.08);
+  border-left: 2px solid var(--ifm-color-primary);
+}
+
+.menu__link--sublist {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ifm-color-emphasis-500) !important;
+}
+
+.menu__link--sublist:hover {
+  background: transparent !important;
+  color: var(--ifm-color-primary) !important;
+}
+
+/* Caret icon — saffron tint */
+.menu__caret::before {
+  filter: none;
+  opacity: 0.6;
+}
+
+.menu__list-item-collapsible:hover .menu__caret::before {
+  opacity: 1;
+}
+
+/* Active category heading */
+.menu__list-item--collapsed > .menu__link--sublist-caret,
+.menu__list-item > .menu__link--sublist-caret {
+  color: var(--ifm-color-emphasis-600) !important;
+}
+
+/* ------------------------------------------
+   DOC ARTICLE HEADINGS
+   ------------------------------------------ */
+
+.theme-doc-markdown h1 {
+  font-weight: 800;
+  position: relative;
+  padding-bottom: 0.65rem;
+  margin-bottom: 1.5rem;
+}
+
+.theme-doc-markdown h1::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    var(--ifm-color-primary) 0%,
+    rgba(224, 94, 0, 0.3) 60%,
+    transparent 100%
+  );
+}
+
+.theme-doc-markdown h2 {
+  font-weight: 700;
+  border-left: 3px solid var(--ifm-color-primary);
+  padding-left: 0.85rem;
+  margin-left: -0.85rem;
+}
+
+.theme-doc-markdown h3 {
+  color: var(--ifm-color-primary);
+  font-weight: 600;
+}
+
+.theme-doc-markdown h4 {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ifm-color-emphasis-500);
+  margin-bottom: 0.75rem;
+}
+
+/* ------------------------------------------
+   TABLES
+   ------------------------------------------ */
+
+.theme-doc-markdown table {
+  border-collapse: collapse;
+  width: 100%;
+  border: 1px solid rgba(224, 94, 0, 0.15);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.theme-doc-markdown thead tr {
+  background: rgba(224, 94, 0, 0.12);
+}
+
+.theme-doc-markdown thead th {
+  color: var(--ifm-color-primary);
+  font-weight: 700;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border-bottom: 1px solid rgba(224, 94, 0, 0.25);
+  padding: 0.7rem 1rem;
+}
+
+.theme-doc-markdown tbody td {
+  border-color: rgba(224, 94, 0, 0.1);
+  padding: 0.65rem 1rem;
+  font-size: 0.9rem;
+}
+
+.theme-doc-markdown tbody tr:hover {
+  background: rgba(224, 94, 0, 0.05);
+}
+
+/* ------------------------------------------
+   BLOCKQUOTES
+   ------------------------------------------ */
+
+.theme-doc-markdown blockquote {
+  border-left: 3px solid var(--ifm-color-primary);
+  background: rgba(224, 94, 0, 0.06);
+  border-radius: 0 6px 6px 0;
+  padding: 0.85rem 1.25rem;
+  color: var(--ifm-color-emphasis-700);
+  font-style: italic;
+  margin: 1.25rem 0;
+}
+
+.theme-doc-markdown blockquote p {
+  margin: 0;
+}
+
+/* ------------------------------------------
+   ADMONITIONS
+   ------------------------------------------ */
+
+.alert {
+  border-radius: 8px;
+  border-left-width: 3px;
+}
+
+/* Note / Info — saffron */
+.alert--info,
+.alert--secondary {
+  background: rgba(224, 94, 0, 0.07);
+  border-left-color: var(--ifm-color-primary);
+  color: var(--ifm-color-emphasis-800);
+}
+
+.alert--info .admonition-heading h5,
+.alert--secondary .admonition-heading h5 {
+  color: var(--ifm-color-primary);
+}
+
+/* Tip — green */
+.alert--success {
+  background: rgba(22, 163, 74, 0.07);
+  border-left-color: #16a34a;
+}
+
+.alert--success .admonition-heading h5 {
+  color: #16a34a;
+}
+
+/* Warning — orange */
+.alert--warning {
+  background: rgba(234, 88, 12, 0.07);
+  border-left-color: #ea580c;
+}
+
+.alert--warning .admonition-heading h5 {
+  color: #ea580c;
+}
+
+/* Danger — red */
+.alert--danger {
+  background: rgba(220, 38, 38, 0.07);
+  border-left-color: #dc2626;
+}
+
+.alert--danger .admonition-heading h5 {
+  color: #dc2626;
+}
+
+/* ------------------------------------------
+   TABLE OF CONTENTS (right sidebar)
+   ------------------------------------------ */
+
+.table-of-contents__title {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ifm-color-emphasis-500);
+  margin-bottom: 0.6rem;
+}
+
+.table-of-contents__link {
+  font-size: 0.85rem;
+  color: var(--ifm-color-emphasis-600);
+  border-radius: 4px;
+  transition: color 0.15s ease;
+}
+
+.table-of-contents__link:hover,
+.table-of-contents__link--active {
+  color: var(--ifm-color-primary) !important;
+  text-decoration: none;
+}
+
+.table-of-contents__link--active {
+  font-weight: 600;
+}
+
+/* ------------------------------------------
+   PAGINATION NAV (prev / next)
+   ------------------------------------------ */
+
+.pagination-nav__link {
+  border: 1px solid rgba(224, 94, 0, 0.25);
+  border-radius: 8px;
+  transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+}
+
+.pagination-nav__link:hover {
+  border-color: var(--ifm-color-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(224, 94, 0, 0.1);
+  text-decoration: none;
+}
+
+.pagination-nav__sublabel {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ifm-color-primary);
+}
+
+.pagination-nav__label {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+/* ------------------------------------------
+   BREADCRUMBS
+   ------------------------------------------ */
+
+.breadcrumbs__item--active .breadcrumbs__link {
+  color: var(--ifm-color-primary);
+  font-weight: 600;
+}
+
+.breadcrumbs__link {
+  border-radius: 4px;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.breadcrumbs__link:hover {
+  background: rgba(224, 94, 0, 0.1);
+  color: var(--ifm-color-primary);
+}
+
+.breadcrumbs__separator {
+  color: var(--ifm-color-emphasis-400);
+}
+
+/* ------------------------------------------
+   EDIT THIS PAGE / LAST UPDATED
+   ------------------------------------------ */
+
+.theme-doc-footer-edit-meta-row {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(224, 94, 0, 0.12);
+  font-size: 0.82rem;
+  color: var(--ifm-color-emphasis-500);
+}
+
+.theme-doc-footer .theme-edit-meta-row__edit a {
+  color: var(--ifm-color-primary);
+  transition: color 0.15s;
+}
+
+.theme-doc-footer .theme-edit-meta-row__edit a:hover {
+  color: var(--ifm-color-primary-light);
+}
+
+/* ------------------------------------------
+   DOCS PAGE MOBILE
+   ------------------------------------------ */
+
+@media (max-width: 768px) {
+  .theme-doc-markdown h2 {
+    padding-left: 0.65rem;
+    margin-left: -0.65rem;
+  }
+}
