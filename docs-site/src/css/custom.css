@@ -1111,8 +1111,8 @@
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   border-collapse: collapse;
-  min-width: max-content;
   width: 100%;
+  max-width: 100%;
   border: 1px solid rgba(224, 94, 0, 0.15);
   border-radius: 8px;
 }
