@@ -69,9 +69,11 @@ blockchain/chaincode/*/vendor/
 proof.json
 witness.json
 
-commitRules.md
-Bharat Sampada Chain (BSC) — PRD.md
-BharatSampadaChainPRD.md
+# ---- Documentation ----
+otherDocs/commitRules.md
+otherDocs/Bharat Sampada Chain (BSC) — PRD.md
+otherDocs/BharatSampadaChainPRD.md
+otherDocs/BLOCKCHAIN_TECH.md
 
 # ---- Claude Code ----
 CLAUDE.md
