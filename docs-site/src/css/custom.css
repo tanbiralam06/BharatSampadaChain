@@ -1107,11 +1107,14 @@
    ------------------------------------------ */
 
 .theme-doc-markdown table {
+  display: block;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   border-collapse: collapse;
+  min-width: max-content;
   width: 100%;
   border: 1px solid rgba(224, 94, 0, 0.15);
   border-radius: 8px;
-  overflow: hidden;
 }
 
 .theme-doc-markdown thead tr {
