@@ -1,4 +1,4 @@
-import snarkjs from 'snarkjs';
+import * as snarkjs from 'snarkjs';
 import { buildPoseidon } from 'circomlibjs';
 import crypto from 'crypto';
 import path from 'path';
@@ -37,8 +37,7 @@ async function generateProof(totalAssets: bigint, threshold: bigint) {
   const salt       = BigInt('0x' + crypto.randomBytes(30).toString('hex'));
   const commitment = poseidon.F.toString(poseidon([totalAssets, salt]));
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { proof, publicSignals } = await (snarkjs as any).groth16.fullProve(
+  const { proof, publicSignals } = await snarkjs.groth16.fullProve(
     { totalAssets: totalAssets.toString(), salt: salt.toString(), threshold: threshold.toString(), commitment },
     path.join(KEYS_DIR, 'asset_threshold_js/asset_threshold.wasm'),
     path.join(KEYS_DIR, 'proving_key.zkey')
@@ -52,8 +51,7 @@ async function generateProof(totalAssets: bigint, threshold: bigint) {
 async function verifyProof(proofJSON: string, publicSignals: string[]): Promise<boolean> {
   if (!keysReady()) return false;
   const vkey = JSON.parse(fs.readFileSync(path.join(KEYS_DIR, 'verification_key.json'), 'utf-8'));
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return (snarkjs as any).groth16.verify(vkey, publicSignals, JSON.parse(proofJSON));
+  return snarkjs.groth16.verify(vkey, publicSignals, JSON.parse(proofJSON));
 }
 
 // ── High-level: prove → verify → attest on-chain ─────────────────────────────
