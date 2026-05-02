@@ -1,5 +1,5 @@
 import { NavLink, Outlet } from 'react-router-dom';
-import { HeartPulse, Building, ClipboardList, LogOut, Settings2, UserCog, ShieldCheck, Lock } from 'lucide-react';
+import { HeartPulse, Building, ClipboardList, LogOut, Settings2, UserCog, ShieldCheck, Lock, Blocks } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 const NAV = [
@@ -9,6 +9,7 @@ const NAV = [
   { to: '/audit',        icon: ClipboardList, label: 'Audit Overview'     },
   { to: '/permissions',  icon: Lock,          label: 'Permissions'        },
   { to: '/security',     icon: ShieldCheck,   label: 'Security'           },
+  { to: '/explorer',    icon: Blocks,        label: 'Fabric Explorer'    },
 ];
 
 export function Layout() {

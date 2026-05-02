@@ -8,6 +8,7 @@ import OfficerManagement     from './pages/OfficerManagement';
 import AuditOverview         from './pages/AuditOverview';
 import Security              from './pages/Security';
 import PermissionMatrix      from './pages/PermissionMatrix';
+import Explorer             from './pages/Explorer';
 
 export function AppRoutes() {
   return (
@@ -20,6 +21,7 @@ export function AppRoutes() {
         <Route path="audit"        element={<AuditOverview />} />
         <Route path="permissions"  element={<PermissionMatrix />} />
         <Route path="security"     element={<Security />} />
+        <Route path="explorer"     element={<Explorer />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

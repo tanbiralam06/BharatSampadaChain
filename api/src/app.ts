@@ -9,6 +9,7 @@ import propertiesRouter from './routes/properties';
 import flagsRouter from './routes/flags';
 import zkpRouter from './routes/zkp';
 import adminRouter from './routes/admin';
+import explorerRouter from './routes/explorer';
 
 const app = express();
 
@@ -39,6 +40,7 @@ app.use('/properties', propertiesRouter);
 app.use('/flags', flagsRouter);
 app.use('/zkp', zkpRouter);
 app.use('/admin', adminRouter);
+app.use('/explorer', explorerRouter);
 
 app.use((err: Error & { status?: number }, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
   const status = err.status ?? 500;
