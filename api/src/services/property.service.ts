@@ -1,7 +1,7 @@
 import * as fabric from '../fabric/contracts';
 import { db } from '../db/client';
 import { syncProperty } from '../db/sync';
-import { isFabricUnavailable } from '../utils/fabricErrors';
+import { isFabricUnavailable, isChaincodeNotFound } from '../utils/fabricErrors';
 import type { PropertyRecord, TransferRecord } from '../models';
 import type { CourtOrder } from '../fabric/contracts';
 
@@ -20,8 +20,7 @@ export async function getProperty(propertyId: string): Promise<PropertyRecord> {
   try {
     return await fabric.getProperty(propertyId);
   } catch (err) {
-    if (!isFabricUnavailable(err)) throw err;
-    console.warn('[properties] Fabric peer unavailable — serving from PostgreSQL mirror');
+    if (!isFabricUnavailable(err) && !isChaincodeNotFound(err)) throw err;
     const result = await db.query('SELECT * FROM properties WHERE property_id = $1', [propertyId]);
     const r = result.rows[0];
     if (!r) throw Object.assign(new Error('Property not found'), { status: 404 });

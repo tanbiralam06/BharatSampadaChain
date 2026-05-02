@@ -2,7 +2,7 @@ import * as fabric from '../fabric/contracts';
 import { getCache, setCache, invalidateCache } from '../cache/redis';
 import { db } from '../db/client';
 import { syncCitizen, syncFlags, syncAccessLog, notifyOfficerAccess } from '../db/sync';
-import { isFabricUnavailable } from '../utils/fabricErrors';
+import { isFabricUnavailable, isChaincodeNotFound } from '../utils/fabricErrors';
 import type { CitizenNode, AnomalyFlag, AccessLog, PropertyRecord, JWTPayload } from '../models';
 
 // ── PostgreSQL fallback helpers ───────────────────────────────────────────────
@@ -100,8 +100,8 @@ export async function getCitizen(citizenHash: string, accessor: JWTPayload): Pro
     });
     void syncAccessLog(accessLog);
   } catch (err) {
-    if (!isFabricUnavailable(err)) throw err;
-    console.warn('[citizens] Fabric peer unavailable — serving from PostgreSQL mirror');
+    if (!isFabricUnavailable(err) && !isChaincodeNotFound(err)) throw err;
+    if (isFabricUnavailable(err)) console.warn('[citizens] Fabric peer unavailable — serving from PostgreSQL mirror');
     const result = await db.query('SELECT * FROM citizens WHERE citizen_hash = $1', [citizenHash]);
     if (!result.rows[0]) throw Object.assign(new Error('Citizen not found'), { status: 404 });
     citizen = rowToCitizen(result.rows[0]);
@@ -154,8 +154,7 @@ export async function getCitizenFlags(citizenHash: string): Promise<AnomalyFlag[
   try {
     return await fabric.getFlagsByCitizen(citizenHash);
   } catch (err) {
-    if (!isFabricUnavailable(err)) throw err;
-    console.warn('[citizens] Fabric peer unavailable — serving flags from PostgreSQL mirror');
+    if (!isFabricUnavailable(err) && !isChaincodeNotFound(err)) throw err;
     const result = await db.query(
       'SELECT * FROM anomaly_flags WHERE citizen_hash = $1 ORDER BY raised_at DESC',
       [citizenHash]
@@ -168,8 +167,7 @@ export async function getCitizenAccessLog(citizenHash: string): Promise<AccessLo
   try {
     return await fabric.getAccessLogsByCitizen(citizenHash);
   } catch (err) {
-    if (!isFabricUnavailable(err)) throw err;
-    console.warn('[citizens] Fabric peer unavailable — serving access logs from PostgreSQL mirror');
+    if (!isFabricUnavailable(err) && !isChaincodeNotFound(err)) throw err;
     const result = await db.query(
       'SELECT * FROM access_logs WHERE citizen_hash = $1 ORDER BY accessed_at DESC',
       [citizenHash]
@@ -193,8 +191,7 @@ export async function getCitizenProperties(citizenHash: string, accessor: JWTPay
     });
     void syncAccessLog(accessLog);
   } catch (err) {
-    if (!isFabricUnavailable(err)) throw err;
-    console.warn('[citizens] Fabric peer unavailable — serving properties from PostgreSQL mirror');
+    if (!isFabricUnavailable(err) && !isChaincodeNotFound(err)) throw err;
     const result = await db.query(
       'SELECT * FROM properties WHERE owner_hash = $1 ORDER BY created_at DESC',
       [citizenHash]

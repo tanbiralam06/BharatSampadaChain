@@ -1,7 +1,7 @@
 import * as fabric from '../fabric/contracts';
 import { db } from '../db/client';
 import { syncFlag, syncFlags } from '../db/sync';
-import { isFabricUnavailable } from '../utils/fabricErrors';
+import { isFabricUnavailable, isChaincodeNotFound } from '../utils/fabricErrors';
 import type { AnomalyFlag } from '../models';
 
 // Maps a PostgreSQL anomaly_flags row (snake_case) to the canonical AnomalyFlag type.
@@ -39,8 +39,7 @@ export async function getAllFlags(): Promise<AnomalyFlag[]> {
     ]);
     return [...red, ...orange, ...yellow];
   } catch (err) {
-    if (isFabricUnavailable(err)) {
-      console.warn('[flags] Fabric peer unavailable — serving from PostgreSQL mirror');
+    if (isFabricUnavailable(err) || isChaincodeNotFound(err)) {
       return flagsFromPostgres();
     }
     throw err;
@@ -51,8 +50,7 @@ export async function getFlagsBySeverity(severity: string): Promise<AnomalyFlag[
   try {
     return await fabric.getFlagsBySeverity(severity.toUpperCase());
   } catch (err) {
-    if (isFabricUnavailable(err)) {
-      console.warn('[flags] Fabric peer unavailable — serving from PostgreSQL mirror');
+    if (isFabricUnavailable(err) || isChaincodeNotFound(err)) {
       return flagsFromPostgres(severity.toUpperCase());
     }
     throw err;

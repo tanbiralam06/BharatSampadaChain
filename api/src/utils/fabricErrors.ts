@@ -8,3 +8,10 @@ export function isFabricUnavailable(err: unknown): boolean {
     msg.includes('No connection established')
   );
 }
+
+// Returns true when the chaincode responded but the requested key doesn't exist
+// on the ledger yet (seed citizens are in PostgreSQL but not yet written to Fabric).
+export function isChaincodeNotFound(err: unknown): boolean {
+  const msg = (err as Error)?.message ?? '';
+  return msg.includes('not found') || msg.includes('does not exist');
+}
