@@ -8,6 +8,7 @@ import type {
   HealthData, StatsData, AccessorRole, Severity, FlagStatus, CitizenType,
   OfficerUser, CreateOfficerInput, TotpSetupData, TotpChallengeResponse,
   PermissionRule, UpdatePermissionInput, BenamiScanResult, CourtOrder,
+  ZKPProof, ZKPProveResult, ExplorerStats, LedgerEvent,
 } from './types';
 
 // ── Auth ──────────────────────────────────────────────────────────────────────
@@ -160,4 +161,24 @@ export const listPermissions = () =>
 
 export const updatePermission = (role: string, payload: UpdatePermissionInput) =>
   apiClient.put<ApiResponse<PermissionRule>>(`/admin/permissions/${role}`, payload)
+    .then((r) => r.data.data!);
+
+// ── ZKP ───────────────────────────────────────────────────────────────────────
+
+export const proveAssetThreshold = (citizenHash: string, threshold: number) =>
+  apiClient.post<ApiResponse<ZKPProveResult>>(`/zkp/${citizenHash}/prove`, { threshold })
+    .then((r) => r.data.data!);
+
+export const getVerifiedClaims = (citizenHash: string) =>
+  apiClient.get<ApiResponse<ZKPProof[]>>(`/zkp/${citizenHash}/claims`)
+    .then((r) => r.data.data!);
+
+// ── Fabric Explorer ───────────────────────────────────────────────────────────
+
+export const getExplorerStats = () =>
+  apiClient.get<ApiResponse<ExplorerStats>>('/explorer/stats')
+    .then((r) => r.data.data!);
+
+export const getExplorerActivity = () =>
+  apiClient.get<ApiResponse<LedgerEvent[]>>('/explorer/activity')
     .then((r) => r.data.data!);

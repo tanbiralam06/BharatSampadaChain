@@ -1,6 +1,6 @@
 import { NavLink, Outlet } from 'react-router-dom';
 import {
-  LayoutDashboard, Building2, Wallet, FileText, AlertTriangle, LogOut, Shield,
+  LayoutDashboard, Building2, Wallet, FileText, AlertTriangle, LogOut, Shield, ShieldCheck,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { formatHash } from '@bsc/shared';
@@ -11,6 +11,7 @@ const NAV = [
   { to: '/financial',   icon: Wallet,           label: 'Financial'     },
   { to: '/access-log',  icon: FileText,         label: 'Access Log'    },
   { to: '/flags',       icon: AlertTriangle,    label: 'My Flags'      },
+  { to: '/zkp',         icon: ShieldCheck,      label: 'ZK Proofs'     },
 ];
 
 export function Layout() {

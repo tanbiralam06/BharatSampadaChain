@@ -224,6 +224,56 @@ export interface StatsData {
   redFlags: number;
 }
 
+// ── ZKP ───────────────────────────────────────────────────────────────────────
+
+export interface ZKPProof {
+  proofId: string;
+  citizenHash: string;
+  queryType: string;
+  isVerified: boolean;
+  verifiedAt?: string;
+  expiresAt: string;
+  submittedAt: string;
+  submittedBy: string;
+}
+
+export interface ZKPProveResult {
+  proofId:       string;
+  verified:      boolean;
+  publicSignals: string[];
+  commitment:    string;
+  expiresAt:     string;
+}
+
+// ── Fabric Explorer ───────────────────────────────────────────────────────────
+
+export interface ExplorerStats {
+  totalCitizens:    number;
+  totalProperties:  number;
+  totalFlags:       number;
+  openFlags:        number;
+  totalAccessLogs:  number;
+  last24hEvents:    number;
+}
+
+export type LedgerEventType =
+  | 'FLAG_RAISED'
+  | 'PROPERTY_REGISTERED'
+  | 'CITIZEN_CREATED'
+  | 'ACCESS_LOG'
+  | 'AUDIT_EVENT';
+
+export interface LedgerEvent {
+  id:          string;
+  eventType:   LedgerEventType;
+  chaincode:   string;
+  description: string;
+  subjectHash: string;
+  actorHash:   string;
+  timestamp:   string;
+  txId?:       string;
+}
+
 // ── API envelope ──────────────────────────────────────────────────────────────
 
 export interface ApiResponse<T = unknown> {

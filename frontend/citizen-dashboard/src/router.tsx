@@ -7,6 +7,7 @@ import Properties  from './pages/Properties';
 import Financial   from './pages/Financial';
 import AccessLog   from './pages/AccessLog';
 import Flags       from './pages/Flags';
+import ZKP         from './pages/ZKP';
 
 export function AppRoutes() {
   return (
@@ -24,6 +25,7 @@ export function AppRoutes() {
         <Route path="financial"   element={<Financial />} />
         <Route path="access-log"  element={<AccessLog />} />
         <Route path="flags"       element={<Flags />} />
+        <Route path="zkp"         element={<ZKP />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
