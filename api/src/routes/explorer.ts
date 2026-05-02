@@ -21,7 +21,7 @@ router.get('/stats', authenticate, requireRole('ADMIN'), asyncHandler(async (_re
       "  UNION ALL " +
       "  SELECT raised_at AS ts FROM anomaly_flags WHERE raised_at > NOW() - INTERVAL '24 hours' " +
       "  UNION ALL " +
-      "  SELECT timestamp AS ts FROM access_logs WHERE timestamp > NOW() - INTERVAL '24 hours' " +
+      "  SELECT accessed_at AS ts FROM access_logs WHERE accessed_at > NOW() - INTERVAL '24 hours' " +
       ") sub"
     ),
   ]);
@@ -94,8 +94,8 @@ router.get('/activity', authenticate, requireRole('ADMIN'), asyncHandler(async (
         accessor_role || ' accessed citizen data' AS description,
         citizen_hash               AS subject_hash,
         accessor_hash              AS actor_hash,
-        timestamp                  AS ts,
-        tx_id
+        accessed_at                AS ts,
+        blockchain_tx_hash         AS tx_id
       FROM access_logs
 
     ) combined
