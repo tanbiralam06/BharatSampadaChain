@@ -1,7 +1,7 @@
 # BSC — Implementation Status
 
 > Read this before starting any session. Updated after every significant merge to `main`.
-> Last updated: 2026-04-26 · Branch: `main` · Phase: 3 in progress — Court + Bank integrations complete
+> Last updated: 2026-05-02 · Branch: `main` · Phase: 3 complete — all feasible features shipped
 
 ---
 
@@ -28,9 +28,9 @@
 | `GET /citizens/:hash/financial-assets` | ✅ Done | PostgreSQL off-chain read |
 | `POST /auth/guest` | ✅ Done | Issues PUBLIC-role JWT for unauthenticated dashboard |
 | Authentication model | ✅ Done | `login_id` column — Aadhaar / email / username; hash resolved server-side |
-| Frontend — `citizen-dashboard` | ✅ Built | Port 5174 · 5 pages · JWT auth · React Query · all endpoints wired |
+| Frontend — `citizen-dashboard` | ✅ Built | Port 5174 · 7 pages · JWT auth · React Query · all endpoints wired |
 | Frontend — `officer-console` | ✅ Built | Port 5175 · ActiveFlags, CaseInvestigation, FamilyAnalysis, MyTeam |
-| Frontend — `admin-panel` | ✅ Built | Port 5176 · SystemHealth, AgencyManagement, OfficerManagement, AuditOverview |
+| Frontend — `admin-panel` | ✅ Built | Port 5176 · SystemHealth, AgencyManagement, OfficerManagement, AuditOverview, Permissions, Security, FabricExplorer |
 | Frontend — `public-dashboard` | ✅ Built | Port 5173 · Guest JWT · BrowseOfficials, OfficialProfile, Compare |
 | Frontend — `shared/` | ✅ Built | Types, apiClient, endpoints, formatters, Badge/Card/Spinner/Error/Empty/Hash |
 | Dev credentials reference | ✅ Done | `DEV_CREDENTIALS.md` — all seed logins + curl examples |
@@ -157,6 +157,21 @@ All chaincodes use `txTime(ctx)` — deterministic timestamps across all endorsi
 - **Chaincode `zkp` v1.1** — stores proof HASH (SHA-256), not raw proof; anti-replay via `ZKPHASH_` sentinel; rejects unverified proofs
 - **Standalone CLI** (`zkp/scripts/prove.js`, `verify.js`) — usable without the API
 - **Circuit tests** (`zkp/tests/asset_threshold.test.js`) — 5 tests: valid proof, exact equality, below-threshold fails, tampered signals fail, tampered proof fails
+
+#### Citizen Self-Service Features (complete)
+
+- `GET /properties/:id/court-orders` now accepts the `CITIZEN` role with an ownership guard (403 if caller does not own the property)
+- citizen-dashboard **Properties** page: each property card has a collapsible "Court Orders" row; lazy-loads orders on expand; properties with `COURT_STAY` encumbrance show an "Active Stay" badge before expanding
+- citizen-dashboard **ZK Proofs** page (new): citizen selects a threshold (₹10L / ₹50L / ₹1Cr / ₹5Cr or custom crore amount), generates a Groth16 proof on-chain via `POST /zkp/:hash/prove`, and views all active verified claims; 422 (assets below threshold) and 503 (keys not set up) errors handled gracefully
+- `proveAssetThreshold` and `getVerifiedClaims` endpoint helpers added to `frontend/shared/src/endpoints.ts`
+- **Fabric graceful degradation extended:** `isChaincodeNotFound()` added to `fabricErrors.ts`; all read services (citizen, property, flag) now fall back to PostgreSQL mirror when the chaincode returns "not found" — fixes seed citizens that exist in PostgreSQL but were never written to the Fabric ledger
+
+#### Fabric Explorer (complete)
+
+- `GET /explorer/stats` (ADMIN only) — counts across all 5 tables + last-24h event count
+- `GET /explorer/activity` (ADMIN only) — unified timeline of the last 60 ledger events from `anomaly_flags`, `properties`, `citizens`, and `access_logs`, sorted newest-first
+- admin-panel **Fabric Explorer** page: 6-card stats row + activity table with chaincode/event-type badges, hash display, relative timestamps
+- Route `/explorer` and "Fabric Explorer" nav item (Blocks icon) added to admin-panel
 
 #### Court + Bank Role Integrations (complete)
 
@@ -285,21 +300,24 @@ Default dev password for all seed users: `password` — **change before any demo
 | `Makefile` with `setup`, `seed`, `reset` targets | ✅ Done | `Makefile` at repo root — `make help` for all targets |
 | Anchor peer fix (`MCAmspanchors.tx` typo) | ✅ Done | Fixed `create-channel.sh:108` — was failing silently on Linux |
 | Cold-start validation on Linux / macOS | ✅ Done | Validated on WSL2 (Ubuntu) — `make setup` + `make seed` + API health all passed |
-| Fabric Explorer block browser UI | P2 | Visibility into raw block data |
+| Fabric Explorer block browser UI | ✅ Done | PostgreSQL-mirror-based explorer — stats + 60-event activity feed in admin-panel |
 
 ### Phase 3 — Advanced Features
 
 | Feature | Notes |
 |---|---|
 | Real ZKP (Groth16 via circom) | ✅ Done | asset_threshold circuit, snarkjs prover, anti-replay chaincode — see Phase 3 section above |
-| Aadhaar OTP login (UIDAI sandbox) | Replace static password with one-time passcode for citizens |
+| Aadhaar OTP login (UIDAI sandbox) | Skipped — requires paid UIDAI API; static password remains for citizens |
 | Officer onboarding flow | ✅ Done | API + admin-panel OfficerManagement + officer-console MyTeam |
-| Raft consensus orderer | Replace solo orderer for production fault tolerance |
-| NIC / Government SSO integration | Single sign-on for officer roles |
+| Raft consensus orderer | Production infra only — not needed for testnet/demo |
+| NIC / Government SSO integration | Skipped — requires external NIC integration |
 | Admin TOTP (2FA) | ✅ Done | Two-step login, QR enroll, Security page — see Phase 3 section above |
 | Cross-ministry data sharing rules | ✅ Done | Permission matrix API + admin UI — see Phase 3 section above |
 | Benami detection (cross-citizen ML rules) | ✅ Done | 4 rules: proxy ownership, systematic undervaluation, disproportionate assets, 5-yr surge — see Phase 3 section above |
 | Court + Bank role integrations | ✅ Done | Freeze/unfreeze property (COURT), bank discrepancy flag (BANK), officer-console pages — see Phase 3 section above |
+| Citizen court order visibility | ✅ Done | CITIZEN role added to court-orders route; expandable panel in Properties page |
+| Citizen ZKP self-service | ✅ Done | ZK Proofs page in citizen-dashboard; preset + custom thresholds; active claims list |
+| Fabric Explorer | ✅ Done | Stats + 60-event activity feed in admin-panel; ADMIN only |
 
 ---
 
