@@ -163,6 +163,13 @@ export const updatePermission = (role: string, payload: UpdatePermissionInput) =
   apiClient.put<ApiResponse<PermissionRule>>(`/admin/permissions/${role}`, payload)
     .then((r) => r.data.data!);
 
+// ── Flag Dispute ──────────────────────────────────────────────────────────────
+
+export const disputeFlag = (citizenHash: string, flagId: string, reason: string) =>
+  apiClient.post<ApiResponse<{ flagId: string; disputeStatus: string }>>(
+    `/citizens/${citizenHash}/flags/${flagId}/dispute`, { reason }
+  ).then((r) => r.data.data!);
+
 // ── ZKP ───────────────────────────────────────────────────────────────────────
 
 export const proveAssetThreshold = (citizenHash: string, threshold: number) =>

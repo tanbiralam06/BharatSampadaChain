@@ -39,6 +39,9 @@ function rowToFlag(r: Record<string, unknown>): AnomalyFlag {
     raisedAt:        (r.raised_at  as Date).toISOString(),
     resolvedAt:      r.resolved_at  ? (r.resolved_at  as Date).toISOString() : undefined,
     resolutionNotes: r.resolution_notes as string | undefined,
+    disputeReason:   r.dispute_reason   as string | undefined,
+    disputedAt:      r.disputed_at  ? (r.disputed_at  as Date).toISOString() : undefined,
+    disputeStatus:   r.dispute_status   as AnomalyFlag['disputeStatus'] | undefined,
   };
 }
 

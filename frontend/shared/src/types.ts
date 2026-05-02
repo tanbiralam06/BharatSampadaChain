@@ -66,6 +66,8 @@ export interface PropertyRecord {
 
 // ── Anomaly Flag ─────────────────────────────────────────────────────────────
 
+export type DisputeStatus = 'PENDING' | 'REVIEWED';
+
 export interface AnomalyFlag {
   flagId: string;
   citizenHash: string;
@@ -79,6 +81,9 @@ export interface AnomalyFlag {
   raisedAt: string;
   resolvedAt?: string;
   resolutionNotes?: string;
+  disputeReason?: string;
+  disputedAt?: string;
+  disputeStatus?: DisputeStatus;
 }
 
 // ── Access Log ────────────────────────────────────────────────────────────────

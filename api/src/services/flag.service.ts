@@ -30,6 +30,32 @@ async function flagsFromPostgres(severity?: string): Promise<AnomalyFlag[]> {
   return result.rows.map(rowToFlag);
 }
 
+// Merges dispute info from PostgreSQL into flags that came from Fabric
+// (Fabric records are immutable and never have dispute columns)
+async function mergeDisputeInfo(flags: AnomalyFlag[]): Promise<AnomalyFlag[]> {
+  if (flags.length === 0) return flags;
+  const ids = flags.map((f) => f.flagId);
+  const rows = await db.query<{
+    flag_id: string; dispute_reason: string | null;
+    disputed_at: Date | null; dispute_status: string | null;
+  }>(
+    `SELECT flag_id, dispute_reason, disputed_at, dispute_status
+     FROM anomaly_flags WHERE flag_id = ANY($1)`,
+    [ids]
+  );
+  const map = new Map(rows.rows.map((r) => [r.flag_id, r]));
+  return flags.map((f) => {
+    const d = map.get(f.flagId);
+    if (!d || !d.dispute_status) return f;
+    return {
+      ...f,
+      disputeReason: d.dispute_reason ?? undefined,
+      disputedAt:    d.disputed_at?.toISOString(),
+      disputeStatus: d.dispute_status as AnomalyFlag['disputeStatus'],
+    };
+  });
+}
+
 export async function getAllFlags(): Promise<AnomalyFlag[]> {
   try {
     const [red, orange, yellow] = await Promise.all([
@@ -37,7 +63,7 @@ export async function getAllFlags(): Promise<AnomalyFlag[]> {
       fabric.getFlagsBySeverity('ORANGE'),
       fabric.getFlagsBySeverity('YELLOW'),
     ]);
-    return [...red, ...orange, ...yellow];
+    return mergeDisputeInfo([...red, ...orange, ...yellow]);
   } catch (err) {
     if (isFabricUnavailable(err) || isChaincodeNotFound(err)) {
       return flagsFromPostgres();
@@ -48,7 +74,8 @@ export async function getAllFlags(): Promise<AnomalyFlag[]> {
 
 export async function getFlagsBySeverity(severity: string): Promise<AnomalyFlag[]> {
   try {
-    return await fabric.getFlagsBySeverity(severity.toUpperCase());
+    const flags = await fabric.getFlagsBySeverity(severity.toUpperCase());
+    return mergeDisputeInfo(flags);
   } catch (err) {
     if (isFabricUnavailable(err) || isChaincodeNotFound(err)) {
       return flagsFromPostgres(severity.toUpperCase());

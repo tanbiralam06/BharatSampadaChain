@@ -173,6 +173,54 @@ const BankFlagSchema = z.object({
   accountRef:        z.string().min(1).max(100),
 });
 
+const DisputeSchema = z.object({
+  reason: z.string().min(20, 'Reason must be at least 20 characters').max(1000),
+});
+
+// POST /citizens/:hash/flags/:flagId/dispute — CITIZEN only; own flags only
+// Stores a dispute reason in PostgreSQL. The on-chain flag record is immutable.
+// Cannot dispute a CLEARED flag. Cannot re-dispute a PENDING dispute.
+router.post('/:hash/flags/:flagId/dispute', authenticate, requireRole('CITIZEN'), asyncHandler(async (req: AuthRequest, res: Response) => {
+  if (req.user!.sub !== req.params.hash) {
+    res.status(403).json({ success: false, error: 'You can only dispute your own flags' });
+    return;
+  }
+
+  const parsed = DisputeSchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ success: false, error: parsed.error.issues[0].message });
+    return;
+  }
+
+  const rows = await query<{
+    flag_id: string; status: string; dispute_status: string | null;
+  }>('SELECT flag_id, status, dispute_status FROM anomaly_flags WHERE flag_id = $1 AND citizen_hash = $2', [
+    req.params.flagId, req.params.hash,
+  ]);
+
+  if (!rows[0]) {
+    res.status(404).json({ success: false, error: 'Flag not found' });
+    return;
+  }
+  if (rows[0].status === 'CLEARED') {
+    res.status(422).json({ success: false, error: 'Cannot dispute a cleared flag' });
+    return;
+  }
+  if (rows[0].dispute_status === 'PENDING') {
+    res.status(422).json({ success: false, error: 'A dispute is already pending review for this flag' });
+    return;
+  }
+
+  await query(
+    `UPDATE anomaly_flags
+     SET dispute_reason = $1, disputed_at = NOW(), dispute_status = 'PENDING'
+     WHERE flag_id = $2`,
+    [parsed.data.reason, req.params.flagId]
+  );
+
+  res.json({ success: true, data: { flagId: req.params.flagId, disputeStatus: 'PENDING' } });
+}));
+
 // POST /citizens/:hash/bank-flag — BANK only; reports a financial discrepancy
 router.post('/:hash/bank-flag', authenticate, requireRole('BANK'), asyncHandler(async (req: AuthRequest, res: Response) => {
   const parsed = BankFlagSchema.safeParse(req.body);
