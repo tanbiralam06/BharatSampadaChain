@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { getAllFlags, formatCrore, formatDate, daysAgo } from '@bsc/shared';
-import { SeverityBadge, StatusBadge, Card, Stat, PageSpinner, ErrorBanner, EmptyState, HashDisplay } from '@bsc/shared';
+import { SeverityBadge, StatusBadge, Badge, Card, Stat, PageSpinner, ErrorBanner, EmptyState, HashDisplay } from '@bsc/shared';
 import type { Severity, FlagStatus } from '@bsc/shared';
 import { AlertTriangle, Filter } from 'lucide-react';
 
@@ -91,7 +91,14 @@ export default function ActiveFlags() {
                   <td className="px-4 py-3"><HashDisplay hash={flag.citizenHash} /></td>
                   <td className="px-4 py-3 text-slate-300 text-xs">{flag.ruleTriggered.replace(/_/g,' ')}</td>
                   <td className="px-4 py-3 font-semibold text-orange-400">{formatCrore(flag.gapAmount)}</td>
-                  <td className="px-4 py-3"><StatusBadge status={flag.status} /></td>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <StatusBadge status={flag.status} />
+                      {flag.disputeStatus === 'PENDING' && (
+                        <Badge variant="amber">Disputed</Badge>
+                      )}
+                    </div>
+                  </td>
                   <td className="px-4 py-3 text-slate-400 text-xs">{daysAgo(flag.raisedAt)}d</td>
                   <td className="px-4 py-3">
                     <button
