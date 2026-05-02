@@ -1,9 +1,11 @@
-import { Building2, MapPin } from 'lucide-react';
+import { useState } from 'react';
+import { Building2, MapPin, ChevronDown, ChevronUp, Gavel } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
 import { useProperties } from '../hooks/useProperties';
 import {
   Card, PageSpinner, ErrorBanner, EmptyState,
-  Badge, formatCrore, formatDate,
-  type Encumbrance,
+  Badge, formatCrore, formatDate, getPropertyCourtOrders,
+  type Encumbrance, type CourtOrder,
 } from '@bsc/shared';
 
 const encumbranceVariant: Record<Encumbrance, 'green' | 'orange' | 'red' | 'yellow'> = {
@@ -13,8 +15,41 @@ const encumbranceVariant: Record<Encumbrance, 'green' | 'orange' | 'red' | 'yell
   COURT_STAY: 'yellow',
 };
 
+function CourtOrdersPanel({ propertyId }: { propertyId: string }) {
+  const { data, isLoading, isError } = useQuery<CourtOrder[]>({
+    queryKey: ['court-orders', propertyId],
+    queryFn:  () => getPropertyCourtOrders(propertyId),
+    staleTime: 60_000,
+  });
+
+  if (isLoading) return <p className="text-xs text-slate-500 py-2">Loading court orders…</p>;
+  if (isError)   return <p className="text-xs text-red-400 py-2">Could not load court orders.</p>;
+  if (!data || data.length === 0)
+    return <p className="text-xs text-slate-500 py-2">No court orders on record for this property.</p>;
+
+  return (
+    <div className="mt-3 space-y-2">
+      {data.map((order) => (
+        <div key={order.orderId} className="rounded-lg border border-white/5 bg-white/[0.02] p-3">
+          <div className="flex items-center justify-between gap-2 mb-1.5">
+            <Badge variant={order.orderType === 'FREEZE' ? 'red' : 'green'}>
+              {order.orderType === 'FREEZE' ? 'Freeze Order' : 'Unfreeze Order'}
+            </Badge>
+            <span className="text-[10px] text-slate-500">{formatDate(order.timestamp)}</span>
+          </div>
+          <p className="text-xs text-slate-300 mb-1">
+            <span className="text-slate-500">Ref:</span> {order.orderRef}
+          </p>
+          <p className="text-xs text-slate-400">{order.reason}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export default function Properties() {
   const { data, isLoading, isError, refetch } = useProperties();
+  const [expandedId, setExpandedId] = useState<string | null>(null);
 
   if (isLoading) return <PageSpinner />;
   if (isError)   return <div className="p-8"><ErrorBanner message="Could not load properties." onRetry={refetch} /></div>;
@@ -84,6 +119,27 @@ export default function Properties() {
                   </div>
                 )}
               </div>
+
+              {/* Court orders toggle */}
+              <button
+                onClick={() => setExpandedId(expandedId === p.propertyId ? null : p.propertyId)}
+                className="mt-4 flex w-full items-center justify-between rounded-lg border border-white/5 bg-white/[0.02] px-3 py-2 text-xs text-slate-400 hover:bg-white/5 hover:text-white transition-colors"
+              >
+                <span className="flex items-center gap-1.5">
+                  <Gavel className="h-3.5 w-3.5" />
+                  Court Orders
+                  {p.encumbrance === 'COURT_STAY' && (
+                    <Badge variant="yellow" className="ml-1">Active Stay</Badge>
+                  )}
+                </span>
+                {expandedId === p.propertyId
+                  ? <ChevronUp className="h-3.5 w-3.5" />
+                  : <ChevronDown className="h-3.5 w-3.5" />}
+              </button>
+
+              {expandedId === p.propertyId && (
+                <CourtOrdersPanel propertyId={p.propertyId} />
+              )}
             </Card>
           ))}
         </div>

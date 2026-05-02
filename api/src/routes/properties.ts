@@ -91,8 +91,15 @@ router.post('/:id/unfreeze', authenticate, requireRole('COURT'), asyncHandler(as
   res.json({ success: true, data: property });
 }));
 
-// GET /properties/:id/court-orders — COURT, ADMIN, IT_DEPT, ED, CBI
-router.get('/:id/court-orders', authenticate, requireRole('COURT', 'ADMIN', 'IT_DEPT', 'ED', 'CBI'), asyncHandler(async (req: AuthRequest, res: Response) => {
+// GET /properties/:id/court-orders — COURT, ADMIN, IT_DEPT, ED, CBI + CITIZEN (own property only)
+router.get('/:id/court-orders', authenticate, requireRole('COURT', 'ADMIN', 'IT_DEPT', 'ED', 'CBI', 'CITIZEN'), asyncHandler(async (req: AuthRequest, res: Response) => {
+  if (req.user!.role === 'CITIZEN') {
+    const property = await propertyService.getProperty(req.params.id);
+    if (property.ownerHash !== req.user!.sub) {
+      res.status(403).json({ success: false, error: 'Access denied — not your property' });
+      return;
+    }
+  }
   const orders = await propertyService.getCourtOrders(req.params.id);
   res.json({ success: true, data: orders });
 }));
